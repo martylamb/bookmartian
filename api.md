@@ -31,14 +31,15 @@ http -v -f POST http://127.0.0.1:4567/api/bookmark/update oldUrl=http://martians
 ```
 
 
-Get All Bookmarks
------------------
+Get Bookmarks
+-------------
 
 **GET /api/bookmarks**
 
 Parameters:
-  * tags: space-and-comma-delimited list of tags.  Only bookmarks with
-    all of the specified tags will be returned.
+  * tags (optional): space-and-comma-delimited list of tags.  Only bookmarks with
+    all of the specified tags will be returned.  If no tags are specified then all
+    bookmarks will be returned.
     
 Examples:
 
