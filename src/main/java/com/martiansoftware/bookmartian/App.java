@@ -21,20 +21,14 @@ public class App {
     private static Logger log = LoggerFactory.getLogger(App.class);
     
     public static void main(String[] args) throws Exception {
-        if (args.length == 0 || args.length > 2) {
-            System.err.println("Usage: bookmartian BOOKMARKS_FILE [STATIC_RESOURCE_PATH]");
+        if (args.length !=1) {
+            System.err.println("Usage: bookmartian BOOKMARKS_FILE");
             System.exit(1);
         }
         
         JsonConfig.init();
-        System.setProperty("BOOM_DEBUG", "false");
         
         BookmarkCollection bc = new BookmarkCollection(Paths.get(args[0]));
-        if (args.length == 2) {
-            File staticPath = Paths.get(args[1]).toFile();
-            log.info("Using static resources at {}", staticPath.getAbsolutePath());
-            Spark.externalStaticFileLocation(staticPath.getAbsolutePath());
-        }
         
         before("/*", (req, rsp) -> log(req,rsp));
         get("/api/tags", () -> json(bc.tags()));        
