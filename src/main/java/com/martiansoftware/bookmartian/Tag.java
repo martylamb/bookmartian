@@ -1,11 +1,7 @@
-
 package com.martiansoftware.bookmartian;
 
 import com.martiansoftware.util.Check;
 import com.martiansoftware.util.Strings;
-import java.util.List;
-import java.util.Set;
-import java.util.function.Predicate;
 
 /**
  *
@@ -19,7 +15,7 @@ public class Tag implements Comparable<Tag> {
         _name = Check.arg(Strings.safeTrim(name), "name")
                     .notNullOrEmpty()
                     .value();
-        Check.arg(_name, "name").isTrue(_name.matches("^[^\\s]+$"), "Tag name may not contain whitespace.");
+        Check.arg(_name, "name").isTrue(_name.matches("^[^\\s,]+$"), "Tag name may not contain whitespace or commas.");
         
         _color = Colors.safeColor(color).toLowerCase();
     }
