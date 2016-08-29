@@ -4,13 +4,11 @@ import java.nio.file.Paths;
 import static com.martiansoftware.boom.Boom.*;
 import com.martiansoftware.boom.BoomResponse;
 import com.martiansoftware.util.Strings;
-import java.io.File;
 import java.io.IOException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
-import spark.Spark;
 
 /**
  *
@@ -85,7 +83,6 @@ public class App {
     }
     
     private static void log(Request req, Response rsp) {
-//        new Exception().printStackTrace();
         StringBuilder msg = new StringBuilder();
         msg.append(String.format("%s: %s %s", req.ip(), req.requestMethod(), req.url()));
         String q = req.queryString();

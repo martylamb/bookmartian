@@ -8,7 +8,6 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import com.martiansoftware.bookmartian.TagRefs;
 import com.martiansoftware.boom.Json;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
