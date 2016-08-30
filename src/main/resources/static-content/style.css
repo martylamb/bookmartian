@@ -1,0 +1,258 @@
+html, body {
+    margin:0px; 
+    padding:0px;
+    font-family: 'Lato', sans-serif;
+    background-color: #f3f3f3;
+}
+
+hr {
+    margin: 12px;
+    background-color: #b5b5b5;
+    height: 1px; 
+    border: 0;
+}
+
+h1 {
+    font-size: 16pt;
+    margin: 0px;
+    padding-bottom: 8px;
+}
+
+h2 {
+    font-size: 16pt;
+}
+
+h3 {
+    font-size: 16pt;
+}
+
+/* ======================================================================= */
+/* header */
+.header {
+    background-color: #B4C7E7;
+    height: 36px;
+}
+
+.addbutton {
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+}
+
+.searchbutton {
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    float:right;
+    margin-right: 4px;
+}
+
+.search {
+    margin: 5px;
+    float:right;
+    width:100px;
+    height: 20px;
+}
+
+/* ======================================================================= */
+/* action panel */
+.action {
+    background-color: #E87D0C;
+    display: none;
+}
+
+.addpanel {
+    color: white;
+    padding: 12px;
+    overflow: auto;
+}
+
+.fieldtitle {
+    width: 64px;
+}
+
+.actionbutton {
+    width:64px;
+}
+
+.titleinputpair {
+    float:left;
+}
+
+.addinputtitle {
+    margin-right: 12px;
+    width: 160px;
+}
+
+.addinputurl {
+    margin-right: 12px;
+    width: 250px;
+}
+
+.addinputtags {
+    margin-right: 12px;
+    width: 160px;
+}
+
+.addinputnotes {
+    margin-right: 12px;
+    width: 250px;
+}
+
+/* ======================================================================= */
+/* tag cloud */
+.tagcloud {
+    padding: 4px 12px 12px 24px;
+    color: #a4a4a4;
+    text-align: center;
+    font-size: small;
+    clear: both;
+}
+
+.tagcloud a {
+    color: #a4a4a4;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.tagcloud a {
+    color: #a4a4a4;
+}
+
+.tagcloud a:hover {
+    text-decoration: underline;
+}
+
+/* ======================================================================= */
+/* promoted tiles */
+.promotedsection {
+    margin: 12 24 12 24;
+    text-align: center;
+}
+
+.promotedlink {
+    margin: 12px 6px; 
+    height: 90px;
+    width: 90px;
+    background-color: #ffffff;
+    border: solid 1px #000000;
+    display: none;
+}
+
+.promotedimage {
+    height: 90px;
+    width: 90px;
+}
+
+/* ======================================================================= */
+/* search results */
+
+.searchclose {
+    width: 34px;
+    height: 34px;
+    cursor: pointer;
+    display: inline;
+}
+
+.searchresults {
+    margin: 6px 24px 6px 24px;
+    display: none;
+}
+
+.searchblock {
+    width:100%;
+    margin: 8px;
+    display: inline-block;
+    text-align: left;
+}
+.searchtable {
+    background-color: white;
+    width: 95%;
+    font-size: 11pt;  
+    border-collapse: collapse;
+    border-style: hidden;
+}
+
+.searchtable td {
+    border: 2px solid #f3f3f3;
+    padding: 8px;
+}
+
+.searchtable a:link {
+    color: black;
+    text-decoration: none;
+}
+
+.searchtable a:visited {
+    color: black;
+}
+
+.searchtable a:hover {
+    text-decoration: underline;
+}
+.tags {
+    font-style: italic;
+    color: #b1b1b1;
+}
+
+/* ======================================================================= */
+/* links */
+.content {
+    margin: 6px 24px 6px 24px;
+    text-align: center;
+    clear: both;
+}
+
+.linkblock {
+    margin: 8px;
+    display: inline-block;
+    text-align: left;
+}
+
+.linktable {
+    background-color: white;
+    width: 220px;
+    font-size: 11pt;  
+    border-collapse: collapse;
+    border-style: hidden;
+}
+
+.linktable td {
+    border: 2px solid #f3f3f3;
+    padding: 8px;
+}
+
+.linktable a:link {
+    color: black;
+    text-decoration: none;
+}
+
+.linktable a:visited {
+    color: black;
+}
+
+.linktable a:hover {
+    text-decoration: underline;
+}
+
+.favicon {
+    width: 20px;
+    text-align: center;
+}
+
+.bookmarkedits {
+    font-size: 10pt;
+    text-align: right;
+    display: none;
+}
+
+.bookmarkedits a {
+    cursor: pointer;
+}
+
+.footer {
+    text-align: right;
+    font-size: 10pt;
+    color: darkgrey;
+    margin-right: 12px;
+}

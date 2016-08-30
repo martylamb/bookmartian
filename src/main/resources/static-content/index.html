@@ -1,6 +1,98 @@
+<!DOCTYPE html>
 <html>
-<head></head>
+
+<head>
+    <title>Bookmarks</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link REL=StyleSheet HREF="style.css" TYPE="text/css" MEDIA=screen>
+</head>
+
 <body>
-<h1>Static content goes here.</h1>
+    <script src="jquery-3.1.0.min.js"></script>
+    <script src="bookmarks.js"></script>
+
+    <!-- bar at top of page -->
+    <div class="header">
+        <img class='addbutton' src='img/plus.png' onclick="$('#actionpanel').slideDown('fast')">
+        <img class='searchbutton' src='img/searchsmall.png' onclick="executeSearch();">
+        <input class='search' type="text" id='searchterm'/>
+    </div>
+
+    <!-- action panel (hidden at start) -->
+    <div class="action" id="actionpanel">
+        <div id="addpanel" class="addpanel">
+            <h1>Add a bookmark</h1>
+            <form id="addform">
+                <div class="titleinputpair">
+                    <div class="fieldtitle">title:</div>
+                    <input type="text" name="title" id="addinputtitle" class="addinputtitle" />
+                </div>
+                <div class="titleinputpair">
+                    <div class="fieldtitle">url:</div>
+                    <input type="text" name="url" id="addinputurl" class="addinputurl" />
+                </div>
+                <div class="titleinputpair">
+                    <div class="fieldtitle">tags:</div>
+                    <input type="text" name="tags" id="addinputtags" class="addinputtags" />
+                </div>
+                <div class="titleinputpair">
+                    <div class="fieldtitle">notes:</div>
+                    <input type="text" name="notes" id="addinputnotes" class="addinputnotes" />
+                </div>
+                <div class="titleinputpair">
+                    <div class="fieldtitle">&nbsp;</div>
+                    <input type="button" value="save" class="actionbutton" onclick="saveBookmark();" />
+                    <input type="button" value="cancel" class="actionbutton" onclick="closeAction();" />
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- tag cloud -->
+    <div class="tagcloud">
+    </div>
+
+    <!-- promoted link tiles -->
+    <div class="promotedsection">
+        <div class="promotedlink" id="promotedlinktemplate">
+            <a><img class="promotedimage" src="img/plus.jpg" /></a>
+        </div>
+    </div>
+
+    <hr id='promohr' />
+
+    <!-- search results -->
+    <div class="searchresults" id="search">
+        <div class="searchblock">
+            <h1 class="linkblocktitle">search results</h1>
+            
+            <table id="searchtable" class="searchtable">
+            </table>
+        </div>
+    </div>
+
+    <hr id='searchhr' style='display:none;'/>
+
+    <!-- tag blocks -->
+    <div class="content" id="content">
+        <div class="linkblock" id="linkblocktemplate">
+            <h1 class="linkblocktitle">recent</h1>
+            <table class="linktable">
+            </table>
+        </div>
+    </div>
+
+    <script>
+    </script>
+
+    <hr/>
+    <div class='footer'>
+        the bookmartian | 
+        2016 | 
+        mlamb/jmutchek | 
+        source on <a href="https://github.com/martylamb/bookmartian">github</a>
+    </div>
+
 </body>
+
 </html>
