@@ -5,7 +5,7 @@ function populateLinkTable(value) {
     var tagColors = new Array();
     $.ajax({
         // The URL for the request
-        url: "/bookmarks?tags=" + value.replace(/\|/g, '+'),
+        url: "/api/bookmarks?tags=" + value.replace(/\|/g, '+'),
 
         // Whether this is a POST or GET request
         type: "GET",
@@ -46,7 +46,7 @@ function populateLinkTable(value) {
 }
 
 function saveBookmark() {
-    $.post('/bookmarks/update', $("#addform").serialize())
+    $.post('/api/bookmark/update', $("#addform").serialize())
         .done(function () {
             closeAction();
         })
@@ -81,7 +81,7 @@ function deleteMark(e) {
 
     $.ajax({
         type: 'POST',
-        url: '/bookmarks/delete',
+        url: '/api/bookmark/delete',
         data: { 'url': bookmark.attr('href') }
     })
         .done(function () {
@@ -121,7 +121,7 @@ function executeSearch(term) {
 
     $.ajax({
         // The URL for the request
-        url: "/bookmarks?tags=" + searchterm,
+        url: "/api/bookmarks?tags=" + searchterm,
 
         // Whether this is a POST or GET request
         type: "GET",
@@ -178,8 +178,11 @@ $(document).ready(function () {
     // create promoted tag blocks from the querystring
     var qd = {};
     location.search.substr(1).split("&").forEach(function (item) { (item.split("=")[0] in qd) ? qd[item.split("=")[0]].push(item.split("=")[1]) : qd[item.split("=")[0]] = [item.split("=")[1]] })
-    var promotedTags = qd.pins.toString();
-    var promotedTagArray = promotedTags.split(",");
+    var promotedTags = "";
+    if (qd.pins) {
+        var promotedTags = qd.pins.toString();
+        var promotedTagArray = promotedTags.split(",");
+    }
 
     // create a linkblock for each promoted tag
     $.each(promotedTagArray, function (index, value) {
@@ -199,7 +202,7 @@ $(document).ready(function () {
     var tagColors = new Array();
     $.ajax({
         // The URL for the request
-        url: "/tags",
+        url: "/api/tags",
 
         // Whether this is a POST or GET request
         type: "GET",
@@ -239,7 +242,7 @@ $(document).ready(function () {
     // retrieve promo tiles
     $.ajax({
         // The URL for the request
-        url: "/bookmarks?tags=.promote",
+        url: "/api/bookmarks?tags=.promote",
 
         // Whether this is a POST or GET request
         type: "GET",
