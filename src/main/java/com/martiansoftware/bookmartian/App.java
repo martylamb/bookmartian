@@ -3,12 +3,21 @@ package com.martiansoftware.bookmartian;
 import java.nio.file.Paths;
 import static com.martiansoftware.boom.Boom.*;
 import com.martiansoftware.boom.BoomResponse;
+import com.martiansoftware.jsap.FlaggedOption;
+import com.martiansoftware.jsap.JSAP;
+import com.martiansoftware.jsap.JSAPException;
+import com.martiansoftware.jsap.JSAPResult;
+import com.martiansoftware.jsap.Switch;
+import com.martiansoftware.jsap.UnflaggedOption;
+import com.martiansoftware.jsap.stringparsers.FileStringParser;
 import com.martiansoftware.util.Strings;
 import java.io.IOException;
+import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
+import spark.Spark;
 
 /**
  *
@@ -16,18 +25,38 @@ import spark.Response;
  */
 public class App {
     
+    private static final String ARG_WEB_ROOT = "webroot";
+    private static final String ARG_BOOKMARK_JSON_FILE = "json";
+    
     private static Logger log = LoggerFactory.getLogger(App.class);
     
+    private static JSAP jsap() throws JSAPException {
+        JSAP jsap = new JSAP();
+//        jsap.setUsage("Usage: bookmartian [-r|--root STATIC_WEB_ROOT] BOOKMARK_JSON_FILE");
+        jsap.registerParameter(new FlaggedOption(ARG_WEB_ROOT)
+                                .setShortFlag('r')
+                                .setLongFlag("root"));        
+        jsap.registerParameter(new UnflaggedOption(ARG_BOOKMARK_JSON_FILE)
+                                .setRequired(true));
+        return jsap;
+    }
     public static void main(String[] args) throws Exception {
-        if (args.length !=1) {
-            System.err.println("Usage: bookmartian BOOKMARKS_FILE");
+
+        JSAP jsap = jsap();
+        JSAPResult cmd = jsap().parse(args);
+        if (!cmd.success()) {
+            System.err.format("Usage: bookmartian %s", jsap.getUsage());
             System.exit(1);
         }
         
         JsonConfig.init();
-        
-        BookmarkCollection bc = new BookmarkCollection(Paths.get(args[0]));
-        
+        BookmarkCollection bc = new BookmarkCollection(Paths.get(cmd.getString(ARG_BOOKMARK_JSON_FILE)));
+
+        if (cmd.contains(ARG_WEB_ROOT)) {
+            Path root = Paths.get(cmd.getString(ARG_WEB_ROOT)).toAbsolutePath();
+            log.warn("USING ALTERNATE WEB ROOT: {}", root);
+            Spark.externalStaticFileLocation(root.toString());
+        }
         before("/*", (req, rsp) -> log(req,rsp));
         get("/api/tags", () -> json(bc.tags()));        
         get("/api/bookmark", () -> getBookmark(bc));
