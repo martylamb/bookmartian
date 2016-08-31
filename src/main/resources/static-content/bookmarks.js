@@ -216,7 +216,7 @@ $(document).ready(function () {
             $(json).each(function (index, element) {
                 if (element.name.substr(0,1) !== ".") {
                     var link = "<a onclick=\"executeSearch('" + element.name + "');\" style=color:" + element.color + " id=" + element.name + ">" + element.name + "</a>";
-                    $(".tagcloud").append(link).append("&nbsp;&nbsp;");
+                    $(".tagcloud").append(link).append(" &nbsp;");
                     tagColors[element.name] = element.color;
                 }
             })
