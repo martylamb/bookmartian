@@ -2,4 +2,4 @@
 
 mvn clean package
 
-java -jar target/bookmartian-0.1.0-SNAPSHOT-jar-with-dependencies.jar bookmarks.json
+java -jar target/bookmartian-0.1.0-SNAPSHOT-jar-with-dependencies.jar bookmarks.json --root src/main/resources/static-content
