@@ -1,6 +1,7 @@
-
+// url to the bookmartian host
 var host = 'http://localhost:4567';
 
+// function called when the save button is clicked
 function saveBookmark() {
     $.post(host + "/api/bookmark/update", $("#bookmartian_addform").serialize())
         .done(function () {
@@ -14,10 +15,12 @@ function saveBookmark() {
         });
 }
 
+// function called when the close button is clicked AND on a successful save
 function closeAction() {
     $('#bookmartian_actionpanel').slideUp('fast');
-    $('#bookmartian_addform').find("input[type=text], textarea").val("");
+    $('#bookmartian_actionpanel').remove();
 }
+
 
 (function () {
 
@@ -85,15 +88,10 @@ function closeAction() {
                                     </form>
                                 </div>
     					    </div> `);
-                //               $("#wikiframe_veil").fadeIn(750);
-                //               $("#wikiframe_veil").fadeOut(750);
-                //               $("#wikiframe iframe").slideUp(500);
-                //               setTimeout("$('#wikiframe').remove()", 750);
             }
             $('#bookmartian_addinputtitle').val(document.title);
             $('#bookmartian_addinputurl').val(document.location);
             $('#bookmartian_addinputnotes').val(s);
-            $('#bookmartian_addinputtags').focus();
         })();
     }
 })();
