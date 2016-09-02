@@ -16,7 +16,7 @@ function populateLinkTable(value) {
         // Code to run if the request succeeds (is done);
         // The response is passed to the function
         .done(function (json) {
-            var safeID = value.replace(/[\|,\.]/g,'_');
+            var safeID = value.replace(/[\|,\.]/g, '_');
             var linktable = $('#linktable_' + safeID)
 
             //  linktable.children().remove();
@@ -24,11 +24,15 @@ function populateLinkTable(value) {
             $(json).each(function (index, element) {
 
                 var padlock = ""
-                if (element.url.substr(0,5) === "https") {
+                if (element.url.substr(0, 5) === "https") {
                     padlock = "<span style='color:green;'>&#x1f512;</span> ";
                 }
 
-                var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "' onclick='toggleEdits(this);'></td><td class='bookmark'><a href='" + element.url + "' data-tags='" + element.tags + "' data-notes='" + element.notes + "' data-title='" + element.title + "'>" + padlock + element.title + "</a></td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a  onclick='deleteMark(this);'>delete</a></td></tr>";
+                var notes = "";
+                if (typeof element.notes != 'undefined') {
+                    notes = element.notes;
+                }
+                var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "' onclick='toggleEdits(this);'></td><td class='bookmark'><a href='" + element.url + "' data-tags='" + element.tags + "' data-notes='" + notes + "' data-title='" + element.title + "'>" + padlock + element.title + "</a></td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a  onclick='deleteMark(this);'>delete</a></td></tr>";
                 linktable.append(row);
             })
         })
@@ -101,18 +105,19 @@ function editMark(e) {
     var bookmark = $(e).parent().parent().prev().find('.bookmark a');
     console.log("editing bookmark: " + bookmark.attr('href'));
 
-    $('#addinputtitle').val(bookmark.attr('data-title'));
-    $('#addinputurl').val(bookmark.attr('href'));
-    $('#addinputtags').val(bookmark.attr('data-tags').replace(/,/g, ' '));
-    $('#addinputnotes').val(bookmark.attr('data-notes'));
+    $('#addinputtitle').val(bookmark.attr('data-title') ? bookmark.attr('data-title') : '');
+    $('#addinputurl').val(bookmark.attr('href') ? bookmark.attr('href') : '');
+    $('#addinputtags').val(bookmark.attr('data-tags') ? bookmark.attr('data-tags').replace(/,/g, ' ') : '');
+    $('#addinputnotes').val(bookmark.attr('data-notes') ? bookmark.attr('data-notes') : '');
     $('#actionpanel').slideDown('fast');
+    $('#addinputtags').focus();
 }
 
 function executeSearch(term) {
     var searchterm = "";
-    
-    if (term) { 
-        searchterm = term; 
+
+    if (term) {
+        searchterm = term;
     } else {
         searchterm = $('#searchterm').val();
     }
@@ -135,11 +140,16 @@ function executeSearch(term) {
             var searchtable = $('#searchtable');
             $(json).each(function (index, element) {
                 var padlock = ""
-                if (element.url.substr(0,5) === "https") {
+                if (element.url.substr(0, 5) === "https") {
                     padlock = "<span style='color:green;'>&#x1f512;</span> ";
                 }
 
-                var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "' onclick='toggleEdits(this);'/></td><td class='bookmark'><a href='" + element.url + "' data-tags='" + element.tags + "' data-notes='" + element.notes + "' data-title='" + element.title + "'>" + padlock + element.title + "</a> - <span class='tags'>" + element.tags.toString().replace(/,/g, ' ') + "</span></td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a  onclick='deleteMark(this);'>delete</a></td></tr>";
+                var notes = "";
+                if (typeof element.notes != 'undefined') {
+                    notes = element.notes;
+                }
+
+                var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "' onclick='toggleEdits(this);'/></td><td class='bookmark'><a href='" + element.url + "' data-tags='" + element.tags + "' data-notes='" + notes + "' data-title='" + element.title + "'>" + padlock + element.title + "</a> - <span class='tags'>" + element.tags.toString().replace(/,/g, ' ') + "</span></td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a  onclick='deleteMark(this);'>delete</a></td></tr>";
                 searchtable.append(row);
             })
             $('#search').show();
@@ -188,8 +198,8 @@ $(document).ready(function () {
     $.each(promotedTagArray, function (index, value) {
         var block = $("#linkblocktemplate").clone()
         var heading = block.find('h1');
-        var safeID = value.replace(/[\|,\.]/g,'_');
-        var cleanHeading = value.replace(/\.[^|]+/g,'').replace(/\|/g,'');
+        var safeID = value.replace(/[\|,\.]/g, '_');
+        var cleanHeading = value.replace(/\.[^|]+/g, '').replace(/\|/g, '');
         heading.text(cleanHeading);
         var linktable = block.find('.linktable');
         linktable.attr("id", "linktable_" + safeID);
@@ -214,7 +224,7 @@ $(document).ready(function () {
         // The response is passed to the function
         .done(function (json) {
             $(json).each(function (index, element) {
-                if (element.name.substr(0,1) !== ".") {
+                if (element.name.substr(0, 1) !== ".") {
                     var link = "<a onclick=\"executeSearch('" + element.name + "');\" style=color:" + element.color + " id=" + element.name + ">" + element.name + "</a>";
                     $(".tagcloud").append(link).append(" &nbsp;");
                     tagColors[element.name] = element.color;
@@ -232,7 +242,7 @@ $(document).ready(function () {
         .always(function (xhr, status) {
             // color the hearing of each linkblock for promoted tags
             $.each(promotedTagArray, function (index, value) {
-                var cleanHeading = value.replace(/\.[^|]+/g,'').replace(/\|/g,'');
+                var cleanHeading = value.replace(/\.[^|]+/g, '').replace(/\|/g, '');
                 var heading = $("#content").find("h1:contains('" + cleanHeading + "')");
                 heading.css('color', tagColors[cleanHeading]);
             });

@@ -1,6 +1,8 @@
 
+var host = 'http://localhost:4567';
+
 function saveBookmark() {
-    $.post('http://localhost:4567/api/bookmark/update', $("#bookmartian_addform").serialize())
+    $.post(host + "/api/bookmark/update", $("#bookmartian_addform").serialize())
         .done(function () {
             console.log("bookmark saved.");
             closeAction();
@@ -24,7 +26,7 @@ function closeAction() {
     if (window.jQuery === undefined || window.jQuery.fn.jquery < v) {
         var done = false;
         var script = document.createElement("script");
-        script.src = "http://localhost:4567/jquery-3.1.0.min.js";
+        script.src = host + "/jquery-3.1.0.min.js";
         script.onload = script.onreadystatechange = function () {
             if (!done && (!this.readyState || this.readyState == "loaded" || this.readyState == "complete")) {
                 done = true;
@@ -53,7 +55,7 @@ function closeAction() {
             if ($("#bookmartian_actionpanel").length == 0) {
                 var s = "";
                 s = getSelText();
-                $('head').append('<link rel="stylesheet" type="text/css" href="http://localhost:4567/style.bookmarklet.css">');
+                $('head').append('<link rel="stylesheet" type="text/css" href="' + host + '/style.bookmarklet.css">');
                 $("body").append(`
                             <div class="bookmartian_action" id="bookmartian_actionpanel">
                                 <div id="bookmartian_addpanel" class="bookmartian_addpanel">

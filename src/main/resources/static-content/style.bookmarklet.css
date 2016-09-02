@@ -4,6 +4,7 @@
     font-size: 16pt;
     margin: 0px;
     padding-bottom: 8px;
+    text-align: left;
 }
 
 .bookmartian_action {
@@ -23,6 +24,7 @@
 
 .bookmartian_fieldtitle {
     width: 64px;
+    text-align: left;
 }
 
 .bookmartian_actionbutton {
