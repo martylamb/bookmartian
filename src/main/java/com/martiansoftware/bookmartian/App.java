@@ -57,14 +57,33 @@ public class App {
             log.warn("USING ALTERNATE WEB ROOT: {}", root);
             Spark.externalStaticFileLocation(root.toString());
         }
+        
         before("/*", (req, rsp) -> log(req,rsp));
+        
         get("/api/tags", () -> json(bc.tags()));        
         get("/api/bookmark", () -> getBookmark(bc));
         get("/api/bookmarks", () -> json(bc.bookmarks(request().queryParams("tags"))));
+        
+        options("/api/bookmark/update", () -> corsOptions());
         post("/api/bookmark/update", () -> updateBookmark(bc));
+        
         post("/api/bookmark/delete", () -> deleteBookmark(bc));
     }
     
+    private static BoomResponse corsOptions() {
+        corsHeaders();
+        return JSend.success();
+    }
+    
+    private static void corsHeaders() {
+        String acrh = request().headers("Access-Control-Request-Headers");
+        if (acrh != null) response().header("Access-Control-Allow-Headers", acrh);
+        String acrm = request().headers("Access-Control-Request-Method");
+        if (acrm != null) response().header("Access-Control-Allow-Methods", "POST");
+        String origin = request().headers("Origin");
+        response().header("Access-Control-Allow-Origin", origin == null ? "*" : origin);
+    }
+
     private static String q(String key) {
         return Strings.safeTrimToNull(request().queryParams(key));
     }
@@ -85,6 +104,7 @@ public class App {
                         .tags(q("tags"))
                         .build();
 
+        corsHeaders();
         try {
             return JSend.success(bc.upsert(b, oldUrl));
         } catch (IOException e) {
