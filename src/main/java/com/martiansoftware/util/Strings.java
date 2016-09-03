@@ -9,6 +9,11 @@ import java.util.List;
  */
 public class Strings {
     
+    public static boolean isEmpty(String s) {
+        if (s == null) return true;
+        return (s.isEmpty());
+    }
+    
     public static String safeTrim(String s) {
         return (s == null) ? "" : s.trim();
     }
