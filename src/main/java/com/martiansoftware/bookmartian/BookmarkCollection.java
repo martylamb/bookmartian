@@ -40,7 +40,7 @@ public class BookmarkCollection {
         
         if (Files.exists(_file)) {
             log.info("loading bookmarks...");
-            SavedCollection sc = Json.fromJson(Files.newBufferedReader(_file), SavedCollection.class);
+            SavedCollection sc = Json.fromJson(_file, SavedCollection.class);
             _bookmarks = sc.bookmarks;
             _tags = sc.tags;
             _bookmarks.stream().forEach(b -> _bookmarksByUrl.put(b.url(), b));
