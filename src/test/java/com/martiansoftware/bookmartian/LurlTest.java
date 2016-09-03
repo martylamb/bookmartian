@@ -27,7 +27,7 @@ public class LurlTest {
     }
     
     @Test
-    public void testAll() {
+    public void testConstruction() {
         test("martiansoftware.com");
         test("MartianSoftware.com");
         
@@ -49,4 +49,10 @@ public class LurlTest {
              "mailto://fake@email.fake");
     }
     
+    @Test
+    public void testId() {
+        assertEquals("66064c6105dee6a177a637f060174c01f8c549ad", new Lurl("Https://MartianSoftware.com").id());
+        assertEquals("66064c6105dee6a177a637f060174c01f8c549ad", new Lurl("https://martiansoftware.com").id());
+        assertEquals("64e2ad35b5d0bf7b4dd0d832831428a9ff14d3c1", new Lurl("http://martiansoftware.com").id());
+    }
 }
