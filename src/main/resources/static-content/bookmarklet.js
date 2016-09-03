@@ -1,9 +1,15 @@
 // url to the bookmartian host
-var host = 'http://localhost:4567';
+var parser = document.createElement('a');
+parser.href = document.getElementById ( "bookmartian_scriptblock" ).getAttribute ( "src" );
+var host = parser.protocol + "//" + parser.host;
 
 // function called when the save button is clicked
 function saveBookmark() {
-    $.post(host + "/api/bookmark/update", $("#bookmartian_addform").serialize())
+    $.post({
+        url: host + "/api/bookmark/update",
+        data: $("#bookmartian_addform").serialize(),
+        headers: {'X-BOOKMARTIAN':'aw yeah'}
+    })
         .done(function () {
             console.log("bookmark saved.");
             closeAction();
@@ -17,11 +23,10 @@ function saveBookmark() {
 
 // function called when the close button is clicked AND on a successful save
 function closeAction() {
-    $('#bookmartian_actionpanel').slideUp('fast');
     $('#bookmartian_actionpanel').remove();
 }
 
-
+// embedded javascript executes to insert content into host page
 (function () {
 
     var v = "3.1.0";
@@ -42,6 +47,8 @@ function closeAction() {
     }
 
     function initMyBookmarklet() {
+
+        // function to retrieve the currently selected text on a page
         (window.myBookmarklet = function () {
             function getSelText() {
                 var s = '';
