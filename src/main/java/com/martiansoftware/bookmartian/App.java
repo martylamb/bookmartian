@@ -26,39 +26,32 @@ import spark.Spark;
 public class App {
     
     private static final String ARG_WEB_ROOT = "webroot";
-    private static final String ARG_BOOKMARK_JSON_FILE = "json";
+    private static final String ARG_BOOKMARK_JSON_FILE = "BOOKMARK_FILE";
     
     private static Logger log = LoggerFactory.getLogger(App.class);
     
     private static JSAP jsap() throws JSAPException {
         JSAP jsap = new JSAP();
-//        jsap.setUsage("Usage: bookmartian [-r|--root STATIC_WEB_ROOT] BOOKMARK_JSON_FILE");
-        jsap.registerParameter(new FlaggedOption(ARG_WEB_ROOT)
-                                .setShortFlag('r')
-                                .setLongFlag("root"));        
+
         jsap.registerParameter(new UnflaggedOption(ARG_BOOKMARK_JSON_FILE)
                                 .setRequired(true));
         return jsap;
     }
+    
     public static void main(String[] args) throws Exception {
 
         JSAP jsap = jsap();
         JSAPResult cmd = jsap().parse(args);
         if (!cmd.success()) {
-            System.err.format("Usage: bookmartian %s", jsap.getUsage());
+            System.err.format("Usage: bookmartian %s%d", jsap.getUsage());
             System.exit(1);
         }
         
         JsonConfig.init();
         BookmarkCollection bc = new BookmarkCollection(Paths.get(cmd.getString(ARG_BOOKMARK_JSON_FILE)));
-
-        if (cmd.contains(ARG_WEB_ROOT)) {
-            Path root = Paths.get(cmd.getString(ARG_WEB_ROOT)).toAbsolutePath();
-            log.warn("USING ALTERNATE WEB ROOT: {}", root);
-            Spark.externalStaticFileLocation(root.toString());
-        }
         
-        before("/*", (req, rsp) -> log(req,rsp));
+        before("/*", (req, rsp) -> log(req, rsp));
+        before("/*", (req, rsp) -> disableCaching(req, rsp));
         
         get("/api/tags", () -> json(bc.tags()));        
         get("/api/bookmark", () -> getBookmark(bc));
@@ -73,6 +66,12 @@ public class App {
     private static BoomResponse corsOptions() {
         corsHeaders();
         return JSend.success();
+    }
+    
+    private static void disableCaching(Request req, Response rsp) {
+        rsp.header("Cache-Control", "no-cache, no-store, must-revalidate");
+        rsp.header("Pragma", "no-cache");
+        rsp.header("Expires", "0");
     }
     
     private static void corsHeaders() {
