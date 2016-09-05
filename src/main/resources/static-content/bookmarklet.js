@@ -66,8 +66,10 @@ function closeAction() {
                 var s = "";
                 s = getSelText();
                 $('head').append('<link rel="stylesheet" type="text/css" href="' + host + '/style.bookmarklet.css">');
+                $('head').append('<link rel="stylesheet" type="text/css" href="' + host + '/colors.css">');
+                $('head').append('<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">');
                 $("body").append(`
-                            <div class="bookmartian_action" id="bookmartian_actionpanel">
+                            <div class="bookmartian_action light-primary-color" id="bookmartian_actionpanel">
                                 <div id="bookmartian_addpanel" class="bookmartian_addpanel">
                                     <h1>Add a bookmark</h1>
                                     <form id="bookmartian_addform">

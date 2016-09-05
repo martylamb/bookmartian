@@ -122,6 +122,7 @@ function executeSearch(term) {
         searchterm = $('#searchterm').val();
     }
 
+    closeAction();
     $('#searchtable').children().remove();
 
     $.ajax({
@@ -149,7 +150,7 @@ function executeSearch(term) {
                     notes = element.notes;
                 }
 
-                var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "' onclick='toggleEdits(this);'/></td><td class='bookmark'><a href='" + element.url + "' data-tags='" + element.tags + "' data-notes='" + notes + "' data-title='" + element.title + "'>" + padlock + element.title + "</a> - <span class='tags'>" + element.tags.toString().replace(/,/g, ' ') + "</span></td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a  onclick='deleteMark(this);'>delete</a></td></tr>";
+                var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "' onclick='toggleEdits(this);'/></td><td class='bookmark'><a href='" + element.url + "' data-tags='" + element.tags + "' data-notes='" + notes + "' data-title='" + element.title + "'>" + padlock + element.title + "</a> - <span class='tags secondary-text-color'>" + element.tags.toString().replace(/,/g, ' ') + "</span></td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a  onclick='deleteMark(this);'>delete</a></td></tr>";
                 searchtable.append(row);
             })
             $('#search').show();
@@ -194,9 +195,10 @@ $(document).ready(function () {
         var promotedTagArray = promotedTags.split(",");
     }
 
-    // create a linkblock for each promoted tag
+    // create a linkblock for each pinned tag
     $.each(promotedTagArray, function (index, value) {
         var block = $("#linkblocktemplate").clone()
+        block.css('display', 'inline-block');
         var heading = block.find('h1');
         var safeID = value.replace(/[\|,\.]/g, '_');
         var cleanHeading = value.replace(/\.[^|]+/g, '').replace(/\|/g, '');
@@ -240,7 +242,7 @@ $(document).ready(function () {
         })
         // Code to run regardless of success or failure;
         .always(function (xhr, status) {
-            // color the hearing of each linkblock for promoted tags
+            // color the hearing of each linkblock for pinned tags
             $.each(promotedTagArray, function (index, value) {
                 var cleanHeading = value.replace(/\.[^|]+/g, '').replace(/\|/g, '');
                 var heading = $("#content").find("h1:contains('" + cleanHeading + "')");

@@ -1,13 +1,12 @@
+
 html, body {
     margin:0px; 
     padding:0px;
     font-family: 'Lato', sans-serif;
-    background-color: #f3f3f3;
 }
 
 hr {
     margin: 12px;
-    background-color: #b5b5b5;
     height: 1px; 
     border: 0;
 }
@@ -29,25 +28,25 @@ h3 {
 /* ======================================================================= */
 /* header */
 .header {
-    background-color: #B4C7E7;
     height: 36px;
 }
 
-.addbutton {
-    width: 34px;
-    height: 34px;
+.iconbutton {
+    width: 24px;
+    height: 24px;
     cursor: pointer;
+}
+
+.addbutton {
+    margin: 6px 8px;    
 }
 
 .searchbutton {
-    width: 34px;
-    height: 34px;
-    cursor: pointer;
     float:right;
-    margin-right: 4px;
+    margin: 6px 8px;
 }
 
-.search {
+.searchbox {
     margin: 5px;
     float:right;
     width:100px;
@@ -57,12 +56,11 @@ h3 {
 /* ======================================================================= */
 /* action panel */
 .action {
-    background-color: #E87D0C;
     display: none;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
 }
 
 .addpanel {
-    color: white;
     padding: 12px;
     overflow: auto;
 }
@@ -103,20 +101,19 @@ h3 {
 /* tag cloud */
 .tagcloud {
     padding: 4px 12px 12px 24px;
-    color: #a4a4a4;
     text-align: center;
     font-size: small;
     clear: both;
 }
 
 .tagcloud a {
-    color: #a4a4a4;
+    color: #757575;;
     text-decoration: none;
     cursor: pointer;
 }
 
 .tagcloud a {
-    color: #a4a4a4;
+    color: #757575;;
 }
 
 .tagcloud a:hover {
@@ -134,7 +131,6 @@ h3 {
     margin: 12px 6px; 
     height: 90px;
     width: 90px;
-    background-color: #ffffff;
     border: solid 1px #000000;
     display: none;
 }
@@ -146,13 +142,6 @@ h3 {
 
 /* ======================================================================= */
 /* search results */
-
-.searchclose {
-    width: 34px;
-    height: 34px;
-    cursor: pointer;
-    display: inline;
-}
 
 .searchresults {
     margin: 6px 24px 6px 24px;
@@ -166,7 +155,6 @@ h3 {
     text-align: left;
 }
 .searchtable {
-    background-color: white;
     width: 95%;
     font-size: 11pt;  
     border-collapse: collapse;
@@ -192,7 +180,6 @@ h3 {
 }
 .tags {
     font-style: italic;
-    color: #b1b1b1;
 }
 
 /* ======================================================================= */
@@ -205,12 +192,11 @@ h3 {
 
 .linkblock {
     margin: 8px;
-    display: inline-block;
+    display: none;
     text-align: left;
 }
 
 .linktable {
-    background-color: white;
     width: 220px;
     font-size: 11pt;  
     border-collapse: collapse;
@@ -253,6 +239,5 @@ h3 {
 .footer {
     text-align: right;
     font-size: 10pt;
-    color: darkgrey;
     margin-right: 12px;
 }

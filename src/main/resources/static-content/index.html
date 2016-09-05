@@ -5,22 +5,23 @@
     <title>Bookmarks</title>
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     <link REL=StyleSheet HREF="style.css" TYPE="text/css" MEDIA=screen>
+    <link REL=StyleSheet HREF="colors.css" TYPE="text/css" MEDIA=screen>
 </head>
 
-<body>
+<body class="paper-color">
     <script src="jquery-3.1.0.min.js"></script>
     <script src="bookmarks.js"></script>
 
     <!-- bar at top of page -->
-    <div class="header">
-        <img class='addbutton' src='img/plus.png' onclick="$('#actionpanel').slideDown('fast')">
-        <img class='searchbutton' src='img/searchsmall.png' onclick="executeSearch();">
-        <input class='search' type="text" id='searchterm'/>
+    <div class="header default-primary-color">
+        <img class='iconbutton addbutton' src='img/plus-icon-white-one-lo.png' onclick="$('#actionpanel').slideDown('fast')">
+        <img class='iconbutton searchbutton' src='img/search-icon-white-one-lo.png' onclick="executeSearch();">
+        <input class='searchbox' type="text" id='searchterm'/>
     </div>
 
     <!-- action panel (hidden at start) -->
-    <div class="action" id="actionpanel">
-        <div id="addpanel" class="addpanel">
+    <div class="action light-primary-color" id="actionpanel">
+        <div id="addpanel" class="addpanel primary-text-color">
             <h1>Add a bookmark</h1>
             <form id="addform">
                 <div class="titleinputpair">
@@ -49,35 +50,35 @@
     </div>
 
     <!-- tag cloud -->
-    <div class="tagcloud">
+    <div class="tagcloud secondary-text-color">
     </div>
 
     <!-- promoted link tiles -->
     <div class="promotedsection">
         <div class="promotedlink" id="promotedlinktemplate">
-            <a><img class="promotedimage" src="img/plus.jpg" /></a>
+            <a><img class="promotedimage" src="" /></a>
         </div>
     </div>
 
-    <hr id='promohr' />
+    <hr id='promohr' class="divider-color"/>
 
     <!-- search results -->
     <div class="searchresults" id="search">
         <div class="searchblock">
             <h1 class="linkblocktitle">search results</h1>
             
-            <table id="searchtable" class="searchtable">
+            <table id="searchtable" class="searchtable table-color">
             </table>
         </div>
     </div>
 
-    <hr id='searchhr' style='display:none;'/>
+    <hr id='searchhr' style='display:none;' class="divider-color"/>
 
     <!-- tag blocks -->
     <div class="content" id="content">
         <div class="linkblock" id="linkblocktemplate">
-            <h1 class="linkblocktitle">recent</h1>
-            <table class="linktable">
+            <h1 class="linkblocktitle">template</h1>
+            <table class="linktable table-color">
             </table>
         </div>
     </div>
@@ -85,8 +86,8 @@
     <script>
     </script>
 
-    <hr/>
-    <div class='footer'>
+    <hr class="divider-color"/>
+    <div class='footer secondary-text-color'>
         the bookmartian | 
         2016 | 
         mlamb/jmutchek | 
