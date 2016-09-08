@@ -1,7 +1,6 @@
 package com.martiansoftware.bookmartian.model;
 
 import com.martiansoftware.bookmartian.model.JsonConfig.StringAdapter;
-import com.martiansoftware.util.Check;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -13,14 +12,15 @@ import java.util.stream.Stream;
  */
 public class TagName implements Comparable<TagName> {
 
-    private static final Pattern VALID_TAG = Pattern.compile("^\\s*(?<tag>[a-zA-Z0-9_-]+)\\s*$");
+//    private static final Pattern VALID_TAG = Pattern.compile("^\\s*(?<tag>[a-zA-Z0-9_-][.a-zA-Z0-9_-]*)\\s*$");
+    private static final Pattern VALID_TAG = Pattern.compile("^\\s*(?<tag>[^\\s,]+)\\s*$");
     
     private final String _name;
     
     private TagName(String name) {
         Matcher m = VALID_TAG.matcher(name);
         if (!m.matches()) {
-            throw new IllegalArgumentException("Tags may only consist of letters, numbers, underscores, and dashes.");
+            throw new IllegalArgumentException("Tags may only consist of letters, numbers, underscores, dots, and dashes - and may not start with a dot.");
         }
        _name = m.group("tag").toLowerCase();
     }

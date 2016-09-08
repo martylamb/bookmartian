@@ -28,6 +28,12 @@ public class TagNameTest {
         
         TagName t4 = TagName.of("This-is_a_TEST");
         assertEquals("this-is_a_test", t4.toString());
+        
+        TagName t5 = TagName.of("This.is.another");
+        assertEquals("this.is.another", t5.toString());
+        
+        TagName t6 = TagName.of("#hashie");
+        assertEquals("#hashie", t6.toString());
     }
 
     private void expectIAEorNPE(Runnable r) {
@@ -43,7 +49,9 @@ public class TagNameTest {
         expectIAEorNPE(() -> { TagName t = TagName.of(""); }); 
         expectIAEorNPE(() -> { TagName t = TagName.of("   \t"); }); 
         expectIAEorNPE(() -> { TagName t = TagName.of("a test"); }); 
-        expectIAEorNPE(() -> { TagName t = TagName.of("#tag"); }); 
+        expectIAEorNPE(() -> { TagName t = TagName.of("# tag"); }); 
+        expectIAEorNPE(() -> { TagName t = TagName.of(".some thing"); });
+        expectIAEorNPE(() -> { TagName t = TagName.of("some,thing"); });
     }
     
     @Test

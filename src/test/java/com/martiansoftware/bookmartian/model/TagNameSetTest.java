@@ -21,7 +21,7 @@ public class TagNameSetTest {
     @Test
     public void testTagNameSet() {
         TagNameSet t = TagNameSet.of("one, two, three four");
-        assertEquals(4, t.tagNames().size());
+        assertEquals(4, t.asSet().size());
         assertFalse(t.isEmpty());
         assertTrue(t.containsAll("one four"));
         assertTrue(t.containsAll("three three three three"));
@@ -37,7 +37,7 @@ public class TagNameSetTest {
 //        System.out.println(json);
         
         TagNameSet t2 = Json.fromJson(json, TagNameSet.class);
-        assertEquals(4, t2.tagNames().size());
+        assertEquals(4, t2.asSet().size());
         assertTrue(t2.contains(TagName.of("john")));
         assertTrue(t2.contains(TagName.of("paul")));
         assertTrue(t2.contains(TagName.of("george")));

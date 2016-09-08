@@ -254,7 +254,7 @@ $(document).ready(function () {
     // retrieve promo tiles
     $.ajax({
         // The URL for the request
-        url: "/api/bookmarks?tags=.promote",
+        url: "/api/bookmarks?tags=promote",
 
         // Whether this is a POST or GET request
         type: "GET",

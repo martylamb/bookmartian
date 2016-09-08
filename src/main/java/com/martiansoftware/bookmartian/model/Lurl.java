@@ -1,9 +1,6 @@
 package com.martiansoftware.bookmartian.model;
 
 import com.martiansoftware.util.Strings;
-import java.nio.charset.StandardCharsets;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -16,10 +13,9 @@ import java.util.stream.Stream;
  * 
  * @author mlamb
  */
-public class Lurl {
+public class Lurl implements Comparable<Lurl> {
    
     private final String _lurl;
-//    private final String _id;
     
     // TODO: add pattern for mailto: urls?
     private final Pattern weblikeUrl = Pattern.compile("^(?<scheme>[a-zA-z0-9+-.]+)"
@@ -45,24 +41,12 @@ public class Lurl {
     
     private Lurl(String url) {
         _lurl = normalize(url);
-//        _id = digest(_lurl);
     }
     
     public static Lurl of(String url) {
         return new Lurl(url);
     }
     
-//    private final String digest(String lurl) {
-//        try {
-//            MessageDigest md = MessageDigest.getInstance("SHA-1");
-//            byte[] digest = md.digest(_lurl.getBytes(StandardCharsets.UTF_8));
-//            StringBuilder s = new StringBuilder();
-//            for(byte b : digest) s.append(String.format("%02x", b));
-//            return s.toString();
-//        } catch (NoSuchAlgorithmException impossible) { // SHA-1 is guaranteed
-//            throw new Error(impossible);
-//        }
-//    }
     // used to determine if the url scheme is "weblike", meaning we can use the
     // weblikeUrl pattern to parse it and can safely lowercase the host.  Some
     // schemes may not even include a host so we can't just pick out what looks
@@ -110,6 +94,12 @@ public class Lurl {
     @Override
     public String toString() {
         return _lurl;
+    }
+
+    @Override
+    public int compareTo(Lurl other) {
+        if (other == null) return 1;
+        return _lurl.compareTo(other._lurl);
     }
     
     // gson helper

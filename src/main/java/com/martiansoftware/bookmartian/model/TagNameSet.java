@@ -47,7 +47,7 @@ public class TagNameSet {
         );
     }
     
-    public Set<TagName> tagNames() {
+    public Set<TagName> asSet() {
         return _tagNames;
     }
     

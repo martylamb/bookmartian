@@ -32,7 +32,8 @@ public class JsonConfig {
                 .registerTypeAdapterFactory(OptionalTypeAdapter.FACTORY)
                 .registerTypeAdapter(TagNameSet.class, new TagNameSet.GsonAdapter())
                 .registerTypeAdapter(TagName.class, new TagName.GsonAdapter())
-                .registerTypeAdapter(Lurl.class, new Lurl.GsonAdapter());
+                .registerTypeAdapter(Lurl.class, new Lurl.GsonAdapter())
+                .registerTypeAdapter(Color.class, new Color.GsonAdapter());
 
         Json.use(creator.create());
     }

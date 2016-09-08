@@ -76,13 +76,13 @@ class JsonDirMap<K, V> {
     public JsonDirMap<K, V> add(V value) throws IOException {
         if (value != null) {
             K key = _keyGetter.apply(value);
-            try(Deleter d = new Deleter(_map.remove(key))) {
+//            try(Deleter d = new Deleter(_map.remove(key))) {
                 Path dest = newFilePath();
                 log.debug("saving object with {} [{}] to {}", _kDesc, key, dest);
                 Json.toJson(value, dest);
                 _map.put(key, new ValueAndFilename(value, nameOf(dest)));            
-                d.commit();
-            }
+//                d.commit();
+//            }
         }
         return this;
     }

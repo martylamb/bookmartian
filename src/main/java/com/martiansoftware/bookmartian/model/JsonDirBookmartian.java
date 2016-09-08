@@ -6,6 +6,7 @@
 package com.martiansoftware.bookmartian.model;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
@@ -31,12 +32,14 @@ public class JsonDirBookmartian implements IBookmartian {
         _root = dir;
         _username = username;
         log.info("using data directory {}", _root.toAbsolutePath());
-        _bookmarks = JsonDirBookmarkCollection.in(userPath("bookmarks"));
-        _tags = JsonDirTagCollection.in(userPath("tags"));
+        _bookmarks = JsonDirBookmarkCollection.in(ensurePath("bookmarks"));
+        _tags = JsonDirTagCollection.in(ensurePath("tags"));
+        
+        _bookmarks.all().stream().forEach(b -> ensureTagsExistFor(b));
     }
     
-    private Path userPath(String path) {
-        return _root.resolve("users").resolve(_username).resolve(path);
+    private Path ensurePath(String path) throws IOException {
+        return Files.createDirectories(_root.resolve("users").resolve(_username).resolve(path));
     }
     
     public static JsonDirBookmartian in(Path dir) throws IOException {
@@ -70,11 +73,26 @@ public class JsonDirBookmartian implements IBookmartian {
         }
     }
   
+    private Bookmark ensureTagsExistFor(Bookmark b) {
+        b.tagNames()
+            .asSet()
+            .stream()
+            .forEach(tn -> {
+                if (!_tags.contains(tn)) {
+                    try {
+                        _tags.add(Tag.newBuilder().name(tn.toString()).build());
+                    } catch (IOException e) {
+                        log.error("unable to add tag [" + tn + "]: " + e.getMessage(), e);
+                    }
+                }
+            });
+        return b;
+    }
+    
     @Override
     public Bookmark replaceOrAdd(Lurl oldLurl, Bookmark toAdd) throws IOException {
         synchronized(_lock) {
-            // TODO: ensure tags exist!
-            return _bookmarks.replace(oldLurl, toAdd);
+            return _bookmarks.replace(oldLurl, ensureTagsExistFor(toAdd));
         }
     }
     

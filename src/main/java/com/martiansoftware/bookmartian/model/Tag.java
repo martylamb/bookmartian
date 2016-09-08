@@ -1,7 +1,6 @@
 package com.martiansoftware.bookmartian.model;
 
 import com.martiansoftware.util.Check;
-import java.awt.Color;
 
 /**
  *

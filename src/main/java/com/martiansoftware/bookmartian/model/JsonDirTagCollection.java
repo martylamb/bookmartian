@@ -20,6 +20,7 @@ public class JsonDirTagCollection implements ITagCollection {
                         .path(dir)
                         .keyDesc("tag")
                         .keyGetter(t -> ((Tag) t).tagName())
+                        .valueClass(Tag.class)
                         .build();
     }
     
@@ -32,5 +33,24 @@ public class JsonDirTagCollection implements ITagCollection {
         synchronized(_lock) {
             return Collections.unmodifiableList(_map.values().collect(Collectors.toList()));
         }
-    }    
+    }
+    
+    @Override
+    public void add(Tag tag) throws IOException {
+        synchronized(_lock) {
+            _map.add(tag);
+        }
+    }
+    
+    @Override
+    public Tag get(TagName name) { 
+        synchronized(_lock) {
+            return _map.get(name);
+        }
+    }
+    
+    @Override
+    public boolean contains(TagName name) {
+        return get(name) != null;
+    }
 }

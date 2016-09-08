@@ -20,6 +20,7 @@ public class JsonDirBookmarkCollection implements IBookmarkCollection {
                         .path(dir)
                         .keyDesc("url")
                         .keyGetter(b -> ((Bookmark) b).lurl())
+                        .valueClass(Bookmark.class)
                         .build();
     }
     
