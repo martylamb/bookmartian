@@ -1,6 +1,5 @@
 package com.martiansoftware.bookmartian.model;
 
-import com.martiansoftware.bookmartian.model.TagNameSet;
 import com.martiansoftware.util.Check;
 import com.martiansoftware.util.Strings;
 import java.util.Optional;
@@ -10,13 +9,13 @@ import java.util.Optional;
  * @author mlamb
  */
 public class Bookmark {
-    private final Lurl _lurl;
+    private final Lurl _url;
     private final Optional<String> _title, _notes, _imageUrl;
     private final TagNameSet _tags;
     
     
     private Bookmark(Lurl lurl, String title, String notes, String imageUrl, TagNameSet tags) {
-        _lurl = Check.arg(lurl, "url").notNull().value();
+        _url = Check.arg(lurl, "url").notNull().value();
 
         _title = Optional.ofNullable(Strings.safeTrimToNull(title));
         _notes = Optional.ofNullable(Strings.safeTrimToNull(notes));
@@ -24,7 +23,7 @@ public class Bookmark {
         _tags = (tags == null) ? TagNameSet.EMPTY : tags;
     }
     
-    public Lurl lurl() { return _lurl; }
+    public Lurl lurl() { return _url; }
     public Optional<String> title() { return _title; }
     public Optional<String> notes() { return _notes; }
     public Optional<String> imageUrl() { return _imageUrl; }

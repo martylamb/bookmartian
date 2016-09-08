@@ -8,16 +8,16 @@ import com.martiansoftware.util.Check;
  */
 public class Tag {
 
-    private final TagName _tagName;
+    private final TagName _name;
     private final Color _color;
 
     private Tag(TagName tagName, Color color) {
-        _tagName = Check.arg(tagName, "tagName").notNull().value();
+        _name = Check.arg(tagName, "tagName").notNull().value();
         _color = (color == null) ? Color.BLACK : color;
     }
     
     public TagName tagName() {
-        return _tagName;
+        return _name;
     }
     
     public Color color() {
