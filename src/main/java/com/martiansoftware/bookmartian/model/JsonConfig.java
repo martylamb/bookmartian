@@ -1,5 +1,6 @@
-package com.martiansoftware.bookmartian;
+package com.martiansoftware.bookmartian.model;
 
+import com.martiansoftware.bookmartian.model.TagNameSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.TypeAdapter;
@@ -8,11 +9,14 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
+import com.martiansoftware.bookmartian.model.Lurl;
+import com.martiansoftware.bookmartian.model.TagName;
 import com.martiansoftware.boom.Json;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  *
@@ -26,7 +30,9 @@ public class JsonConfig {
                 .setPrettyPrinting()
                 .enableComplexMapKeySerialization()
                 .registerTypeAdapterFactory(OptionalTypeAdapter.FACTORY)
-                .registerTypeAdapter(TagRefs.class, new TagRefs.GsonAdapter());
+                .registerTypeAdapter(TagNameSet.class, new TagNameSet.GsonAdapter())
+                .registerTypeAdapter(TagName.class, new TagName.GsonAdapter())
+                .registerTypeAdapter(Lurl.class, new Lurl.GsonAdapter());
 
         Json.use(creator.create());
     }
@@ -90,6 +96,29 @@ public class JsonConfig {
             return Optional.empty();
         }
 
+    }
+    
+    // TypeAdapter that can tell you what types it can handle.
+    public static abstract class Adapter<T> extends TypeAdapter<T> {
+        public abstract Stream<Class> classes();
+    }
+    
+    // TypeAdapter for classes that can be represented as a single string
+    public static abstract class StringAdapter<T> extends Adapter<T> {
+        
+        protected abstract String toString(T t) throws IOException;   // will never be called with null t
+        protected abstract T fromString(String s) throws IOException; // will never be called with null s
+
+        @Override public void write(JsonWriter writer, T t) throws IOException {
+            if (t == null) writer.nullValue();
+            else writer.value(toString(t));
+        }
+        
+        @Override public T read(JsonReader reader) throws IOException {
+            if (reader.peek() != JsonToken.NULL) return fromString(reader.nextString());
+            reader.nextNull();
+            return null;            
+        }
     }
     
 }

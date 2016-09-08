@@ -1,14 +1,6 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
-package com.martiansoftware.bookmartian;
+package com.martiansoftware.bookmartian.model;
 
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
+import com.martiansoftware.boom.Json;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -19,7 +11,7 @@ import static org.junit.Assert.*;
 public class LurlTest {
     
     private void test(String before, String expectedAfter) {
-        assertEquals(expectedAfter, new Lurl(before).toString());
+        assertEquals(expectedAfter, Lurl.of(before).toString());
     }
     
     private void test(String beforeAndExpectedAfter) {
@@ -50,9 +42,13 @@ public class LurlTest {
     }
     
     @Test
-    public void testId() {
-        assertEquals("66064c6105dee6a177a637f060174c01f8c549ad", new Lurl("Https://MartianSoftware.com").id());
-        assertEquals("66064c6105dee6a177a637f060174c01f8c549ad", new Lurl("https://martiansoftware.com").id());
-        assertEquals("64e2ad35b5d0bf7b4dd0d832831428a9ff14d3c1", new Lurl("http://martiansoftware.com").id());
+    public void testJson() {
+        JsonConfig.init();
+        
+        Lurl l = Lurl.of("http://martiansoftware.com");
+        String json = Json.toJson(l);        
+        System.out.println(json);
+        Lurl l2 = Json.fromJson(json, Lurl.class);
+        assertEquals("http://martiansoftware.com", l2.toString());
     }
 }

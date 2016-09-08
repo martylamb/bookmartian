@@ -47,7 +47,6 @@ public class JSend {
     }
     
     public static BoomResponse error(Exception e) {
-        log.error("intercepted exception: " + e.getMessage(), e);
         return error(e.getMessage());
     }
 }

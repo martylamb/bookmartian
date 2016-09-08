@@ -1,5 +1,6 @@
-package com.martiansoftware.bookmartian;
+package com.martiansoftware.bookmartian.model;
 
+import com.martiansoftware.bookmartian.model.TagNameSet;
 import com.martiansoftware.util.Check;
 import com.martiansoftware.util.Strings;
 import java.util.Optional;
@@ -8,44 +9,39 @@ import java.util.Optional;
  *
  * @author mlamb
  */
-public class Bookmark implements Comparable<Bookmark> {
-    private final String _url; // TODO: reify a lenient URL that normalizes schema and domain name
+public class Bookmark {
+    private final Lurl _lurl;
     private final Optional<String> _title, _notes, _imageUrl;
-    private final TagRefs _tags;
+    private final TagNameSet _tags;
     
     
-    private Bookmark(String url, String title, String notes, String imageUrl, TagRefs tags) {
-        _url = Check.arg(Strings.safeTrim(url), "url")
-            .notNullOrEmpty()
-            .value();
+    private Bookmark(Lurl lurl, String title, String notes, String imageUrl, TagNameSet tags) {
+        _lurl = Check.arg(lurl, "url").notNull().value();
 
         _title = Optional.ofNullable(Strings.safeTrimToNull(title));
         _notes = Optional.ofNullable(Strings.safeTrimToNull(notes));
         _imageUrl = Optional.ofNullable(Strings.safeTrimToNull(imageUrl));
-        _tags = (tags == null) ? TagRefs.EMPTY : tags;
+        _tags = (tags == null) ? TagNameSet.EMPTY : tags;
     }
     
-    public String url() { return _url; }
+    public Lurl lurl() { return _lurl; }
     public Optional<String> title() { return _title; }
     public Optional<String> notes() { return _notes; }
     public Optional<String> imageUrl() { return _imageUrl; }
-    public TagRefs tags() { return _tags; }
+    public TagNameSet tagNames() { return _tags; }
     
     public static Builder newBuilder() { return new Builder(); }
 
-    @Override
-    public int compareTo(Bookmark t) {
-        return url().compareTo(t.url());
-    }
     
     public static class Builder {
-        private String _url, _title, _notes, _imageUrl;
-        private TagRefs _tags;
+        private Lurl _lurl;
+        private String _title, _notes, _imageUrl;
+        private TagNameSet _tags;
         
         private Builder() {}
         
         public Builder url(String url) {
-            _url = url;
+            _lurl = Lurl.of(url);
             return this;
         }
         
@@ -65,12 +61,12 @@ public class Bookmark implements Comparable<Bookmark> {
         }
         
         public Builder tags(String tags) {
-            _tags = new TagRefs(tags);
+            _tags = TagNameSet.of(tags);
             return this;
         }
         
         public Bookmark build() {
-            return new Bookmark(_url, _title, _notes, _imageUrl, _tags);
+            return new Bookmark(_lurl, _title, _notes, _imageUrl, _tags);
         }
     }
 }

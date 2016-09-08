@@ -1,5 +1,11 @@
 package com.martiansoftware.bookmartian;
 
+import com.martiansoftware.bookmartian.model.Bookmark;
+import com.martiansoftware.bookmartian.model.IBookmartian;
+import com.martiansoftware.bookmartian.model.JsonConfig;
+import com.martiansoftware.bookmartian.model.JsonDirBookmartian;
+import com.martiansoftware.bookmartian.model.Lurl;
+import com.martiansoftware.bookmartian.model.TagNameSet;
 import java.nio.file.Paths;
 import static com.martiansoftware.boom.Boom.*;
 import com.martiansoftware.boom.BoomResponse;
@@ -7,12 +13,7 @@ import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
-import com.martiansoftware.jsap.Switch;
-import com.martiansoftware.jsap.UnflaggedOption;
-import com.martiansoftware.jsap.stringparsers.FileStringParser;
 import com.martiansoftware.util.Strings;
-import java.io.IOException;
-import java.nio.file.Path;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
@@ -25,21 +26,22 @@ import spark.Spark;
  */
 public class App {
     
-    private static final String ARG_WEB_ROOT = "webroot";
-    private static final String ARG_BOOKMARK_JSON_FILE = "BOOKMARK_FILE";
-    
+    private static final String ARG_BOOKMARTIAN_DIR = "BOOKMARTIAN_DIR";
     private static Logger log = LoggerFactory.getLogger(App.class);
-    
+
     private static JSAP jsap() throws JSAPException {
         JSAP jsap = new JSAP();
 
-        jsap.registerParameter(new UnflaggedOption(ARG_BOOKMARK_JSON_FILE)
+        jsap.registerParameter(new FlaggedOption(ARG_BOOKMARTIAN_DIR)
+                                .setShortFlag('d')
+                                .setLongFlag("dir")
+                                .setDefault(System.getProperty("user.dir"))
                                 .setRequired(true));
         return jsap;
     }
-    
-    public static void main(String[] args) throws Exception {
 
+    public static void main(String[] args) throws Exception {
+        
         JSAP jsap = jsap();
         JSAPResult cmd = jsap().parse(args);
         if (!cmd.success()) {
@@ -48,19 +50,19 @@ public class App {
         }
         
         JsonConfig.init();
-        BookmarkCollection bc = new BookmarkCollection(Paths.get(cmd.getString(ARG_BOOKMARK_JSON_FILE)));
+        IBookmartian bm = JsonDirBookmartian.in(Paths.get(cmd.getString(ARG_BOOKMARTIAN_DIR)));
         
         before("/*", (req, rsp) -> log(req, rsp));
         before("/*", (req, rsp) -> disableCaching(req, rsp));
         
-        get("/api/tags", () -> json(bc.tags()));        
-        get("/api/bookmark", () -> getBookmark(bc));
-        get("/api/bookmarks", () -> json(bc.bookmarks(request().queryParams("tags"))));
+        get("/api/tags", () -> json(bm.tags()));
+        get("/api/bookmark", () -> getBookmark(bm));
+        get("/api/bookmarks", () -> json(bm.bookmarksWithTags(TagNameSet.of(q("tags")))));
         
         options("/api/bookmark/update", () -> corsOptions());
-        post("/api/bookmark/update", () -> updateBookmark(bc));
+        post("/api/bookmark/update", () -> updateBookmark(bm));
         
-        post("/api/bookmark/delete", () -> deleteBookmark(bc));
+        post("/api/bookmark/delete", () -> deleteBookmark(bm));
     }
     
     private static BoomResponse corsOptions() {
@@ -87,45 +89,52 @@ public class App {
         return Strings.safeTrimToNull(request().queryParams(key));
     }
     
-    private static BoomResponse updateBookmark(BookmarkCollection bc) {
-        String url = q("url"); // TODO: URL normalization (lowercase schema and domain name?)
+    private static BoomResponse updateBookmark(IBookmartian bm) {
+        String url = q("url");
         if (url == null) return JSend.fail("a URL is required");
-
-        log.debug("updating bookmark: {}", url);
-        String oldUrl = q("oldUrl");
-        if (oldUrl != null) log.debug("  => replacing {}", oldUrl);
-        
-        Bookmark b = Bookmark.newBuilder()
-                        .url(url)
-                        .title(q("title"))
-                        .imageUrl(q("imageUrl"))
-                        .notes(q("notes"))
-                        .tags(q("tags"))
-                        .build();
-
-        corsHeaders();
         try {
-            return JSend.success(bc.upsert(b, oldUrl));
-        } catch (IOException e) {
+            log.debug("updating bookmark: {}", url);
+            String oldUrl = q("oldUrl");
+            Lurl oldLurl = (oldUrl == null) ? null : Lurl.of(oldUrl);
+            if (oldLurl != null) log.debug("  => replacing {}", oldLurl);
+
+            Bookmark b = Bookmark.newBuilder()
+                            .url(url)
+                            .title(q("title"))
+                            .imageUrl(q("imageUrl"))
+                            .notes(q("notes"))
+                            .tags(q("tags"))
+                            .build();
+
+            corsHeaders();
+            return JSend.success(bm.replaceOrAdd(oldLurl, b));
+        } catch (Exception e) {
             return JSend.error(e);
         }
     }
     
-    private static BoomResponse getBookmark(BookmarkCollection bc) {
+    private static BoomResponse getBookmark(IBookmartian bm) {
         String url = q("url");
         if (url == null) return JSend.fail("a URL is required");
-        log.debug("searching for bookmark: {}", url);
-        Bookmark b = bc.findByUrl(url);
-        return (b == null) ? JSend.fail("no such bookmark: " + url) : JSend.success(b);
+        try {
+            Lurl lurl = Lurl.of(url);
+            log.debug("searching for bookmark: {}", lurl);
+            Bookmark b = bm.get(lurl);
+            return (b == null) ? JSend.fail("no such bookmark: " + url) : JSend.success(b);
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return JSend.error(e);
+        }
     }
     
-    private static BoomResponse deleteBookmark(BookmarkCollection bc) {
+    private static BoomResponse deleteBookmark(IBookmartian bm) {
         String url = q("url"); // TODO: URL normalization (lowercase schema and domain name?)
         if (url == null) return JSend.fail("a URL is required");
         log.warn("deleting bookmark: {}", url);
         try {
-            return JSend.success(bc.deleteByUrl(url));
-        } catch (IOException e) {
+            Bookmark b = bm.remove(Lurl.of(url));
+            return (b == null) ? JSend.fail("no such bookmark: " + url) : JSend.success(b);
+        } catch (Exception e) {
             return JSend.error(e);
         }
     }
