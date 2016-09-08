@@ -28,12 +28,12 @@ h3 {
 /* ======================================================================= */
 /* header */
 .header {
-    height: 36px;
+    height: 48px;
 }
 
 .iconbutton {
-    width: 24px;
-    height: 24px;
+    width: 36px;
+    height: 36px;
     cursor: pointer;
 }
 
@@ -49,8 +49,9 @@ h3 {
 .searchbox {
     margin: 5px;
     float:right;
-    width:100px;
-    height: 20px;
+    width: 200px;
+    height: 32px;
+    font-size: x-large;
 }
 
 /* ======================================================================= */
@@ -63,6 +64,7 @@ h3 {
 .addpanel {
     padding: 12px;
     overflow: auto;
+    font-size: large;
 }
 
 .fieldtitle {
@@ -70,7 +72,9 @@ h3 {
 }
 
 .actionbutton {
-    width:64px;
+    width:120px;
+    height: 32px;
+    font-size: x-large;    
 }
 
 .titleinputpair {
@@ -80,21 +84,25 @@ h3 {
 .addinputtitle {
     margin-right: 12px;
     width: 160px;
+    font-size: x-large;    
 }
 
 .addinputurl {
     margin-right: 12px;
     width: 250px;
+    font-size: x-large;    
 }
 
 .addinputtags {
     margin-right: 12px;
     width: 160px;
+    font-size: x-large;    
 }
 
 .addinputnotes {
     margin-right: 12px;
     width: 250px;
+    font-size: x-large;    
 }
 
 /* ======================================================================= */
@@ -102,7 +110,7 @@ h3 {
 .tagcloud {
     padding: 4px 12px 12px 24px;
     text-align: center;
-    font-size: small;
+    font-size: x-large;
     clear: both;
 }
 
@@ -156,7 +164,7 @@ h3 {
 }
 .searchtable {
     width: 95%;
-    font-size: medium;  
+    font-size: x-large;  
     border-collapse: collapse;
     border-style: hidden;
 }
@@ -198,7 +206,7 @@ h3 {
 
 .linktable {
     width: 220px;
-    font-size: medium;  
+    font-size: x-large;  
     border-collapse: collapse;
     border-style: hidden;
 }
@@ -227,7 +235,7 @@ h3 {
 }
 
 .bookmarkedits {
-    font-size: small;
+    font-size: large;
     text-align: right;
     display: none;
 }
@@ -238,7 +246,7 @@ h3 {
 
 .footer {
     text-align: right;
-    font-size: small;
+    font-size: medium;
     margin-right: 12px;
     margin-bottom: 24px;
 }

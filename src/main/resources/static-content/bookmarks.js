@@ -1,4 +1,26 @@
 
+function buildBookmarkRow(element, withTags) {
+    
+    var padlock = ""
+    if (element.url.substr(0, 5) === "https") {
+        padlock = "<span style='color:green;'>&#x1f512;</span> ";
+    }
+
+    var notes = "";
+    if (typeof element.notes != 'undefined') {
+        notes = element.notes;
+    }
+
+    var tags = "";
+    if (withTags) {
+        tags = " - <span class='tags secondary-text-color'>" + element.tags.toString().replace(/,/g, ', ') + "</span>"
+    }
+
+    var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "' onclick='toggleEdits(this);'></td><td class='bookmark'><a href='" + element.url + "' data-tags='" + element.tags + "' data-notes='" + notes + "' data-title='" + element.title + "'>" + padlock + element.title + "</a>" + tags + "</td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a  onclick='deleteMark(this);'>delete</a></td></tr>";
+
+    return row;
+}
+
 function populateLinkTable(value) {
     // ==========================================================================
     // populate link table
@@ -22,18 +44,7 @@ function populateLinkTable(value) {
             //  linktable.children().remove();
 
             $(json).each(function (index, element) {
-
-                var padlock = ""
-                if (element.url.substr(0, 5) === "https") {
-                    padlock = "<span style='color:green;'>&#x1f512;</span> ";
-                }
-
-                var notes = "";
-                if (typeof element.notes != 'undefined') {
-                    notes = element.notes;
-                }
-                var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "' onclick='toggleEdits(this);'></td><td class='bookmark'><a href='" + element.url + "' data-tags='" + element.tags + "' data-notes='" + notes + "' data-title='" + element.title + "'>" + padlock + element.title + "</a></td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a  onclick='deleteMark(this);'>delete</a></td></tr>";
-                linktable.append(row);
+                linktable.append(buildBookmarkRow(element, false));
             })
         })
         // Code to run if the request fails; the raw request and
@@ -124,6 +135,7 @@ function executeSearch(term) {
 
     closeAction();
     $('#searchtable').children().remove();
+    $('#searchresultstitle').text('search results for \'' + searchterm + '\'');
 
     $.ajax({
         // The URL for the request
@@ -140,18 +152,7 @@ function executeSearch(term) {
         .done(function (json) {
             var searchtable = $('#searchtable');
             $(json).each(function (index, element) {
-                var padlock = ""
-                if (element.url.substr(0, 5) === "https") {
-                    padlock = "<span style='color:green;'>&#x1f512;</span> ";
-                }
-
-                var notes = "";
-                if (typeof element.notes != 'undefined') {
-                    notes = element.notes;
-                }
-
-                var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "' onclick='toggleEdits(this);'/></td><td class='bookmark'><a href='" + element.url + "' data-tags='" + element.tags + "' data-notes='" + notes + "' data-title='" + element.title + "'>" + padlock + element.title + "</a> - <span class='tags secondary-text-color'>" + element.tags.toString().replace(/,/g, ' ') + "</span></td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a  onclick='deleteMark(this);'>delete</a></td></tr>";
-                searchtable.append(row);
+                searchtable.append(buildBookmarkRow(element, true));
             })
             $('#search').show();
             $('#searchhr').show();
@@ -167,8 +168,6 @@ function executeSearch(term) {
         .always(function (xhr, status) {
         });
 
-    $('#searchterm').focus();
-    $('#searchterm').select();
 }
 
 $(document).ready(function () {
