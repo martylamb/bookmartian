@@ -2,3 +2,4 @@
 /target/
 nbactions.xml
 *.json
+/users/

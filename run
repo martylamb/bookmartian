@@ -1,4 +1,4 @@
 #!/bin/bash
 
-nohup ./go ~/data/bookmarks.json &
+nohup ./go -d ~/data/bookmartian &
 nohup /opt/caddy/caddy -conf=/home/jmutchek/data/Caddyfile &
