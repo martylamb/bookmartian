@@ -63,8 +63,13 @@ function closeAction() {
             }
 
             if ($("#bookmartian_actionpanel").length == 0) {
+                // grab any currently selected text on the page to stick in the notes field
                 var s = "";
                 s = getSelText();
+
+                // grab the text of the body of the page and clean up extra whitespace
+                var body = $('body').text().replace(/\s+/g, ' ');
+
                 $('head').append('<link rel="stylesheet" type="text/css" href="' + host + '/style.bookmarklet.css">');
                 $('head').append('<link rel="stylesheet" type="text/css" href="' + host + '/colors.css">');
                 $('head').append('<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">');
@@ -73,6 +78,7 @@ function closeAction() {
                                 <div id="bookmartian_addpanel" class="bookmartian_addpanel">
                                     <h1>Add a bookmark</h1>
                                     <form id="bookmartian_addform">
+                                        <input type="hidden" name="body" id="bookmartian_addinputbody"/>                
                                         <div class="bookmartian_titleinputpair">
                                             <div class="bookmartian_fieldtitle">title:</div>
                                             <input type="text" name="title" id="bookmartian_addinputtitle" class="bookmartian_addinputtitle" />
@@ -101,6 +107,8 @@ function closeAction() {
             $('#bookmartian_addinputtitle').val(document.title);
             $('#bookmartian_addinputurl').val(document.location);
             $('#bookmartian_addinputnotes').val(s);
+            $('#bookmartian_addinputbody').val(body);
+
         })();
     }
 })();
