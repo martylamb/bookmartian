@@ -4,6 +4,18 @@ bookmartian API
 All examples use for the [httpie client](https://github.com/jkbrzt/httpie)
 and assume a server running on localhost:4567.
 
+Bookmark JSON format
+--------------------
+  * url (required): url of the bookmark
+  * title (optional): descriptive title of bookmarked resource
+  * notes (optional): descriptive notes re bookmarked resource
+  * imageUrl (optional): url for image representing bookmarked resource
+  * tags (optional): array of tags describing bookmarked resource
+  * created (required): timestamp of bookmark creation
+  * modified (required): timestamp of last bookmark modification
+  * lastVisited (optional): timestamp of last visit to bookmark via api
+  * visitCount (required): number of times bookmark was visited via api
+
 Add or Update a Bookmark
 ------------------------
 
