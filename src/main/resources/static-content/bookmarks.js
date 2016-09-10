@@ -11,12 +11,17 @@ function buildBookmarkRow(element, withTags) {
         notes = element.notes;
     }
 
+    var imageUrl = "";
+    if (typeof element.imageUrl != 'undefined') {
+        imageUrl = element.imageUrl;
+    }
+
     var tags = "";
     if (withTags) {
         tags = " - <span class='tags secondary-text-color'>" + element.tags.toString().replace(/,/g, ', ') + "</span>"
     }
 
-    var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "' onclick='toggleEdits(this);'></td><td class='bookmark'><a href='" + element.url + "' data-tags='" + element.tags + "' data-notes='" + notes + "' data-title='" + element.title + "'>" + padlock + element.title + "</a>" + tags + "</td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a  onclick='deleteMark(this);'>delete</a></td></tr>";
+    var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "' onclick='toggleEdits(this);'></td><td class='bookmark'><a href='" + element.url + "' data-tags='" + element.tags + "' data-notes='" + notes  + "' data-imageurl='" + imageUrl + "' data-title='" + element.title + "'>" + padlock + element.title + "</a>" + tags + "</td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a  onclick='deleteMark(this);'>delete</a></td></tr>";
 
     return row;
 }
@@ -120,6 +125,7 @@ function editMark(e) {
     $('#addinputurl').val(bookmark.attr('href') ? bookmark.attr('href') : '');
     $('#addinputtags').val(bookmark.attr('data-tags') ? bookmark.attr('data-tags').replace(/,/g, ' ') : '');
     $('#addinputnotes').val(bookmark.attr('data-notes') ? bookmark.attr('data-notes') : '');
+    $('#addinputimageUrl').val(bookmark.attr('data-imageurl') ? bookmark.attr('data-imageurl') : '');
     $('#actionpanel').slideDown('fast');
     $('#addinputtags').focus();
 }
