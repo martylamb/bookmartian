@@ -97,6 +97,19 @@ public class JsonDirBookmartian implements IBookmartian {
     }
     
     @Override
+    public Bookmark visit(Lurl lurl) throws IOException {
+        synchronized(_lock) {
+            Bookmark b = get(lurl);
+            if (b == null) return null;
+            return replaceOrAdd(null,
+                                b.toBuilder()
+                                    .lastVisited(new java.util.Date())
+                                    .visitCount(b.visitCount().orElse(0l) + 1)
+                                    .build());
+        }
+    }
+    
+    @Override
     public Bookmark remove(Lurl lurl) throws IOException {
         synchronized(_lock) {
             return _bookmarks.remove(lurl);

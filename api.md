@@ -64,6 +64,23 @@ http -v GET http://127.0.0.1:4567/api/bookmarks "tags==personal programming"
 ```
 
 
+Visit a Bookmark
+----------------
+
+**GET /api/visit**
+
+Parameters:
+  * url (required): url of the bookmark to visit.  Must be a bookmarked url or
+    else result will be 404.
+
+Using this api rather than just linking the url directly allows bookmartian to
+track the last visit time and number of times each bookmark is visited.
+
+It is recommended to add rel="noreferrer" to the link so that the site you
+visit is not informed of your bookmartian's existence or location.
+
+
+
 Delete a Bookmark
 -----------------
 

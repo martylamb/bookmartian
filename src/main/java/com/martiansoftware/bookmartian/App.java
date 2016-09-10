@@ -9,6 +9,7 @@ import com.martiansoftware.bookmartian.model.TagNameSet;
 import java.nio.file.Paths;
 import static com.martiansoftware.boom.Boom.*;
 import com.martiansoftware.boom.BoomResponse;
+import com.martiansoftware.boom.StatusPage;
 import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
@@ -16,6 +17,7 @@ import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import spark.HaltException;
 import spark.Request;
 import spark.Response;
 import spark.Spark;
@@ -58,6 +60,7 @@ public class App {
         get("/api/tags", () -> json(bm.tags()));
         get("/api/bookmark", () -> getBookmark(bm));
         get("/api/bookmarks", () -> json(bm.bookmarksWithTags(TagNameSet.of(q("tags")))));
+        get("/api/visit", () -> visit(bm));
         
         options("/api/bookmark/update", () -> corsOptions());
         post("/api/bookmark/update", () -> updateBookmark(bm));
@@ -124,6 +127,21 @@ public class App {
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return JSend.error(e);
+        }
+    }
+    
+    private static BoomResponse visit(IBookmartian bm) {
+        String url = q("url");
+        if (url == null) halt(400, "a URL is required");
+        try {
+            Lurl lurl = Lurl.of(url);
+            Bookmark b = bm.visit(lurl);
+            if (b == null) return StatusPage.of(404, "Not Found");
+            response().redirect(b.lurl().toString());
+            return null;
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return StatusPage.of(e);
         }
     }
     

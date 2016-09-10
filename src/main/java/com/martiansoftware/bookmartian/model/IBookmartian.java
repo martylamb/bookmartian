@@ -14,5 +14,5 @@ public interface IBookmartian {
     public List<Bookmark> bookmarksWithTags(TagNameSet query);
     public Bookmark replaceOrAdd(Lurl oldLurl, Bookmark toAdd) throws IOException;
     public Bookmark remove(Lurl lurl) throws IOException;
-
+    public Bookmark visit(Lurl lurl) throws IOException;
 }
