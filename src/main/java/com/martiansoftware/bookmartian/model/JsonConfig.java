@@ -1,21 +1,31 @@
 package com.martiansoftware.bookmartian.model;
 
-import com.martiansoftware.bookmartian.model.TagNameSet;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonDeserializationContext;
+import com.google.gson.JsonDeserializer;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParseException;
+import com.google.gson.JsonPrimitive;
+import com.google.gson.JsonSerializationContext;
+import com.google.gson.JsonSerializer;
 import com.google.gson.TypeAdapter;
 import com.google.gson.TypeAdapterFactory;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import com.martiansoftware.bookmartian.model.Lurl;
-import com.martiansoftware.bookmartian.model.TagName;
 import com.martiansoftware.boom.Json;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.TimeZone;
 import java.util.stream.Stream;
 
 /**
@@ -29,11 +39,14 @@ public class JsonConfig {
                 .setFieldNamingStrategy(f -> f.getName().replaceAll("^_", ""))
                 .setPrettyPrinting()
                 .enableComplexMapKeySerialization()
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ssX")
                 .registerTypeAdapterFactory(OptionalTypeAdapter.FACTORY)
                 .registerTypeAdapter(TagNameSet.class, new TagNameSet.GsonAdapter())
                 .registerTypeAdapter(TagName.class, new TagName.GsonAdapter())
                 .registerTypeAdapter(Lurl.class, new Lurl.GsonAdapter())
-                .registerTypeAdapter(Color.class, new Color.GsonAdapter());
+                .registerTypeAdapter(Color.class, new Color.GsonAdapter())
+                .registerTypeAdapter(Date.class, new UTCDateAdapter())
+                .registerTypeAdapter(Bookmark.class, new Bookmark.GsonAdapter());
 
         Json.use(creator.create());
     }
@@ -122,4 +135,27 @@ public class JsonConfig {
         }
     }
     
+    // this adapter courtesy of http://stackoverflow.com/questions/26044881/java-date-to-utc-using-gson
+    private static class UTCDateAdapter implements JsonSerializer<Date>,JsonDeserializer<Date> {
+
+        private final DateFormat dateFormat;
+
+        public UTCDateAdapter() {
+          dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US);      //This is the format I need
+          dateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));                               //This is the key line which converts the date to UTC which cannot be accessed with the default serializer
+        }
+
+        @Override public synchronized JsonElement serialize(Date date,Type type,JsonSerializationContext jsonSerializationContext) {
+            return new JsonPrimitive(dateFormat.format(date));
+        }
+
+        @Override public synchronized Date deserialize(JsonElement jsonElement,Type type,JsonDeserializationContext jsonDeserializationContext) {
+          try {
+            return dateFormat.parse(jsonElement.getAsString());
+          } catch (ParseException e) {
+            throw new JsonParseException(e);
+          }
+        }
+    }    
+
 }

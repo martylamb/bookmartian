@@ -3,8 +3,11 @@ package com.martiansoftware.bookmartian.model;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -12,6 +15,8 @@ import java.util.stream.Collectors;
  */
 public class JsonDirBookmarkCollection implements IBookmarkCollection {
 
+    private static final Logger log = LoggerFactory.getLogger(JsonDirBookmarkCollection.class);
+    
     private final JsonDirMap<Lurl, Bookmark> _map;    
     private final Object _lock = new Object();
     
@@ -22,12 +27,28 @@ public class JsonDirBookmarkCollection implements IBookmarkCollection {
                         .keyGetter(b -> ((Bookmark) b).lurl())
                         .valueClass(Bookmark.class)
                         .build();
+        
+        _map.values().forEach(b -> updateStructure(b));
     }
     
     public static JsonDirBookmarkCollection in(Path dir) throws IOException {
         return new JsonDirBookmarkCollection(dir);
     }
 
+    private void updateStructure(Bookmark b) {
+        try {
+            if (!b.created().isPresent() || !b.modified().isPresent()) {
+                Date now = new Date();
+                Bookmark.Builder nb = b.toBuilder();
+                if (!b.created().isPresent()) nb.created(now);
+                if (!b.modified().isPresent()) nb.modified(now);
+                add(nb.build());
+            }
+        } catch(IOException e) {
+            log.error("Unable to update bookmark structure for {}: {}", b.lurl(), e.getMessage(), e);
+        }
+    }
+    
     @Override
     public Bookmark get(Lurl lurl) {
         synchronized(_lock) {
@@ -52,18 +73,23 @@ public class JsonDirBookmarkCollection implements IBookmarkCollection {
     @Override
     public Bookmark add(Bookmark b) throws IOException {
         synchronized(_lock) {
-            _map.add(b); // TODO: insert any bookmark stats here (e.g. "created", "modified", etc.)
-            return b;
+            Bookmark original = get(b.lurl());
+            Bookmark.Builder nb = b.toBuilder();
+            Date now = new Date();
+            nb.created(original == null ? now : original.created().orElse(now));
+            nb.modified(now);
+            Bookmark result = nb.build();
+            _map.add(result);
+            return result;
         }
     }
 
     @Override
     public Bookmark replace(Lurl replacing, Bookmark b) throws IOException {
-        // todo: synchronize?
         synchronized(_lock) {
-            _map.remove(replacing);
-            _map.add(b); // TODO: insert any bookmark stats here (e.g. "created", "modified", etc.)
-            return b;
+            Bookmark result = add(b);
+            if (!replacing.equals(b.lurl())) _map.remove(replacing);
+            return result;
         }
     }
 

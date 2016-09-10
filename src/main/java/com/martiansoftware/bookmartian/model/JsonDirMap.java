@@ -173,7 +173,7 @@ class JsonDirMap<K, V> {
     }
     
     private static class IdGenerator {
-        private static final Random R = new Random(1);
+        private static final Random R = new Random();
         private static final char[] IDCHARS = ("abcdefghijkmnopqrstuvwxyz" 
                                                 + "ABCDEFGHJKLMNPQRSTUVWXYZ"
                                                 + "23456789-_").toCharArray();

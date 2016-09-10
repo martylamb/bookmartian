@@ -2,6 +2,7 @@ package com.martiansoftware.bookmartian.model;
 
 import com.martiansoftware.util.Strings;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -100,6 +101,31 @@ public class Lurl implements Comparable<Lurl> {
     public int compareTo(Lurl other) {
         if (other == null) return 1;
         return _lurl.compareTo(other._lurl);
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 67 * hash + Objects.hashCode(this._lurl);
+        return hash;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final Lurl other = (Lurl) obj;
+        if (!Objects.equals(this._lurl, other._lurl)) {
+            return false;
+        }
+        return true;
     }
     
     // gson helper
