@@ -63,7 +63,7 @@ public class App {
                                         bm.query(
                                             new java.util.HashSet(
                                                 Strings.splitOnWhitespaceAndCommas(
-                                                    q("tags")
+                                                    q("q")
                                             )))));
         get("/api/visit", () -> visit(bm));
         
@@ -151,7 +151,7 @@ public class App {
     }
     
     private static BoomResponse deleteBookmark(IBookmartian bm) {
-        String url = q("url"); // TODO: URL normalization (lowercase schema and domain name?)
+        String url = q("url");
         if (url == null) return JSend.fail("a URL is required");
         log.warn("deleting bookmark: {}", url);
         try {
