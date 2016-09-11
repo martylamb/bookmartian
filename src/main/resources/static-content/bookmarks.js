@@ -6,10 +6,12 @@ var API_UpdateBookmark = "/api/bookmark/update";
 var API_DeleteBookmark = "/api/bookmark/delete";
 var API_QueryTags = "/api/tags";
 
+var bookmarkJSONArrays = new Array();
+
 // ==========================================================================
 // construct an HTML table row string to visualize a single bookmark and its edit/delete/detail capabilities
 function buildBookmarkRow(element, withTags) {
-    
+
     var padlock = ""
     if (element.url.substr(0, 5) === "https") {
         padlock = "<span style='color:green;'>&#x1f512;</span> ";
@@ -35,36 +37,200 @@ function buildBookmarkRow(element, withTags) {
     if (typeof element.lastVisited != 'undefined') {
         var lastVisitedDate = new Date(element.lastVisited);
         // if the bookmark was visited in the last 8 hours, also display the time of the visit
-        if (Date.now()-lastVisitedDate < 28800000) {
+        if (Date.now() - lastVisitedDate < 28800000) {
             lastVisitedTime = " at " + lastVisitedDate.toLocaleTimeString() + " ";
         }
-        lastVisited = "visited on " + lastVisitedDate.toDateString() ;
+        lastVisited = "visited on " + lastVisitedDate.toDateString();
     }
 
     var created = "";
     if (typeof element.created != 'undefined') {
         var createdDate = new Date(element.created);
-        created = "created on " + createdDate.toDateString() ;
+        created = "created on " + createdDate.toDateString();
     }
 
     var modified = "";
     if (typeof element.modified != 'undefined') {
         var modifiedDate = new Date(element.modified);
-        modified = "modified on " + modifiedDate.toDateString() ;
+        modified = "modified on " + modifiedDate.toDateString();
     }
 
-    var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "' onclick='toggleEdits(this);'></td><td class='bookmark'><a rel='noreferrer' href='" + API_VisitLink + "?url=" + element.url + "' data-url='" + element.url + "' data-tags='" + element.tags + "' data-notes='" + notes  + "' data-imageurl='" + imageUrl + "' data-title='" + element.title + "'>" + padlock + element.title + "</a>" + tags + "</td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a onclick='deleteMark(this);'>delete</a><p class='dateinfo text-default-primary-color'>" + element.url + "</p><p class='dateinfo secondary-text-color'>" + created + "</br>" + modified + "</br>" + lastVisited + lastVisitedTime + "</p></td></tr>";
+    var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "' onclick='toggleEdits(this);'></td><td class='bookmark'><a rel='noreferrer' href='" + API_VisitLink + "?url=" + element.url + "' data-url='" + element.url + "' data-tags='" + element.tags + "' data-notes='" + notes + "' data-imageurl='" + imageUrl + "' data-title='" + element.title + "'>" + padlock + element.title + "</a>" + tags + "</td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a onclick='deleteMark(this);'>delete</a><p class='dateinfo text-default-primary-color'>" + element.url + "</p><p class='dateinfo secondary-text-color'>" + created + "</br>" + modified + "</br>" + lastVisited + lastVisitedTime + "</p></td></tr>";
 
     return row;
 }
 
 // ==========================================================================
+// sort the bookmark list table
+function sortTable(thisTable, sortField) {
+
+    var listDataJSON = bookmarkJSONArrays[thisTable.attr('id')];
+    
+    // --------------------------------------------------------------------------
+    // sort by title    
+    if (sortField === "title") {
+        if (thisTable.attr('data-sort') === 'title_asc') {
+            listDataJSON.sort(function (a, b) {
+                if (a.title == b.title) return 0;
+                if (a.title < b.title) return 1;
+                if (a.title > b.title) return -1;
+            });
+            thisTable.attr('data-sort', 'title_desc');
+        } else {
+            listDataJSON.sort(function (a, b) {
+                if (a.title == b.title) return 0;
+                if (a.title < b.title) return -1;
+                if (a.title > b.title) return 1;
+            });
+            thisTable.attr('data-sort', 'title_asc');
+        }
+    }
+
+    // --------------------------------------------------------------------------
+    // sort by lastVisited    
+    if (sortField === "lastVisited") {
+        if (thisTable.attr('data-sort') === 'lastVisited_desc') {
+            listDataJSON.sort(function (a, b) {
+                if ((typeof a.lastVisited != 'undefined')) {
+                    var aDate = new Date(a.lastVisited);
+                }
+                else {
+                    var aDate = new Date("1/1/1970");
+                }
+                if ((typeof b.lastVisited != 'undefined')) {
+                    var bDate = new Date(b.lastVisited);
+                }
+                else {
+                    var bDate = new Date("1/1/1970");
+                }
+                if (aDate == bDate) return 0;
+                if (aDate < bDate) return -1;
+                if (aDate > bDate) return 1;
+            });
+            thisTable.attr('data-sort', 'lastVisited_asc');
+        } else {
+            listDataJSON.sort(function (a, b) {
+                if ((typeof a.lastVisited != 'undefined')) {
+                    var aDate = new Date(a.lastVisited);
+                }
+                else {
+                    var aDate = new Date("1/1/1970");
+                }
+                if ((typeof b.lastVisited != 'undefined')) {
+                    var bDate = new Date(b.lastVisited);
+                }
+                else {
+                    var bDate = new Date("1/1/1970");
+                }
+                if (aDate == bDate) return 0;
+                if (aDate < bDate) return 1;
+                if (aDate > bDate) return -1;
+            });
+            thisTable.attr('data-sort', 'lastVisited_desc');
+        }
+    }
+
+    // --------------------------------------------------------------------------
+    // sort by created    
+    if (sortField === "created") {
+        if (thisTable.attr('data-sort') === 'created_desc') {
+            listDataJSON.sort(function (a, b) {
+                if ((typeof a.created != 'undefined')) {
+                    var aDate = new Date(a.created);
+                }
+                else {
+                    var aDate = new Date("1/1/1970");
+                }
+                if ((typeof b.created != 'undefined')) {
+                    var bDate = new Date(b.created);
+                }
+                else {
+                    var bDate = new Date("1/1/1970");
+                }
+                if (aDate == bDate) return 0;
+                if (aDate < bDate) return -1;
+                if (aDate > bDate) return 1;
+            });
+            thisTable.attr('data-sort', 'created_asc');
+        } else {
+            listDataJSON.sort(function (a, b) {
+                if ((typeof a.created != 'undefined')) {
+                    var aDate = new Date(a.created);
+                }
+                else {
+                    var aDate = new Date("1/1/1970");
+                }
+                if ((typeof b.created != 'undefined')) {
+                    var bDate = new Date(b.created);
+                }
+                else {
+                    var bDate = new Date("1/1/1970");
+                }
+                if (aDate == bDate) return 0;
+                if (aDate < bDate) return 1;
+                if (aDate > bDate) return -1;
+            });
+            thisTable.attr('data-sort', 'created_desc');
+        }
+    }
+}
+
+// ==========================================================================
+// sort the parent table
+function sortThisTable(e, sortField) {
+    var thisTable = $(e).parent().parent().find("table");
+    sortTable(thisTable, sortField);
+    renderLinkTable(thisTable);
+}
+
+// ==========================================================================
+// render link table
+function renderLinkTable(linktable) {
+    linktable.empty();
+    bookmarkJSONArrays[linktable.attr('id')].each(function (index, element) {
+        linktable.append(buildBookmarkRow(element, false));
+    })
+
+    // --------------------------------------------------------------------------
+    // update the sort links to reflect current sort order   
+    var sorttitlelink = linktable.parent().find('.sorttitle');
+    var sortlastvisitedlink = linktable.parent().find('.sortlastvisited');
+    var sortcreatedlink = linktable.parent().find('.sortcreated');
+    sorttitlelink.css("font-weight", "normal");
+    sorttitlelink.html("title");   
+    sortlastvisitedlink.css("font-weight", "normal");
+    sortlastvisitedlink.html("visited");
+    sortcreatedlink.css("font-weight", "normal");
+    sortcreatedlink.html("created");
+    
+    if (linktable.attr('data-sort') === 'title_asc') {
+        sorttitlelink.css("font-weight", "bold");
+        sorttitlelink.html("title &uarr;");
+    } else if (linktable.attr('data-sort') === 'title_desc') {
+        sorttitlelink.css("font-weight", "bold");
+        sorttitlelink.html("title &darr;");
+    } else if (linktable.attr('data-sort') === 'lastVisited_asc') {
+        sortlastvisitedlink.css("font-weight", "bold");
+        sortlastvisitedlink.html("visited &uarr;");
+    } else if (linktable.attr('data-sort') === 'lastVisited_desc') {
+        sortlastvisitedlink.css("font-weight", "bold");
+        sortlastvisitedlink.html("visited &darr;");
+    } else if (linktable.attr('data-sort') === 'created_asc') {
+        sortcreatedlink.css("font-weight", "bold");
+        sortcreatedlink.html("created &uarr;");
+    } else if (linktable.attr('data-sort') === 'created_desc') {
+        sortcreatedlink.css("font-weight", "bold");
+        sortcreatedlink.html("created &darr;");
+    }
+
+}
+
+// ==========================================================================
 // populate link table
 function populateLinkTable(value) {
-    var tagColors = new Array();
     $.ajax({
         // The URL for the request
-        url: API_QueryBookmarks + "?tags=" + value.replace(/\|/g, '+'),
+        url: API_QueryBookmarks + "?q=" + value.replace(/\|/g, '+'),
 
         // Whether this is a POST or GET request
         type: "GET",
@@ -78,11 +244,10 @@ function populateLinkTable(value) {
             var safeID = value.replace(/[\|,\.]/g, '_');
             var linktable = $('#linktable_' + safeID)
 
-            //  linktable.children().remove();
+            bookmarkJSONArrays['linktable_' + safeID] = $(json);
+            sortTable(linktable, "title");
+            renderLinkTable(linktable);
 
-            $(json).each(function (index, element) {
-                linktable.append(buildBookmarkRow(element, false));
-            })
         })
         // Code to run if the request fails; the raw request and
         // status codes are passed to the function
@@ -189,7 +354,7 @@ function executeSearch(term) {
 
     $.ajax({
         // The URL for the request
-        url: API_QueryBookmarks + "?tags=" + searchterm,
+        url: API_QueryBookmarks + "?q=" + searchterm,
 
         // Whether this is a POST or GET request
         type: "GET",
@@ -201,9 +366,11 @@ function executeSearch(term) {
         // The response is passed to the function
         .done(function (json) {
             var searchtable = $('#searchtable');
-            $(json).each(function (index, element) {
-                searchtable.append(buildBookmarkRow(element, true));
-            })
+
+            bookmarkJSONArrays['searchtable'] = $(json);
+            sortTable(searchtable, "title");
+            renderLinkTable(searchtable);
+
             $('#search').show();
             $('#searchhr').show();
         })
@@ -305,7 +472,7 @@ $(document).ready(function () {
     // retrieve promo tiles
     $.ajax({
         // The URL for the request
-        url: API_QueryBookmarks + "?tags=promote",
+        url: API_QueryBookmarks + "?q=promote",
 
         // Whether this is a POST or GET request
         type: "GET",

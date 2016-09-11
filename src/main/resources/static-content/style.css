@@ -149,16 +149,17 @@ h3 {
 }
 
 .searchblock {
-    width:100%;
     margin: 8px;
     display: inline-block;
-    text-align: left;
-}
-.searchtable {
     width: 95%;
+}
+
+.searchtable {
     font-size: medium;  
     border-collapse: collapse;
     border-style: hidden;
+    width: 100%;
+    text-align: left;        
 }
 
 .searchtable td {
@@ -194,6 +195,8 @@ h3 {
     margin: 8px;
     display: none;
     text-align: left;
+    width: 220px;
+    vertical-align:top;
 }
 
 .linktable {
@@ -224,6 +227,7 @@ h3 {
 .favicon {
     width: 20px;
     text-align: center;
+    cursor: pointer;        
 }
 
 .bookmarkedits {
@@ -239,6 +243,20 @@ h3 {
 
 .bookmarkedits a {
     cursor: pointer;
+}
+
+.sortcommands {
+    text-align: right;
+    font-size: small;  
+    margin-top: 4px;  
+}
+
+.sortcommands a {
+    cursor: pointer;    
+}
+
+.sortcommands a:hover {
+    text-decoration: underline;
 }
 
 .footer {
