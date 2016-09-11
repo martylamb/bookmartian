@@ -59,7 +59,12 @@ public class App {
         
         get("/api/tags", () -> json(bm.tags()));
         get("/api/bookmark", () -> getBookmark(bm));
-        get("/api/bookmarks", () -> json(bm.bookmarksWithTags(TagNameSet.of(q("tags")))));
+        get("/api/bookmarks", () -> json(
+                                        bm.query(
+                                            new java.util.HashSet(
+                                                Strings.splitOnWhitespaceAndCommas(
+                                                    q("tags")
+                                            )))));
         get("/api/visit", () -> visit(bm));
         
         options("/api/bookmark/update", () -> corsOptions());

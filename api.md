@@ -49,9 +49,19 @@ Get Bookmarks
 **GET /api/bookmarks**
 
 Parameters:
-  * tags (optional): space-and-comma-delimited list of tags.  Only bookmarks with
-    all of the specified tags will be returned.  If no tags are specified then all
-    bookmarks will be returned.
+  * tags (optional): space-and-comma-delimited list of tags and queries.  Only 
+    bookmarks with all of the specified tags and matching all of the speified
+    queries will be returned.  If no tags or queries are specified then all
+    bookmarks will be returned.  Sample queries include:
+    * is:untagged
+    * site:microsoft.com
+    * is:recent
+    * created-after:2016/09/07
+    * created-before:2016/09/10
+    * last-visited-after:2015/12/31
+    * last-visited-before:2015/12/31
+ 
+
     
 Examples:
 

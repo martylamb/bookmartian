@@ -10,6 +10,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,15 +63,14 @@ public class JsonDirBookmartian implements IBookmartian {
     }
     
     @Override
-    public List<Bookmark> bookmarksWithTags(TagNameSet query) {
+    public List<Bookmark> query(Set<String> queryTerms) {
         synchronized(_lock) {
-            if (query.isEmpty()) return _bookmarks.all(); // already unmodifiable
             return Collections.unmodifiableList(
-                        _bookmarks.all()
-                            .stream()
-                            .filter(b -> b.tagNames().containsAll(query))
-                            .collect(Collectors.toList())
-                    );
+                    _bookmarks.all()
+                    .stream()
+                    .filter(Query.of(queryTerms))
+                    .collect(Collectors.toList())
+            );
         }
     }
   

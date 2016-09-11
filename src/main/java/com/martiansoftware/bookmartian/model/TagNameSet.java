@@ -36,7 +36,7 @@ public class TagNameSet {
     public static TagNameSet of(Collection<String> tags) {
         return new TagNameSet(scrub(tags));
     }
-    
+        
     private static Set<TagName> scrub(Collection<String> tags) {
         return (Set<TagName>) (
                 tags == null

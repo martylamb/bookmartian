@@ -12,8 +12,7 @@ import java.util.stream.Stream;
  */
 public class TagName implements Comparable<TagName> {
 
-//    private static final Pattern VALID_TAG = Pattern.compile("^\\s*(?<tag>[a-zA-Z0-9_-][.a-zA-Z0-9_-]*)\\s*$");
-    private static final Pattern VALID_TAG = Pattern.compile("^\\s*(?<tag>[^\\s,]+)\\s*$");
+    private static final Pattern VALID_TAG = Pattern.compile("^\\s*(?<tag>[^\\s,:]+)\\s*$");
     
     private final String _name;
     
