@@ -70,7 +70,10 @@ Examples:
 http -v GET http://127.0.0.1:4567/api/bookmarks
 
 # get all bookmarks that match all of a set of tags
-http -v GET http://127.0.0.1:4567/api/bookmarks "tags==personal programming"
+http -v GET http://127.0.0.1:4567/api/bookmarks "q==personal programming"
+
+# get all unread bookmarks with "java" tag created in the last week
+http -v GET http://127.0.0.1:4567/api/bookmarks "q==java,is:recent"
 ```
 
 
