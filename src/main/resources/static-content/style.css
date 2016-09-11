@@ -49,7 +49,7 @@ h3 {
 .searchbox {
     margin: 5px;
     float:right;
-    width:100px;
+    width:220px;
     height: 20px;
 }
 
@@ -230,6 +230,11 @@ h3 {
     font-size: small;
     text-align: right;
     display: none;
+}
+
+.dateinfo {
+    font-size: x-small;
+    word-break: break-all;
 }
 
 .bookmarkedits a {
