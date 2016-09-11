@@ -86,6 +86,8 @@ public class Lurl implements Comparable<Lurl> {
                 s.append("://");
                 appendIfNotEmpty(s, m.group("rest"));
                 result = maybeLowercase(s, m.group("scheme"));
+            } else {
+                result = normalize("http://" + result);
             }
         }
         if (result.length() == 0) throw new IllegalArgumentException("url may not be empty");
