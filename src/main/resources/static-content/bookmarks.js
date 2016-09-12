@@ -35,7 +35,11 @@ function buildBookmarkRow(element, withTags) {
 
     var tags = "";
     if (withTags) {
-        tags = " - <span class='tags secondary-text-color'>" + element.tags.toString().replace(/,/g, ', ') + "</span>"
+        var taglist = element.tags.toString().split(',');
+        tags = " - "
+        taglist.forEach(function(tag) {
+            tags += "<span onclick=\"executeSearch('" + tag + "', false);\" class='tags secondary-text-color'>" + tag + "</span> ";
+        }, this);
     }
 
     var lastVisited = "";
@@ -46,7 +50,7 @@ function buildBookmarkRow(element, withTags) {
         if (Date.now() - lastVisitedDate < 28800000) {
             lastVisitedTime = " at " + lastVisitedDate.toLocaleTimeString() + " ";
         }
-        lastVisited = "visited on " + lastVisitedDate.toDateString();
+        lastVisited = "visit #" + element.visitCount + " on " + lastVisitedDate.toDateString();
     }
 
     var created = "";
@@ -350,11 +354,17 @@ function editMark(e) {
 
 // ==========================================================================
 // run a bookmark search by sending the contents of the search box to the bookmarks service
-function executeSearch(term) {
+// term - tag or tags to be used in search, if null the value of the search text box is used
+// reset - if true, treat this as a new search. if false, treat this as a drill-down search
+function executeSearch(term, reset) {
+    var searchtable = $('#searchtable');    
     var searchterm = "";
 
     if (term) {
         searchterm = term;
+        if (searchtable.attr('data-searchterm') && !reset) {
+            searchterm = searchtable.attr('data-searchterm') + " " + searchterm;
+        }
     } else {
         searchterm = $('#searchterm').val();
     }
@@ -379,6 +389,7 @@ function executeSearch(term) {
             var searchtable = $('#searchtable');
 
             bookmarkJSONArrays['searchtable'] = $(json);
+            searchtable.attr('data-searchterm', searchterm);
             sortTable(searchtable, "title");
             renderLinkTable(searchtable, true);
 
@@ -456,7 +467,7 @@ $(document).ready(function () {
         .done(function (json) {
             $(json).each(function (index, element) {
                 if (element.name.substr(0, 1) !== ".") {
-                    var link = "<a onclick=\"executeSearch('" + element.name + "');\" style=color:" + element.color + " id=" + element.name + ">" + element.name + "</a>";
+                    var link = "<a onclick=\"executeSearch('" + element.name + "', true);\" style=color:" + element.color + " id=" + element.name + ">" + element.name + "</a>";
                     $(".tagcloud").append(link).append(" &nbsp;");
                     tagColors[element.name] = element.color;
                 }
