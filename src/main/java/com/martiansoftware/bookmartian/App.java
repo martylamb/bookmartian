@@ -58,6 +58,8 @@ public class App {
         before("/*", (req, rsp) -> disableCaching(req, rsp));
         
         get("/api/tags", () -> json(bm.tags()));
+        
+        options("/api/bookmark", () -> corsOptions());
         get("/api/bookmark", () -> getBookmark(bm));
         get("/api/bookmarks", () -> json(
                                         bm.query(
