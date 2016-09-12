@@ -186,15 +186,20 @@ function sortTable(thisTable, sortField) {
 function sortThisTable(e, sortField) {
     var thisTable = $(e).parent().parent().find("table");
     sortTable(thisTable, sortField);
-    renderLinkTable(thisTable);
+
+    // if this is the search results table, make sure that we are still displaying tags after sort
+    var withTags = false;
+    if (thisTable.attr('id') === 'searchtable') withTags = true; 
+
+    renderLinkTable(thisTable, withTags);
 }
 
 // ==========================================================================
 // render link table
-function renderLinkTable(linktable) {
+function renderLinkTable(linktable, withTags) {
     linktable.empty();
     bookmarkJSONArrays[linktable.attr('id')].each(function (index, element) {
-        linktable.append(buildBookmarkRow(element, false));
+        linktable.append(buildBookmarkRow(element, withTags));
     })
 
     // --------------------------------------------------------------------------
@@ -252,7 +257,7 @@ function populateLinkTable(value) {
 
             bookmarkJSONArrays['linktable_' + safeID] = $(json);
             sortTable(linktable, "title");
-            renderLinkTable(linktable);
+            renderLinkTable(linktable, false);
 
         })
         // Code to run if the request fails; the raw request and
@@ -375,7 +380,7 @@ function executeSearch(term) {
 
             bookmarkJSONArrays['searchtable'] = $(json);
             sortTable(searchtable, "title");
-            renderLinkTable(searchtable);
+            renderLinkTable(searchtable, true);
 
             $('#search').show();
             $('#searchhr').show();
