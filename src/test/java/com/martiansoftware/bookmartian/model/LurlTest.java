@@ -14,14 +14,10 @@ public class LurlTest {
         assertEquals(expectedAfter, Lurl.of(before).toString());
     }
     
-    private void test(String beforeAndExpectedAfter) {
-        test(beforeAndExpectedAfter, beforeAndExpectedAfter);
-    }
-    
     @Test
     public void testConstruction() {
-        test("martiansoftware.com");
-        test("MartianSoftware.com");
+        test("martiansoftware.com", "http://martiansoftware.com");
+        test("MartianSoftware.com", "http://martiansoftware.com");
         
         test("Http://martiansoftware.com",
              "http://martiansoftware.com");
