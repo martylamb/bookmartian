@@ -1,12 +1,16 @@
 package com.martiansoftware.bookmartian.model;
 
 import com.martiansoftware.util.Strings;
+import java.net.URI;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A lenient url class; instances don't have to be valid urls, but the ones that
@@ -16,29 +20,37 @@ import java.util.stream.Stream;
  */
 public class Lurl implements Comparable<Lurl> {
    
-    private final String _lurl;
+    private static final Logger log = LoggerFactory.getLogger(Lurl.class);
     
-    // TODO: add pattern for mailto: urls?
-    private final Pattern weblikeUrl = Pattern.compile("^(?<scheme>[a-zA-z0-9+-.]+)"
-                                                        + "://"
-                                                        + "(?<credentials>"
-                                                            + "(?<username>[^:/]+)"
-                                                            + ":"
-                                                            + "(?<password>[^:/]+)"
-                                                        + "@)?" // end of optional credentials
-                                                        + "(?<host>[^:/\\s]+)"
-                                                        + "(?<port>:[0-9]+)?" // optional port
-                                                        + "(?<rest>/.*)?"); // optional remaining pathinfo, etc.
+    // used to see if a url has any scheme at all
+    private static final Pattern SCHEME_FINDER = Pattern.compile("^(?<scheme>[a-zA-z0-9+-.]+):.*");
+    
+    // used to trim trailing slashes from paths with no query or fragment
+    private static final Pattern PATH_TRIMMER = Pattern.compile("^(?<path>[^?#]*)/+$");
+    
+    private static final Pattern WEBLIKE_URL = Pattern.compile("^(?<scheme>[a-zA-z0-9+-.]+)"
+                                                                + "://"
+                                                                + "(?<credentials>"
+                                                                    + "(?<username>[^:/]+)"
+                                                                    + ":"
+                                                                    + "(?<password>[^:/]+)"
+                                                                + "@)?" // end of optional credentials
+                                                                + "(?<host>[^:/\\s]+)"
+                                                                + "(?<port>:[0-9]+)?" // optional port
+                                                                + "(?<rest>/.*)?"); // optional remaining pathinfo, etc.
     
     // see isWeblike() for description
-    private static final Set<String> weblikeSchemes = new java.util.HashSet<>(Arrays.asList("http", "https", "ftp", "ftps", "sftp", "ws", "wss"));
+    private static final Set<String> WEBLIKE_SCHEMES = new java.util.HashSet<>(Arrays.asList("http", "https", "ftp", "ftps", "sftp", "ws", "wss"));
     
     // these schemas always get the WHOLE url lowercased
-    private static final Set<String> alwaysLowercaseAll = new java.util.HashSet<>(Arrays.asList("mailto"));
+    private static final Set<String> ALWAYS_LOWERCASE_ENTIRE_URL = new java.util.HashSet<>(Arrays.asList("mailto"));
     
-    private final Pattern genericUrl = Pattern.compile("^(?<scheme>[a-zA-z0-9+-.]+)"
-                                                        + "://"
-                                                        + "(?<rest>.*)?"); // literally anything else
+    private static final Pattern genericUrl = Pattern.compile("^(?<scheme>[a-zA-z0-9+-.]+)"
+                                                                 + "://"
+                                                                 + "(?<rest>.*)?"); // literally anything else
+    
+    private final String _lurl;
+        
     
     private Lurl(String url) {
         _lurl = normalize(url);
@@ -53,22 +65,41 @@ public class Lurl implements Comparable<Lurl> {
     // schemes may not even include a host so we can't just pick out what looks
     // like a host and lowercase it since that might break the url.
     private boolean isWeblike(String scheme) {
-        return weblikeSchemes.contains(scheme.toLowerCase());
+        return WEBLIKE_SCHEMES.contains(scheme.toLowerCase());
     }
     
     private void appendIfNotEmpty(StringBuilder sb, String s) {
         if (!Strings.isEmpty(s)) sb.append(s);
     }
     
-    private String maybeLowercase(StringBuilder sb, String scheme) {
-        return alwaysLowercaseAll.contains(scheme.toLowerCase())
+    private String maybeLowercaseWholeUrl(StringBuilder sb, String scheme) {
+        return ALWAYS_LOWERCASE_ENTIRE_URL.contains(scheme.toLowerCase())
                 ? sb.toString().toLowerCase()
                 : sb.toString();
     }
     
+    private String scrubRest(String rest) {
+        if (rest == null) return null;
+        // if the URL has no fragment or query, trim all trailing slashes
+        Matcher m = PATH_TRIMMER.matcher(rest);
+        if (m.matches()) {
+            return m.group("path");
+        } else {
+            return rest;
+        }
+    }
+
     private String normalize(String url) {
+        // TODO: UNC check
+        // TODO: windows path check
         String result = url.trim();
-        Matcher m = weblikeUrl.matcher(result);        
+        if (result.length() == 0) throw new IllegalArgumentException("url may not be empty");
+        
+        // no scheme at all?  assume it's http and try again
+        Matcher m = SCHEME_FINDER.matcher(result);
+        if (!m.matches()) return normalize("http://" + url);
+        
+        m = WEBLIKE_URL.matcher(result);        
         if (m.matches() && isWeblike(m.group("scheme"))) {
             StringBuilder s = new StringBuilder();
             s.append(m.group("scheme").toLowerCase());
@@ -76,21 +107,20 @@ public class Lurl implements Comparable<Lurl> {
             appendIfNotEmpty(s, m.group("credentials"));
             s.append(m.group("host").toLowerCase());            
             appendIfNotEmpty(s, m.group("port"));
-            appendIfNotEmpty(s, m.group("rest"));            
-            result = maybeLowercase(s, m.group("scheme"));
+            appendIfNotEmpty(s, scrubRest(m.group("rest")));
+            result = maybeLowercaseWholeUrl(s, m.group("scheme"));
         } else {
             m = genericUrl.matcher(result);
             if (m.matches()) {
                 StringBuilder s = new StringBuilder();
                 s.append(m.group("scheme").toLowerCase());
                 s.append("://");
-                appendIfNotEmpty(s, m.group("rest"));
-                result = maybeLowercase(s, m.group("scheme"));
+                appendIfNotEmpty(s, scrubRest(m.group("rest")));
+                result = maybeLowercaseWholeUrl(s, m.group("scheme"));
             } else {
-                result = normalize("http://" + result);
+                log.error("I don't know what to make of url \"{}\".  Considering it already normalized", result);
             }
         }
-        if (result.length() == 0) throw new IllegalArgumentException("url may not be empty");
         return result;
     }
     
@@ -136,4 +166,5 @@ public class Lurl implements Comparable<Lurl> {
         @Override protected Lurl fromString(String s) { return Lurl.of(s); }
         @Override public Stream<Class> classes() { return Stream.of(Lurl.class); }
     }
+    
 }

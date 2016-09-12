@@ -12,12 +12,17 @@ public class LurlTest {
     
     private void test(String before, String expectedAfter) {
         assertEquals(expectedAfter, Lurl.of(before).toString());
+        
+        assertEquals(Lurl.of(before), Lurl.of(expectedAfter));
     }
     
     @Test
     public void testConstruction() {
-        test("martiansoftware.com", "http://martiansoftware.com");
-        test("MartianSoftware.com", "http://martiansoftware.com");
+        test("martiansoftware.com",
+             "http://martiansoftware.com");
+        
+        test("MartianSoftware.com",
+             "http://martiansoftware.com");
         
         test("Http://martiansoftware.com",
              "http://martiansoftware.com");
@@ -33,8 +38,26 @@ public class LurlTest {
         test("HTTPs://MartyLamb:p@$$word@SomeWebsite.org/Mixed/Case/Path?with==params#andAnchors",
              "https://MartyLamb:p@$$word@somewebsite.org/Mixed/Case/Path?with==params#andAnchors");
         
-        test("mailTo://Fake@email.fake",
+        test("mailTo://Fake@email.fAKe",
              "mailto://fake@email.fake");
+        
+        test("http://stupid.annoying.trailing.slash/",
+             "http://stupid.annoying.trailing.slash");
+
+        test("another/",
+             "http://another");
+        
+        test("https://trailing-slash.com/a/b/c/",
+             "https://trailing-slash.com/a/b/c");
+        
+        test("http://slash.With.query/aBc/?Query=something",
+             "http://slash.with.query/aBc/?Query=something");
+        
+        test("http://slash.With.query/aBc/?Query=something",
+             "http://slash.with.query/aBc/?Query=something");
+        
+        test("a:weirdUrl", "a:weirdUrl");
+        
     }
     
     @Test
