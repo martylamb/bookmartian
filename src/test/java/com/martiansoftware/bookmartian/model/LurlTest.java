@@ -11,8 +11,7 @@ import static org.junit.Assert.*;
 public class LurlTest {
     
     private void test(String before, String expectedAfter) {
-        assertEquals(expectedAfter, Lurl.of(before).toString());
-        
+        assertEquals(expectedAfter, Lurl.of(before).toString());        
         assertEquals(Lurl.of(before), Lurl.of(expectedAfter));
     }
     
