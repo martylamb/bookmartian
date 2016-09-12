@@ -57,6 +57,33 @@ public class LurlTest {
         
         test("a:weirdUrl", "a:weirdUrl");
         
+        test("\\\\?\\UNC\\myServer\\Path\\To\\Thing",
+             "\\\\?\\UNC\\myserver\\Path\\To\\Thing");
+        
+        test("\\\\?\\UNC\\myServer",
+             "\\\\?\\UNC\\myserver");
+        
+        test("\\\\?\\UNC\\myServer\\",
+             "\\\\?\\UNC\\myserver");
+
+        test("\\\\?\\UNC\\myServer\\A\\B\\c\\",
+             "\\\\?\\UNC\\myserver\\A\\B\\c");
+
+        test("\\\\Server",
+             "\\\\server");
+        
+        test("\\\\Server\\",
+             "\\\\server");
+        
+        test("\\\\Server\\a\\b\\c\\",
+             "\\\\server\\a\\b\\c");
+
+        test("\\\\Server\\a\\b\\c",
+             "\\\\server\\a\\b\\c");
+        
+        test("\\\\", "\\\\");
+        test("\\\\\\noServer",
+             "\\\\\\noServer");
     }
     
     @Test

@@ -45,12 +45,30 @@ public class Lurl implements Comparable<Lurl> {
     // these schemas always get the WHOLE url lowercased
     private static final Set<String> ALWAYS_LOWERCASE_ENTIRE_URL = new java.util.HashSet<>(Arrays.asList("mailto"));
     
-    private static final Pattern genericUrl = Pattern.compile("^(?<scheme>[a-zA-z0-9+-.]+)"
+    
+    private static final Pattern GENERIC_URL = Pattern.compile("^(?<scheme>[a-zA-z0-9+-.]+)"
                                                                  + "://"
                                                                  + "(?<rest>.*)?"); // literally anything else
     
+    private static final String UNC_FROM_HOST_PATTERN = "(?<host>[^\\\\]+)(?<rest>\\\\.*[^\\\\])?\\\\*"; // pattern strips trailing backslashes
+    
+    private static final String LONG_UNC_PREFIX = "\\\\?\\UNC\\";
+    private static final Pattern LONG_UNC = Pattern.compile("^" 
+                                                                + Pattern.quote(LONG_UNC_PREFIX)
+                                                                + UNC_FROM_HOST_PATTERN
+                                                                + "$");
+    
+    private static final String GENERIC_UNC_PREFIX = "\\\\";
+    private static final Pattern GENERIC_UNC = Pattern.compile("^" 
+                                                                + Pattern.quote(GENERIC_UNC_PREFIX)
+                                                                + UNC_FROM_HOST_PATTERN
+                                                                + "$");
+    
     private final String _lurl;
         
+    static {
+        System.out.println(LONG_UNC.pattern());
+    }
     
     private Lurl(String url) {
         _lurl = normalize(url);
@@ -89,11 +107,32 @@ public class Lurl implements Comparable<Lurl> {
         }
     }
 
+    private String buildUnc(String prefix, Matcher m) {
+        StringBuilder result = new StringBuilder(prefix);
+        result.append(m.group("host").toLowerCase());
+        appendIfNotEmpty(result, m.group("rest"));
+        return result.toString();
+    }
+    
+    private String normalizeUnc(String uncPath) {
+        Matcher m = LONG_UNC.matcher(uncPath);
+        if (m.matches()) return buildUnc(LONG_UNC_PREFIX, m);
+        m = GENERIC_UNC.matcher(uncPath);
+        if (m.matches()) return buildUnc(GENERIC_UNC_PREFIX, m);
+        log.warn("weird UNC path \"{}\", leaving as-is.", uncPath);
+        return uncPath;
+    }
+    
+    private boolean isUnc(String s) {
+        return s.startsWith(GENERIC_UNC_PREFIX);
+    }
+    
     private String normalize(String url) {
-        // TODO: UNC check
         // TODO: windows path check
         String result = url.trim();
         if (result.length() == 0) throw new IllegalArgumentException("url may not be empty");
+
+        if (isUnc(result)) return normalizeUnc(result);
         
         // no scheme at all?  assume it's http and try again
         Matcher m = SCHEME_FINDER.matcher(result);
@@ -110,7 +149,7 @@ public class Lurl implements Comparable<Lurl> {
             appendIfNotEmpty(s, scrubRest(m.group("rest")));
             result = maybeLowercaseWholeUrl(s, m.group("scheme"));
         } else {
-            m = genericUrl.matcher(result);
+            m = GENERIC_URL.matcher(result);
             if (m.matches()) {
                 StringBuilder s = new StringBuilder();
                 s.append(m.group("scheme").toLowerCase());
@@ -118,7 +157,7 @@ public class Lurl implements Comparable<Lurl> {
                 appendIfNotEmpty(s, scrubRest(m.group("rest")));
                 result = maybeLowercaseWholeUrl(s, m.group("scheme"));
             } else {
-                log.error("I don't know what to make of url \"{}\".  Considering it already normalized", result);
+                log.error("I don't know what to make of url \"{}\", leaving as-is", result);
             }
         }
         return result;
@@ -166,5 +205,10 @@ public class Lurl implements Comparable<Lurl> {
         @Override protected Lurl fromString(String s) { return Lurl.of(s); }
         @Override public Stream<Class> classes() { return Stream.of(Lurl.class); }
     }
+ 
     
+    public static void main(String[] args) throws Exception {
+        Lurl l = Lurl.of("\\\\?\\UNC\\Thing\\with\\Path");
+        System.out.println(l);
+    }
 }
