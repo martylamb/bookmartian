@@ -50,7 +50,7 @@ function buildBookmarkRow(element, withTags) {
         if (Date.now() - lastVisitedDate < 28800000) {
             lastVisitedTime = " at " + lastVisitedDate.toLocaleTimeString() + " ";
         }
-        lastVisited = "visited on " + lastVisitedDate.toDateString();
+        lastVisited = "visit #" + element.visitCount + " on " + lastVisitedDate.toDateString();
     }
 
     var created = "";
