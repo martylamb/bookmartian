@@ -179,8 +179,13 @@ h3 {
 .searchtable a:hover {
     text-decoration: underline;
 }
+
 .tags {
     font-style: italic;
+}
+
+.tags:hover {
+    cursor: pointer;        
 }
 
 /* ======================================================================= */
