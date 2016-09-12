@@ -43,8 +43,25 @@ http -v -f POST http://127.0.0.1:4567/api/bookmark/update oldUrl=http://martians
 ```
 
 
-Get Bookmarks
--------------
+Retrieve a Single Bookmark
+--------------------------
+
+**GET /api/bookmark**
+
+Parameters:
+  * url (required): url of bookmark to retrieve
+  
+Example:
+
+```shell
+# get bookmark for foo.com
+http -v GET http://127.0.0.1:4567/api/bookmarks?url=http://foo.com
+```
+
+
+  
+Query Bookmarks
+---------------
 
 **GET /api/bookmarks**
 
