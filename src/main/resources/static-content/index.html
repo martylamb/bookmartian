@@ -94,17 +94,23 @@
         </div>
     </div>
 
-    <script>
-    </script>
-
     <hr class="divider-color"/>
     <div class='footer secondary-text-color'>
         the bookmartian | 
         2016 | 
         mlamb/jmutchek | 
         source on <a href="https://github.com/martylamb/bookmartian">github</a> |
-        get this <a href="javascript:(function(){if(window.myBookmarklet!==undefined){myBookmarklet();}else{var bs=document.createElement('script');bs.id='bookmartian_scriptblock';bs.src='http://localhost:4567/bookmarklet.js';document.body.appendChild(bs);}})();">bookmarklet</a>
+        get this <a id ='bookmarklet' href="#">bookmarklet</a>
     </div>
+
+    <script>
+        // --------------------------------------------------------------------------
+        // update the bookmarklet on the page to reflect the current protocol and host        
+        var http = location.protocol;
+        var slashes = http.concat("//");
+        var host = slashes.concat(window.location.host);
+        $('#bookmarklet').attr("href", "javascript:(function(){if(window.myBookmarklet!==undefined){myBookmarklet();}else{var bs=document.createElement('script');bs.id='bookmartian_scriptblock';bs.src='" + host + "/bookmarklet.js';document.body.appendChild(bs);}})();")
+    </script>
 
 </body>
 

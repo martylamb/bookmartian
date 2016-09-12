@@ -9,6 +9,12 @@ var API_QueryTags = "/api/tags";
 var bookmarkJSONArrays = new Array();
 
 // ==========================================================================
+// remove characters from string that are difficult for a css/html ID attribute and replace them with underscores
+function convertToSafeIDString(val) {
+    return val.replace(/[:/\|,\.]/g, '_');
+}
+
+// ==========================================================================
 // construct an HTML table row string to visualize a single bookmark and its edit/delete/detail capabilities
 function buildBookmarkRow(element, withTags) {
 
@@ -67,7 +73,7 @@ function sortTable(thisTable, sortField) {
     var listDataJSON = bookmarkJSONArrays[thisTable.attr('id')];
     
     // --------------------------------------------------------------------------
-    // sort by title    
+    // sort by title
     if (sortField === "title") {
         if (thisTable.attr('data-sort') === 'title_asc') {
             listDataJSON.sort(function (a, b) {
@@ -241,7 +247,7 @@ function populateLinkTable(value) {
         // Code to run if the request succeeds (is done);
         // The response is passed to the function
         .done(function (json) {
-            var safeID = value.replace(/[\|,\.]/g, '_');
+            var safeID = convertToSafeIDString(value);
             var linktable = $('#linktable_' + safeID)
 
             bookmarkJSONArrays['linktable_' + safeID] = $(json);
@@ -418,7 +424,7 @@ $(document).ready(function () {
         var block = $("#linkblocktemplate").clone()
         block.css('display', 'inline-block');
         var heading = block.find('h1');
-        var safeID = value.replace(/[\|,\.]/g, '_');
+        var safeID = convertToSafeIDString(value);
         var cleanHeading = value.replace(/\.[^|]+/g, '').replace(/\|/g, '');
         heading.text(cleanHeading);
         var linktable = block.find('.linktable');
