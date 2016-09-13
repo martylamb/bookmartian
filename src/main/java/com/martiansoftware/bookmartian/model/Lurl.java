@@ -157,7 +157,7 @@ public class Lurl implements Comparable<Lurl> {
                 appendIfNotEmpty(s, scrubRest(m.group("rest")));
                 result = maybeLowercaseWholeUrl(s, m.group("scheme"));
             } else {
-                log.error("I don't know what to make of url \"{}\", leaving as-is", result);
+                log.warn("weird URL \"{}\", leaving as-is.", result);
             }
         }
         return result;
