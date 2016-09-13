@@ -130,6 +130,7 @@ public class App {
             Lurl lurl = Lurl.of(url);
             log.debug("searching for bookmark: {}", lurl);
             Bookmark b = bm.get(lurl);
+            corsHeaders();
             return (b == null) ? JSend.fail("no such bookmark: " + url) : JSend.success(b);
         } catch (Exception e) {
             log.error(e.getMessage(), e);
