@@ -241,13 +241,13 @@ h3 {
     display: none;
 }
 
+.bookmarkedits a {
+    cursor: pointer;
+}
+
 .dateinfo {
     font-size: x-small;
     word-break: break-all;
-}
-
-.bookmarkedits a {
-    cursor: pointer;
 }
 
 .sortcommands {

@@ -244,6 +244,21 @@ h3 {
     cursor: pointer;
 }
 
+.dateinfo {
+    font-size: large;
+    word-break: break-all;
+}
+
+.sortcommands {
+    text-align: right;
+    font-size: x-large;  
+    margin-top: 4px;  
+}
+
+.sortcommands a {
+    cursor: pointer;    
+}
+
 .footer {
     text-align: right;
     font-size: medium;

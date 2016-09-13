@@ -1,14 +1,23 @@
 // url to the bookmartian host
 var parser = document.createElement('a');
-parser.href = document.getElementById ( "bookmartian_scriptblock" ).getAttribute ( "src" );
+parser.href = document.getElementById("bookmartian_scriptblock").getAttribute("src");
 var host = parser.protocol + "//" + parser.host;
 
 // function called when the save button is clicked
 function saveBookmark() {
+
+    // do not serialize the oldurl field if no old url was specified or the url did not change
+    var serializedFormData = null;
+    if ($('#bookmartian_addinputoldUrl').val().length == 0 || $('#bookmartian_addinputoldUrl').val() === $('#bookmartian_addinputurl').val()) {
+        serializedFormData = $("#bookmartian_addform :not(#bookmartian_addinputoldUrl)").serialize();
+    } else {
+        serializedFormData = $("#bookmartian_addform").serialize();
+    }
+
     $.post({
         url: host + "/api/bookmark/update",
-        data: $("#bookmartian_addform").serialize(),
-        headers: {'X-BOOKMARTIAN':'aw yeah'}
+        data: serializedFormData,
+        headers: { 'X-BOOKMARTIAN': 'aw yeah' }
     })
         .done(function () {
             console.log("bookmark saved.");
@@ -53,9 +62,9 @@ function closeAction() {
             function getSelText() {
                 var s = '';
                 if (window.getSelection) {
-                    s = window.getSelection();
+                    s = window.getSelection().toString();
                 } else if (document.getSelection) {
-                    s = document.getSelection();
+                    s = document.getSelection().toString();
                 } else if (document.selection) {
                     s = document.selection.createRange().text;
                 }
@@ -64,11 +73,13 @@ function closeAction() {
 
             if ($("#bookmartian_actionpanel").length == 0) {
                 // grab any currently selected text on the page to stick in the notes field
-                var s = "";
+                var s = null;
                 s = getSelText();
 
-                // grab the text of the body of the page and clean up extra whitespace
-                var body = $('body').text().replace(/\s+/g, ' ');
+                // grab the text of the body of the page (without scripts and other embedded elements) and clean up extra whitespace
+                var bodyclone = $('body').clone();
+                bodyclone.find("script, style, img").remove();
+                body = bodyclone.text().replace(/\s+/g, ' ');
 
                 $('head').append('<link rel="stylesheet" type="text/css" href="' + host + '/style.bookmarklet.css">');
                 $('head').append('<link rel="stylesheet" type="text/css" href="' + host + '/colors.css">');
@@ -79,7 +90,8 @@ function closeAction() {
                                     <h1>Add a bookmark</h1>
                                     <form id="bookmartian_addform">
                                         <input type="hidden" name="body" id="bookmartian_addinputbody"/>                
-                                        <div class="bookmartian_titleinputpair">
+                                            <input type="hidden" name="oldUrl" id="bookmartian_addinputoldUrl" />
+                                            <div class="bookmartian_titleinputpair">
                                             <div class="bookmartian_fieldtitle">title:</div>
                                             <input type="text" name="title" id="bookmartian_addinputtitle" class="bookmartian_addinputtitle" />
                                         </div>
@@ -104,11 +116,48 @@ function closeAction() {
                                 </div>
     					    </div> `);
             }
-            $('#bookmartian_addinputtitle').val(document.title);
-            $('#bookmartian_addinputurl').val(document.location);
-            $('#bookmartian_addinputnotes').val(s);
-            $('#bookmartian_addinputbody').val(body);
 
+            // check to see if this url is already bookmarked and, if it is, prepopulate the fields with the saved info
+            $.ajax({
+                // The URL for the request
+                url: host + "/api/bookmark?url=" + escape(document.location),
+
+                headers: { 'X-BOOKMARTIAN': 'aw yeah' },
+
+                // Whether this is a POST or GET request
+                type: "GET",
+
+                // The type of data we expect back
+                dataType: "json"
+            })
+                // Code to run if the request succeeds (is done);
+                // The response is passed to the function
+                .done(function (json) {
+                    if (json.status === 'success') {
+                        $('#bookmartian_addpanel h1').text('Update a saved bookmark');
+                        $('#bookmartian_addinputtitle').val(json.data.title);
+                        $('#bookmartian_addinputtags').val(json.data.tags?json.data.tags.toString().replace(/,/g, ' '):'');
+                        $('#bookmartian_addinputnotes').val(json.data.notes);
+                        $('#bookmartian_addinputoldUrl').val(document.location);
+                    } else {
+                        $('#bookmartian_addinputtitle').val(document.title);                    
+                    }                    
+                })
+                // Code to run if the request fails; the raw request and
+                // status codes are passed to the function
+                .fail(function (xhr, status, errorThrown) {
+                    $('#bookmartian_addinputtitle').val(document.title);
+        
+                    console.log("Error: " + errorThrown);
+                    console.log("Status: " + status);
+                    console.dir(xhr);
+                })
+                // Code to run regardless of success or failure;
+                .always(function (xhr, status) {
+                    $('#bookmartian_addinputurl').val(document.location);
+                    $('#bookmartian_addinputbody').val(body);
+                    if (s) { $('#bookmartian_addinputnotes').val(s); }
+                });
         })();
     }
 })();

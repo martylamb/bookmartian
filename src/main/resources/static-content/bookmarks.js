@@ -280,7 +280,16 @@ function populateLinkTable(value) {
 // ==========================================================================
 // POST the bookmark back to the service to save it
 function saveBookmark() {
-    $.post(API_UpdateBookmark, $("#addform").serialize())
+
+    // do not serialize the oldurl field if no old url was specified or the url did not change
+    var serializedFormData = null;
+    if ($('#addinputoldUrl').val().length == 0 || $('#addinputoldUrl').val() === $('#addinputurl').val()) {
+        serializedFormData = $("#addform :not(#addinputoldUrl)").serialize();
+    } else {
+        serializedFormData = $("#addform").serialize();
+    }
+
+    $.post(API_UpdateBookmark, serializedFormData)
         .done(function () {
             closeAction();
         })
@@ -344,6 +353,7 @@ function editMark(e) {
     console.log("editing bookmark: " + bookmark.attr('href'));
 
     $('#addinputtitle').val(bookmark.attr('data-title') ? bookmark.attr('data-title') : '');
+    $('#addinputoldUrl').val(bookmark.attr('data-url') ? bookmark.attr('data-url') : '');
     $('#addinputurl').val(bookmark.attr('data-url') ? bookmark.attr('data-url') : '');
     $('#addinputtags').val(bookmark.attr('data-tags') ? bookmark.attr('data-tags').replace(/,/g, ' ') : '');
     $('#addinputnotes').val(bookmark.attr('data-notes') ? bookmark.attr('data-notes') : '');
