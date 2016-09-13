@@ -88,7 +88,7 @@ public class JsonDirBookmarkCollection implements IBookmarkCollection {
     public Bookmark replace(Lurl replacing, Bookmark b) throws IOException {
         synchronized(_lock) {
             Bookmark result = add(b);
-            if (b.lurl().equals(replacing)) _map.remove(replacing);
+            if (!b.lurl().equals(replacing)) _map.remove(replacing);
             return result;
         }
     }
