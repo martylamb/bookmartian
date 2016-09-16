@@ -54,6 +54,8 @@ public class App {
         JsonConfig.init();
         IBookmartian bm = JsonDirBookmartian.in(Paths.get(cmd.getString(ARG_BOOKMARTIAN_DIR)));
         
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> bm.shutdown()));
+        
         before("/*", (req, rsp) -> log(req, rsp));
         before("/*", (req, rsp) -> disableCaching(req, rsp));
         
