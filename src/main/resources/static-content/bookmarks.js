@@ -526,7 +526,7 @@ $(document).ready(function () {
                     image.attr("src", "https://icons.better-idea.org/icon?size=90&url=" + element.url);
                 }
                 var link = tile.find("a");
-                link.attr("href", element.url)
+                link.attr("href", API_VisitLink + "?url=" + escape(element.url))
                 tile.css("display", "inline-block");
                 $(".promotedsection").prepend(tile);
             })
