@@ -1,5 +1,6 @@
 package com.martiansoftware.bookmartian;
 
+import com.martiansoftware.util.JSend;
 import com.martiansoftware.bookmartian.model.Bookmark;
 import com.martiansoftware.bookmartian.model.IBookmartian;
 import com.martiansoftware.bookmartian.model.JsonConfig;

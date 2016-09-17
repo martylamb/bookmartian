@@ -1,4 +1,4 @@
-package com.martiansoftware.bookmartian;
+package com.martiansoftware.util;
 
 import com.martiansoftware.boom.Boom;
 import com.martiansoftware.boom.BoomResponse;
