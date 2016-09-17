@@ -17,7 +17,7 @@ import java.util.stream.Collectors;
  */
 public class TagNameSet {
 
-    public static TagNameSet EMPTY = new TagNameSet();
+    public static final TagNameSet EMPTY = new TagNameSet();
     
     private final Set<TagName> _tagNames;
     
