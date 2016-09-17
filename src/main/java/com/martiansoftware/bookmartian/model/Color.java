@@ -1,6 +1,7 @@
 package com.martiansoftware.bookmartian.model;
 
 import com.martiansoftware.util.Check;
+import com.martiansoftware.util.Strings;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -15,11 +16,12 @@ public class Color {
     private final String _color;
 
     private Color(String color) {
-        _color = Check.arg(color, "color")
+        _color = Strings.lower(
+                    Check.arg(color, "color")
                     .notNullOrEmpty()
                     .isTrue(color.matches("#[0-9a-zA-Z]{6}"), "color must be of the form #ffffff")
                     .value()
-                    .toLowerCase();
+        );
     }
     
     public static Color of(String hex) {

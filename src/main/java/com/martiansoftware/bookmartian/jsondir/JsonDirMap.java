@@ -2,6 +2,7 @@ package com.martiansoftware.bookmartian.jsondir;
 
 import com.martiansoftware.boom.Json;
 import com.martiansoftware.util.Check;
+import com.martiansoftware.util.Strings;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -134,7 +135,7 @@ class JsonDirMap<K, V> {
     }
     
     private boolean isJsonFile(Path p) {
-        return Files.isRegularFile(p) && p.getFileName().toString().toLowerCase().endsWith(".json");        
+        return Files.isRegularFile(p) && Strings.lower(p.getFileName().toString()).endsWith(".json");        
     }
     
     public static <K, T> JsonDirBuilder<K, T> newBuilder() {

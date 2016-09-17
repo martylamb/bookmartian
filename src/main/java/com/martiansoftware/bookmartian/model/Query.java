@@ -1,5 +1,6 @@
 package com.martiansoftware.bookmartian.model;
 
+import com.martiansoftware.util.Strings;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -81,12 +82,12 @@ public class Query implements Predicate<Bookmark> {
         Matcher m = QUERY_PATTERN.matcher(s);
         if (!m.matches()) badQuery(s, "syntax error");
         
-        String type = m.group("type").toLowerCase();
+        String type = Strings.lower(m.group("type"));
         String arg = m.group("arg");
         Date d;
         switch(type) {
             case "is":
-                arg = arg.toLowerCase();
+                arg = Strings.lower(arg);
                 if ("untagged".equals(arg)) return b -> b.tagNames().isEmpty();
                 if ("recent".equals(arg)) return datePredicate(b -> b.created(), oneWeekAgo(), DATE_AFTER);
                 badQuery(s, "unrecognized argument \"%s\".  valid arguments are \"untagged\" and \"recent\"", arg);
@@ -104,11 +105,11 @@ public class Query implements Predicate<Bookmark> {
                 return datePredicate(b -> b.lastVisited(), getDate(s, arg), DATE_AFTER);
 
             case "site":
-                String siteName = arg.toLowerCase();
+                String siteName = Strings.lower(arg);
                 return b -> {
                     try {
                         URL url = new URL(b.lurl().toString());
-                        String host = url.getHost().toLowerCase();
+                        String host = Strings.lower(url.getHost());
                         return host.equals(siteName) || host.endsWith("." + siteName);
                     } catch (MalformedURLException e) {
                         return false;

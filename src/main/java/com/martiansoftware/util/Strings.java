@@ -2,6 +2,7 @@ package com.martiansoftware.util;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 
 /**
  *
@@ -21,6 +22,11 @@ public class Strings {
     public static String safeTrimToNull(String s) {
         String result  = safeTrim(s);
         return result.isEmpty() ? null : result;
+    }
+    
+    public static String lower(String s) {
+        if (s == null) return null;
+        return s.toLowerCase(Locale.ROOT);
     }
     
     public static List<String> splitOnWhitespaceAndCommas(String toSplit) {

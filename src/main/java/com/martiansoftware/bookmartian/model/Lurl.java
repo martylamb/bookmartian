@@ -83,7 +83,7 @@ public class Lurl implements Comparable<Lurl> {
     // schemes may not even include a host so we can't just pick out what looks
     // like a host and lowercase it since that might break the url.
     private boolean isWeblike(String scheme) {
-        return WEBLIKE_SCHEMES.contains(scheme.toLowerCase());
+        return WEBLIKE_SCHEMES.contains(Strings.lower(scheme));
     }
     
     private void appendIfNotEmpty(StringBuilder sb, String s) {
@@ -91,8 +91,8 @@ public class Lurl implements Comparable<Lurl> {
     }
     
     private String maybeLowercaseWholeUrl(StringBuilder sb, String scheme) {
-        return ALWAYS_LOWERCASE_ENTIRE_URL.contains(scheme.toLowerCase())
-                ? sb.toString().toLowerCase()
+        return ALWAYS_LOWERCASE_ENTIRE_URL.contains(Strings.lower(scheme))
+                ? Strings.lower(sb.toString())
                 : sb.toString();
     }
     
@@ -109,7 +109,7 @@ public class Lurl implements Comparable<Lurl> {
 
     private String buildUnc(String prefix, Matcher m) {
         StringBuilder result = new StringBuilder(prefix);
-        result.append(m.group("host").toLowerCase());
+        result.append(Strings.lower(m.group("host")));
         appendIfNotEmpty(result, m.group("rest"));
         return result.toString();
     }
@@ -141,10 +141,10 @@ public class Lurl implements Comparable<Lurl> {
         m = WEBLIKE_URL.matcher(result);        
         if (m.matches() && isWeblike(m.group("scheme"))) {
             StringBuilder s = new StringBuilder();
-            s.append(m.group("scheme").toLowerCase());
+            s.append(Strings.lower(m.group("scheme")));
             s.append("://");
             appendIfNotEmpty(s, m.group("credentials"));
-            s.append(m.group("host").toLowerCase());            
+            s.append(Strings.lower(m.group("host")));            
             appendIfNotEmpty(s, m.group("port"));
             appendIfNotEmpty(s, scrubRest(m.group("rest")));
             result = maybeLowercaseWholeUrl(s, m.group("scheme"));
@@ -152,7 +152,7 @@ public class Lurl implements Comparable<Lurl> {
             m = GENERIC_URL.matcher(result);
             if (m.matches()) {
                 StringBuilder s = new StringBuilder();
-                s.append(m.group("scheme").toLowerCase());
+                s.append(Strings.lower(m.group("scheme")));
                 s.append("://");
                 appendIfNotEmpty(s, scrubRest(m.group("rest")));
                 result = maybeLowercaseWholeUrl(s, m.group("scheme"));

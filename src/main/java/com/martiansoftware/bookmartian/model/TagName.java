@@ -1,6 +1,7 @@
 package com.martiansoftware.bookmartian.model;
 
 import com.martiansoftware.bookmartian.model.JsonConfig.StringAdapter;
+import com.martiansoftware.util.Strings;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -21,7 +22,7 @@ public class TagName implements Comparable<TagName> {
         if (!m.matches()) {
             throw new IllegalArgumentException("Tags may only consist of letters, numbers, underscores, dots, and dashes - and may not start with a dot.");
         }
-       _name = m.group("tag").toLowerCase();
+       _name = Strings.lower(m.group("tag"));
     }
     
     public static TagName of(String name) {
