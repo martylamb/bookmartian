@@ -145,6 +145,7 @@ public class App {
         String url = q("url");
         if (url == null) halt(400, "a URL is required");
         try {
+            assert(url != null);
             Lurl lurl = Lurl.of(url);
             Bookmark b = bm.visit(lurl);
             if (b == null) return StatusPage.of(404, "Not Found");
