@@ -91,6 +91,7 @@ public class Query implements Predicate<Bookmark> {
                 if ("untagged".equals(arg)) return b -> b.tagNames().isEmpty();
                 if ("recent".equals(arg)) return datePredicate(b -> b.created(), oneWeekAgo(), DATE_AFTER);
                 badQuery(s, "unrecognized argument \"%s\".  valid arguments are \"untagged\" and \"recent\"", arg);
+                break;
     
             case "created-before":
                 return datePredicate(b -> b.created(), getDate(s, arg), DATE_BEFORE);
