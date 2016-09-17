@@ -1,12 +1,6 @@
 package com.martiansoftware.bookmartian.model;
 
-import com.martiansoftware.bookmartian.model.Bookmark;
 import com.martiansoftware.boom.Json;
-import java.util.Optional;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

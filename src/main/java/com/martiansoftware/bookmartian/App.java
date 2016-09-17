@@ -6,7 +6,6 @@ import com.martiansoftware.bookmartian.model.IBookmartian;
 import com.martiansoftware.bookmartian.model.JsonConfig;
 import com.martiansoftware.bookmartian.jsondir.JsonDirBookmartian;
 import com.martiansoftware.bookmartian.model.Lurl;
-import com.martiansoftware.bookmartian.model.TagNameSet;
 import java.nio.file.Paths;
 import static com.martiansoftware.boom.Boom.*;
 import com.martiansoftware.boom.BoomResponse;
@@ -18,10 +17,8 @@ import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.util.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spark.HaltException;
 import spark.Request;
 import spark.Response;
-import spark.Spark;
 
 /**
  *

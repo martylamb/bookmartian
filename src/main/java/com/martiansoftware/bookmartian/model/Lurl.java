@@ -1,8 +1,6 @@
 package com.martiansoftware.bookmartian.model;
 
 import com.martiansoftware.util.Strings;
-import java.net.URI;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Objects;
 import java.util.Set;
