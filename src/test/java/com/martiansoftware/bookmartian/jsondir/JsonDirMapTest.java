@@ -1,5 +1,6 @@
-package com.martiansoftware.bookmartian.model;
+package com.martiansoftware.bookmartian.jsondir;
 
+import com.martiansoftware.bookmartian.jsondir.JsonDirMap;
 import java.io.File;
 import java.util.Map;
 import org.junit.After;

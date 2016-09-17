@@ -1,5 +1,8 @@
-package com.martiansoftware.bookmartian.model;
+package com.martiansoftware.bookmartian.jsondir;
 
+import com.martiansoftware.bookmartian.model.Bookmark;
+import com.martiansoftware.bookmartian.model.IBookmarkCollection;
+import com.martiansoftware.bookmartian.model.Lurl;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;

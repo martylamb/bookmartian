@@ -1,5 +1,8 @@
-package com.martiansoftware.bookmartian.model;
+package com.martiansoftware.bookmartian.jsondir;
 
+import com.martiansoftware.bookmartian.model.ITagCollection;
+import com.martiansoftware.bookmartian.model.Tag;
+import com.martiansoftware.bookmartian.model.TagName;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;

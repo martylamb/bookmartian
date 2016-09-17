@@ -4,7 +4,7 @@ import com.martiansoftware.util.JSend;
 import com.martiansoftware.bookmartian.model.Bookmark;
 import com.martiansoftware.bookmartian.model.IBookmartian;
 import com.martiansoftware.bookmartian.model.JsonConfig;
-import com.martiansoftware.bookmartian.model.JsonDirBookmartian;
+import com.martiansoftware.bookmartian.jsondir.JsonDirBookmartian;
 import com.martiansoftware.bookmartian.model.Lurl;
 import com.martiansoftware.bookmartian.model.TagNameSet;
 import java.nio.file.Paths;

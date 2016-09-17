@@ -1,4 +1,4 @@
-package com.martiansoftware.bookmartian.model;
+package com.martiansoftware.bookmartian.jsondir;
 
 import com.martiansoftware.boom.Json;
 import com.martiansoftware.util.Check;
