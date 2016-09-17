@@ -6,6 +6,7 @@ import com.martiansoftware.bookmartian.model.IBookmartian;
 import com.martiansoftware.bookmartian.model.JsonConfig;
 import com.martiansoftware.bookmartian.jsondir.JsonDirBookmartian;
 import com.martiansoftware.bookmartian.model.Lurl;
+import com.martiansoftware.bookmartian.model.Query;
 import java.nio.file.Paths;
 import static com.martiansoftware.boom.Boom.*;
 import com.martiansoftware.boom.BoomResponse;
@@ -61,18 +62,21 @@ public class App {
         
         options("/api/bookmark", () -> corsOptions());
         get("/api/bookmark", () -> getBookmark(bm));
-        get("/api/bookmarks", () -> json(
-                                        bm.query(
-                                            new java.util.HashSet(
-                                                Strings.splitOnWhitespaceAndCommas(
-                                                    q("q")
-                                            )))));
+        get("/api/bookmarks", () -> query(bm));
         get("/api/visit", () -> visit(bm));
         
         options("/api/bookmark/update", () -> corsOptions());
         post("/api/bookmark/update", () -> updateBookmark(bm));
         
         post("/api/bookmark/delete", () -> deleteBookmark(bm));
+    }
+    
+    private static BoomResponse query(IBookmartian bm) {
+        try {
+            return JSend.success(Query.of(q("q")).execute(bm));
+        } catch (Exception e) {
+            return JSend.error(e);
+        }
     }
     
     private static BoomResponse corsOptions() {

@@ -28,7 +28,15 @@ public class Strings {
         if (s == null) return null;
         return s.toLowerCase(Locale.ROOT);
     }
-    
+        
+    public static long asLong(String s) {
+        try {
+            return Long.valueOf(s);
+        } catch (Exception e) {
+            throw new IllegalArgumentException(String.format("not a number: '%s'", s));
+        }
+    }
+        
     public static List<String> splitOnWhitespaceAndCommas(String toSplit) {
         List<String> result = new java.util.ArrayList<>();
         if (toSplit != null) {

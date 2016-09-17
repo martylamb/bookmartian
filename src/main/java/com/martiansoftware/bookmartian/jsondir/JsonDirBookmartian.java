@@ -8,6 +8,7 @@ import com.martiansoftware.bookmartian.model.Tag;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -57,10 +58,18 @@ public class JsonDirBookmartian implements IBookmartian {
     }
     
     @Override
-    public List<Tag> tags() {
+    public Collection<Tag> tags() {
         synchronized(_lock) {
             checkShutdown();
             return _tags.all();
+        }
+    }
+    
+    @Override
+    public Collection<Bookmark> bookmarks() {
+        synchronized(_lock) {
+            checkShutdown();
+            return _bookmarks.all();
         }
     }
     
@@ -72,19 +81,6 @@ public class JsonDirBookmartian implements IBookmartian {
         }
     }
     
-    @Override
-    public List<Bookmark> query(Set<String> queryTerms) {
-        synchronized(_lock) {
-            checkShutdown();
-            return Collections.unmodifiableList(
-                    _bookmarks.all()
-                    .stream()
-                    .filter(Query.of(queryTerms))
-                    .collect(Collectors.toList())
-            );
-        }
-    }
-  
     private Bookmark ensureTagsExistFor(Bookmark b) {
         b.tagNames()
             .asSet()

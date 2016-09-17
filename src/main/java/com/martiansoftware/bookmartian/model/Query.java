@@ -1,132 +1,97 @@
 package com.martiansoftware.bookmartian.model;
 
+import com.martiansoftware.bookmartian.jsondir.JsonDirBookmartian;
+import com.martiansoftware.boom.Json;
 import com.martiansoftware.util.Strings;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.nio.file.Paths;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.function.BiFunction;
+import java.util.Stack;
 import java.util.function.Function;
-import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import static com.martiansoftware.util.Oops.oops;
+import java.util.Date;
 
 /**
- *
+ * A Bookmark query, created from a user-specified String.
+ * 
+ * See doc/queries.md in the source tree for a description of the query syntax.
+ * 
  * @author mlamb
  */
-public class Query implements Predicate<Bookmark> {
-    
-    private static final Pattern QUERY_PATTERN = Pattern.compile("^(?<type>[^:]+):(?<arg>[^:]+)$");
-    private static final BiFunction<Date, Date, Boolean> DATE_BEFORE = (d1, d2) -> d1.compareTo(d2) < 0;
-    private static final BiFunction<Date, Date, Boolean> DATE_AFTER = (d1, d2) -> d1.compareTo(d2) > 0;
-    
-    private final Predicate<Bookmark> _delegate;
-    private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
-    
-    private Query(Set<String> query) {
-        Set<String> tags = new java.util.HashSet<>();
-        List<Predicate<Bookmark>> delegates = new java.util.ArrayList<>();
+public class Query {
 
-        for (String s : query) {
-            if (s.contains(":")) {
-                delegates.add(mkPredicate(s));
-            } else {
-                tags.add(s);
-            }
+
+    private final String _raw;
+    private Function<Stream<Bookmark>, Stream<Bookmark>> _compiledQuery;
+    
+    private Query(String rawQuery) {
+        _raw = rawQuery;                
+        _compiledQuery = compile(
+                            Strings.splitOnWhitespaceAndCommas(rawQuery)
+                            .stream()
+                            .map(q -> QueryTerm.of(q))
+                            .collect(Collectors.toCollection(Stack::new)));                
+    }
+    
+    private Function<Stream<Bookmark>, Stream<Bookmark>> compile(Stack<QueryTerm> queryTerms) {
+        if (queryTerms.isEmpty()) return s -> s;
+        return s -> Queries.of(queryTerms.pop()).apply(compile(queryTerms).apply(s));
+    }
+
+    public Result execute(IBookmartian bm) {
+        return new Result("name",
+                            _raw,
+                            Collections.unmodifiableList(
+                                _compiledQuery.apply(
+                                    bm.bookmarks()
+                                        .stream()
+                                ).collect(Collectors.toList())));
+    }
+    
+    public static Query of(String rawQuery) {
+        return new Query(rawQuery);
+    }
+    
+    
+    static class QueryTerm {
+        private static final Pattern QUERYTERM_SPLITTER = Pattern.compile("^((?<action>[^:]+):)?(?<arg>[^:]+)$");
+        private final String _action, _arg;
+        private QueryTerm(String action, String argument) {
+            _action = Strings.lower(Optional.ofNullable(Strings.safeTrimToNull(action)).orElse("tagged"));
+            _arg = Strings.safeTrimToNull(argument);
         }
-        if (!tags.isEmpty()) delegates.add(b -> b.tagNames().containsAll(TagNameSet.of(tags)));
-
-        Predicate<Bookmark> delegate = null;
-        for (Predicate<Bookmark> d : delegates) {
-            delegate = (delegate == null) ? d : d.and(delegate);
+        static QueryTerm of(String rawQueryTerm) {
+            Matcher m = QUERYTERM_SPLITTER.matcher(rawQueryTerm);
+            if (!m.matches()) return oops("invalid query term '%s'", rawQueryTerm);
+            return new QueryTerm(m.group("action"), m.group("arg"));
         }
-        _delegate = (delegate == null) ? b -> true : delegate;
+        public String action() { return _action; }
+        public String arg() { return _arg; }
     }
-    
-    public static Query of(Set<String> query) {
-        return new Query(query);
-    }
-
-    @Override
-    public boolean test(Bookmark b) {
-        return _delegate.test(b);
-    }
-
-    private Date getDate(String query, String queryArg) {
-        try {
-            return DATE_FORMAT.parse(queryArg);
-        } catch (Exception e) {
-            badQuery(query, "invalid date \"%s\" - expected format is YYYY/MM/DD", queryArg);
-            return null; // not executed; badQuery throws a runtimeexception
-        }
-    }
-    
-    
-    private Predicate<Bookmark> datePredicate(Function<Bookmark,Optional<Date>> dateSource, Date comparisonFunction, BiFunction<Date, Date, Boolean> dateComparison) {
-        return b -> {
-            Optional<Date> od = dateSource.apply(b);
-            if (od == null || !od.isPresent()) return false;
-            return dateComparison.apply(od.get(), comparisonFunction);
-        };
-    }
-    
-    private Date oneWeekAgo() {
-        return new Date(System.currentTimeMillis() - (1000 * 60 * 60 * 24 * 7));
-    }
-    
-    private Predicate<Bookmark> mkPredicate(String s) {
-        Matcher m = QUERY_PATTERN.matcher(s);
-        if (!m.matches()) badQuery(s, "syntax error");
         
-        String type = Strings.lower(m.group("type"));
-        String arg = m.group("arg");
-        Date d;
-        switch(type) {
-            case "is":
-                arg = Strings.lower(arg);
-                if ("untagged".equals(arg)) return b -> b.tagNames().isEmpty();
-                if ("recent".equals(arg)) return datePredicate(b -> b.created(), oneWeekAgo(), DATE_AFTER);
-                badQuery(s, "unrecognized argument \"%s\".  valid arguments are \"untagged\" and \"recent\"", arg);
-                break;
-    
-            case "created-before":
-                return datePredicate(b -> b.created(), getDate(s, arg), DATE_BEFORE);
-            
-            case "created-after":
-                return datePredicate(b -> b.created(), getDate(s, arg), DATE_AFTER);
-
-            case "last-visited-before":
-                return datePredicate(b -> b.lastVisited(), getDate(s, arg), DATE_BEFORE);
-
-            case "last-visited-after":
-                return datePredicate(b -> b.lastVisited(), getDate(s, arg), DATE_AFTER);
-
-            case "site":
-                String siteName = Strings.lower(arg);
-                return b -> {
-                    try {
-                        URL url = new URL(b.lurl().toString());
-                        String host = Strings.lower(url.getHost());
-                        return host.equals(siteName) || host.endsWith("." + siteName);
-                    } catch (MalformedURLException e) {
-                        return false;
-                    }
-                };
-                
-            default:
-                badQuery(s, "unrecognized query type \"%s\"", arg);
-        }
-        return null; // never called; badQuery throws an exception
+    public static void main(String[] args) throws Exception {
+//        Query2 qt2 = Query2.of("programming java created:7d by:most-recently-visited");
+        JsonConfig.init(); // TODO: move this to JsonDirBookmartian, etc.
+        IBookmartian bm = JsonDirBookmartian.in(Paths.get("/home/mlamb/bookmartian"));
+        
+        Query qt2 = Query.of("by:least-recently-created created:<2016/09/13 visit-count:1");
+        System.out.println(Json.toJson(qt2.execute(bm)));
     }
-
-    private void badQuery(String q, String fmt, Object... o) {
-        throw new IllegalArgumentException(
-                    String.format("error in query \"%s\": %s",
-                        q,
-                        String.format(fmt, o)));
+    
+    public static class Result {
+        private final String _name, _query;
+        private final List<Bookmark> _bookmarks;
+        private final Date _executed = new Date();
+        
+        Result(String name, String query, List<Bookmark> bookmarks) {
+            _name = name;
+            _query = query;
+            _bookmarks = bookmarks;
+        }
     }
 }
