@@ -21,11 +21,11 @@ import java.util.regex.Pattern;
 public class Query implements Predicate<Bookmark> {
     
     private static final Pattern QUERY_PATTERN = Pattern.compile("^(?<type>[^:]+):(?<arg>[^:]+)$");
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
     private static final BiFunction<Date, Date, Boolean> DATE_BEFORE = (d1, d2) -> d1.compareTo(d2) < 0;
     private static final BiFunction<Date, Date, Boolean> DATE_AFTER = (d1, d2) -> d1.compareTo(d2) > 0;
     
     private final Predicate<Bookmark> _delegate;
+    private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
     
     private Query(Set<String> query) {
         Set<String> tags = new java.util.HashSet<>();
