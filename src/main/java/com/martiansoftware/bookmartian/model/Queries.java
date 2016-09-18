@@ -65,6 +65,18 @@ public class Queries {
         }
     }
 
+    
+    @FunctionalInterface private interface DateConverter {
+        public Date parse(String s) throws Exception;
+        public default Stream<Date> tryConvert(String s) {
+            try {
+                return Stream.of(parse(s));
+            } catch (Exception e) {
+                return Stream.empty();
+            }
+        }
+    }
+    
     /**
      * Generates a Function implementing Date-specific logic
      * @param dateSource accessor method for obtaining the Date of interest from a Bookmark
@@ -73,13 +85,19 @@ public class Queries {
     private static Function<Stream<Bookmark>, Stream<Bookmark>> dateQuery(Function<Bookmark, Optional<Date>> dateSource, QueryTerm qt) {
         Matcher m = COMPARISON_SPLITTER.matcher(qt.arg());
         if (!m.matches()) return oops("invalid %s param '%s'", qt.action(), qt.arg());
-        BiPredicate<Date, Date> cmp = comparisonFunction(m.group("op"));        
-        try {
-            SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
-            Date d = DATE_FORMAT.parse(m.group("arg"));
-            return s -> s.filter(b -> cmp.test(Dates.stripTime(dateSource.apply(b).orElse(null)), d));
-        } catch (ParseException p) {
-            return oops("invalid %s param '%s' - use yyyy/mm/dd format.", qt.action(), m.group("arg"));
+        BiPredicate<Date, Date> cmp = comparisonFunction(m.group("op"));
+        String dText = m.group("arg");
+        
+        Stream<DateConverter> converters = Stream.of(
+                                                (new SimpleDateFormat("yyyy/MM/dd"))::parse,
+                                                RelativeDateParser::parse
+                                            );
+        
+        Optional<Date> d = converters.flatMap(c -> c.tryConvert(dText)).findFirst();
+        if (d.isPresent()) {
+            return s -> s.filter(b -> cmp.test(Dates.stripTime(dateSource.apply(b).orElse(null)), d.get()));
+        } else {
+            return oops("unable to convert '%s' to a date", dText);            
         }
     }
     
