@@ -54,7 +54,8 @@ The following actions are supported:
     limit results to those created either on or after that date.
     Date expressions may also be presented as adjustments to the current
     date, such as "7d" meaning "7 days ago", or "1y6m" meaning "one year
-    six months ago."  Years, months, weeks, and days are supported.
+    six months ago."  Years, months, weeks, and days are supported,
+    plus "today" and "yesterday"
     
   * `last-visited:EXPR` - same as `created:EXPR` but using the bookmark's
     last-visited time.

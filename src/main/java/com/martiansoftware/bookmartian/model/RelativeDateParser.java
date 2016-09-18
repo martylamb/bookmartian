@@ -6,6 +6,7 @@ import com.martiansoftware.util.Strings;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -16,6 +17,13 @@ import java.util.stream.Stream;
  * @author mlamb
  */
 public class RelativeDateParser {
+    
+    private static final Map<String, String> MACROS = new java.util.HashMap<>();
+    
+    static {
+        MACROS.put("today", "0d");
+        MACROS.put("yesterday", "1d");
+    }
     
     enum UNITS { 
         YEARS("years year yr y", Calendar.YEAR, 1),
@@ -55,12 +63,14 @@ public class RelativeDateParser {
         }        
     }
     
-    private static final String ONE_ADJUSTMENT_REGEX = "(0*(?<qty>[1-9][0-9]*)(?<units>" + UNITS.anyUnitPattern() + "))";
+    private static final String ONE_ADJUSTMENT_REGEX = "((?<qty>[0-9]+)(?<units>" + UNITS.anyUnitPattern() + "))";
     private static final Pattern ONE_ADJUSTMENT = Pattern.compile(ONE_ADJUSTMENT_REGEX);
     private static final Pattern MULTIPLE_ADJUSTMENTS = Pattern.compile("^" + ONE_ADJUSTMENT_REGEX + "+$");
     
     public static Date parse(String s) {
         String d = Strings.lower(s);
+        if (MACROS.containsKey(d)) return parse(MACROS.get(d));
+        
         Matcher m = MULTIPLE_ADJUSTMENTS.matcher(d);
         if (!m.matches()) Oops.oops("not a valid relative date: '%s'", s);
         
@@ -71,5 +81,9 @@ public class RelativeDateParser {
         }        
         return Dates.stripTime(cal.getTime());
     }
+ 
     
+    public static void main(String[] args) {
+        System.out.println(parse("today"));
+    }
 }
