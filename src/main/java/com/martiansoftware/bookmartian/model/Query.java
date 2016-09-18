@@ -44,7 +44,7 @@ public class Query {
         _sort = Strings.lower(
                     queryStack.stream()                    
                     .filter(qt -> "by".equals(qt.action()))                            
-                    .reduce((a, b) -> b)
+                    .reduce((a, b) -> b) // essentially, "Stream.findLast()"
                     .orElse(queryStack.push(QueryTerm.of("by:most-recently-created")))
                     .toString());
                 
