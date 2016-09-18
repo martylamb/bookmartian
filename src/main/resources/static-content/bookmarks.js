@@ -280,11 +280,15 @@ function populateLinkTable(value) {
             var linktable = $('#linktable_' + safeID)
 
             var heading = linktable.parent().find('h1');
-            heading.text(json.data.name);
+            if (json.status !== 'error') {
+                heading.text(json.data.name);
 
-            bookmarkJSONArrays['linktable_' + safeID] = $(json.data.bookmarks);
-            linktable.attr('data-sort', json.data.sort);
-            renderLinkTable(linktable, false);
+                bookmarkJSONArrays['linktable_' + safeID] = $(json.data.bookmarks);
+                linktable.attr('data-sort', json.data.sort);
+                renderLinkTable(linktable, false);
+            } else {
+                heading.text(json.message);
+            }
 
         })
         // Code to run if the request fails; the raw request and
