@@ -9,9 +9,16 @@ var API_QueryTags = "/api/tags";
 var bookmarkJSONArrays = new Array();
 
 // ==========================================================================
-// remove characters from string that are difficult for a css/html ID attribute and replace them with underscores
-function convertToSafeIDString(val) {
-    return val.replace(/[:/\|,\.]/g, '_');
+// create an integer hash from a string (used to create safe ID attributes)
+function stringToIntegerHash(str) {
+    var hash = 0;
+    if (str.length == 0) return hash;
+    for (i = 0; i < str.length; i++) {
+        char = str.charCodeAt(i);
+        hash = ((hash<<5)-hash)+char;
+        hash = hash & hash; // Convert to 32bit integer
+    }
+    return hash;
 }
 
 // ==========================================================================
@@ -79,27 +86,27 @@ function sortTable(thisTable, sortField) {
     // --------------------------------------------------------------------------
     // sort by title
     if (sortField === "title") {
-        if (thisTable.attr('data-sort') === 'title_asc') {
+        if (thisTable.attr('data-sort') === 'by:title_asc' || thisTable.attr('data-sort') === 'by:title') {
             listDataJSON.sort(function (a, b) {
                 if (a.title == b.title) return 0;
                 if (a.title < b.title) return 1;
                 if (a.title > b.title) return -1;
             });
-            thisTable.attr('data-sort', 'title_desc');
+            thisTable.attr('data-sort', 'by:title_desc');
         } else {
             listDataJSON.sort(function (a, b) {
                 if (a.title == b.title) return 0;
                 if (a.title < b.title) return -1;
                 if (a.title > b.title) return 1;
             });
-            thisTable.attr('data-sort', 'title_asc');
+            thisTable.attr('data-sort', 'by:title_asc');
         }
     }
 
     // --------------------------------------------------------------------------
     // sort by lastVisited    
-    if (sortField === "lastVisited") {
-        if (thisTable.attr('data-sort') === 'lastVisited_desc') {
+    if (sortField === "recently-visited") {
+        if (thisTable.attr('data-sort') === 'by:most-recently-visited') {
             listDataJSON.sort(function (a, b) {
                 if ((typeof a.lastVisited != 'undefined')) {
                     var aDate = new Date(a.lastVisited);
@@ -117,7 +124,7 @@ function sortTable(thisTable, sortField) {
                 if (aDate < bDate) return -1;
                 if (aDate > bDate) return 1;
             });
-            thisTable.attr('data-sort', 'lastVisited_asc');
+            thisTable.attr('data-sort', 'by:least-recently-visited');
         } else {
             listDataJSON.sort(function (a, b) {
                 if ((typeof a.lastVisited != 'undefined')) {
@@ -136,14 +143,14 @@ function sortTable(thisTable, sortField) {
                 if (aDate < bDate) return 1;
                 if (aDate > bDate) return -1;
             });
-            thisTable.attr('data-sort', 'lastVisited_desc');
+            thisTable.attr('data-sort', 'by:most-recently-visited');
         }
     }
 
     // --------------------------------------------------------------------------
     // sort by created    
-    if (sortField === "created") {
-        if (thisTable.attr('data-sort') === 'created_desc') {
+    if (sortField === "recently-created") {
+        if (thisTable.attr('data-sort') === 'by:most-recently-created') {
             listDataJSON.sort(function (a, b) {
                 if ((typeof a.created != 'undefined')) {
                     var aDate = new Date(a.created);
@@ -161,7 +168,7 @@ function sortTable(thisTable, sortField) {
                 if (aDate < bDate) return -1;
                 if (aDate > bDate) return 1;
             });
-            thisTable.attr('data-sort', 'created_asc');
+            thisTable.attr('data-sort', 'by:least-recently-created');
         } else {
             listDataJSON.sort(function (a, b) {
                 if ((typeof a.created != 'undefined')) {
@@ -180,7 +187,7 @@ function sortTable(thisTable, sortField) {
                 if (aDate < bDate) return 1;
                 if (aDate > bDate) return -1;
             });
-            thisTable.attr('data-sort', 'created_desc');
+            thisTable.attr('data-sort', 'by:most-recently-created');
         }
     }
 }
@@ -201,16 +208,19 @@ function sortThisTable(e, sortField) {
 // ==========================================================================
 // render link table
 function renderLinkTable(linktable, withTags) {
+    // clear the table out
     linktable.empty();
+
+    // insert bookmark rows in the current sort order
     bookmarkJSONArrays[linktable.attr('id')].each(function (index, element) {
         linktable.append(buildBookmarkRow(element, withTags));
     })
 
-    // --------------------------------------------------------------------------
-    // update the sort links to reflect current sort order   
     var sorttitlelink = linktable.parent().find('.sorttitle');
     var sortlastvisitedlink = linktable.parent().find('.sortlastvisited');
     var sortcreatedlink = linktable.parent().find('.sortcreated');
+
+    // reset them all to normal weight
     sorttitlelink.css("font-weight", "normal");
     sorttitlelink.html("title");   
     sortlastvisitedlink.css("font-weight", "normal");
@@ -218,26 +228,36 @@ function renderLinkTable(linktable, withTags) {
     sortcreatedlink.css("font-weight", "normal");
     sortcreatedlink.html("created");
     
-    if (linktable.attr('data-sort') === 'title_asc') {
-        sorttitlelink.css("font-weight", "bold");
-        sorttitlelink.html("title &uarr;");
-    } else if (linktable.attr('data-sort') === 'title_desc') {
-        sorttitlelink.css("font-weight", "bold");
-        sorttitlelink.html("title &darr;");
-    } else if (linktable.attr('data-sort') === 'lastVisited_asc') {
-        sortlastvisitedlink.css("font-weight", "bold");
-        sortlastvisitedlink.html("visited &uarr;");
-    } else if (linktable.attr('data-sort') === 'lastVisited_desc') {
-        sortlastvisitedlink.css("font-weight", "bold");
-        sortlastvisitedlink.html("visited &darr;");
-    } else if (linktable.attr('data-sort') === 'created_asc') {
-        sortcreatedlink.css("font-weight", "bold");
-        sortcreatedlink.html("created &uarr;");
-    } else if (linktable.attr('data-sort') === 'created_desc') {
-        sortcreatedlink.css("font-weight", "bold");
-        sortcreatedlink.html("created &darr;");
+    // bold the active sort and insert an up or down arrow to reflect sort order
+    switch(linktable.attr('data-sort')) {
+        case 'by:title':
+        case 'by:title_asc':
+            sorttitlelink.css("font-weight", "bold");
+            sorttitlelink.html("title &uarr;");
+            break;
+        case 'by:title_desc':
+            sorttitlelink.css("font-weight", "bold");
+            sorttitlelink.html("title &darr;");
+            break;
+        case 'by:least-recently-visited':
+            sortlastvisitedlink.css("font-weight", "bold");
+            sortlastvisitedlink.html("visited &uarr;");
+            break;
+        case 'by:recently-visited':
+        case 'by:most-recently-visited':
+            sortlastvisitedlink.css("font-weight", "bold");
+            sortlastvisitedlink.html("visited &darr;");
+            break;
+        case 'by:least-recently-created':
+            sortcreatedlink.css("font-weight", "bold");
+            sortcreatedlink.html("created &uarr;");
+            break;
+        case 'by:recently-created':
+        case 'by:most-recently-created':
+            sortcreatedlink.css("font-weight", "bold");
+            sortcreatedlink.html("created &darr;");
+            break;
     }
-
 }
 
 // ==========================================================================
@@ -256,11 +276,14 @@ function populateLinkTable(value) {
         // Code to run if the request succeeds (is done);
         // The response is passed to the function
         .done(function (json) {
-            var safeID = convertToSafeIDString(value);
+            var safeID = stringToIntegerHash(value);
             var linktable = $('#linktable_' + safeID)
 
+            var heading = linktable.parent().find('h1');
+            heading.text(json.data.name);
+
             bookmarkJSONArrays['linktable_' + safeID] = $(json.data.bookmarks);
-            sortTable(linktable, "title");
+            linktable.attr('data-sort', json.data.sort);
             renderLinkTable(linktable, false);
 
         })
@@ -402,7 +425,7 @@ function executeSearch(term, reset) {
 
             bookmarkJSONArrays['searchtable'] = $(json.data.bookmarks);
             searchtable.attr('data-searchterm', searchterm);
-            sortTable(searchtable, "title");
+            searchtable.attr('data-sort', json.data.sort);
             renderLinkTable(searchtable, true);
 
             $('#search').show();
@@ -442,8 +465,8 @@ $(document).ready(function () {
     var qd = {};
     location.search.substr(1).split("&").forEach(function (item) { (item.split("=")[0] in qd) ? qd[item.split("=")[0]].push(item.split("=")[1]) : qd[item.split("=")[0]] = [item.split("=")[1]] })
     var promotedTags = "";
-    if (qd.pins) {
-        var promotedTags = qd.pins.toString();
+    if (qd.pin) {
+        var promotedTags = qd.pin.toString();
         var promotedTagArray = promotedTags.split(",");
     }
 
@@ -451,10 +474,7 @@ $(document).ready(function () {
     $.each(promotedTagArray, function (index, value) {
         var block = $("#linkblocktemplate").clone()
         block.css('display', 'inline-block');
-        var heading = block.find('h1');
-        var safeID = convertToSafeIDString(value);
-        var cleanHeading = value.replace(/\.[^|]+/g, '').replace(/\|/g, '');
-        heading.text(cleanHeading);
+        var safeID = stringToIntegerHash(value); 
         var linktable = block.find('.linktable');
         linktable.attr("id", "linktable_" + safeID);
         block.appendTo('#content');
