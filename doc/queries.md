@@ -82,6 +82,11 @@ The following actions are supported:
     visit-count) bookmarks listed first.
     
   * `limit:N` - results will be limited to the first N as specified
+  
+  * `as:query-name` - resulting list of bookmarks will be named as
+    specified by the user.  Does not modify contents of results.  At
+    time of this writing, query-name may not contain whitespace.
+    
     
 Examples
 --------

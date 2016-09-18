@@ -48,4 +48,8 @@ public class QueryTest {
         expectQueryTermFailure("a::b");
         expectQueryTermFailure("::b");
     }
+    
+    public void testNamedQuery() {
+        Query q = Query.of("is:tagged as:my-tagged-stuff");
+    }
 }

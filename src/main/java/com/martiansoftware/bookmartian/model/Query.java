@@ -25,17 +25,30 @@ import java.util.Date;
  */
 public class Query {
 
-
     private final String _raw;
+    private String _name;
+    
+    // the query is compiled into a single function that is simply run against
+    // the full bookmark collection
     private Function<Stream<Bookmark>, Stream<Bookmark>> _compiledQuery;
     
     private Query(String rawQuery) {
-        _raw = rawQuery;                
+        _raw = Strings.safeTrim(rawQuery);
+        _name = _raw;
+        
         _compiledQuery = compile(
                             Strings.splitOnWhitespaceAndCommas(rawQuery)
                             .stream()
                             .map(q -> QueryTerm.of(q))
+                            .flatMap(qt -> maybeProcessGlobalQueryTerm(qt))
                             .collect(Collectors.toCollection(Stack::new)));                
+    }
+    
+    private Stream<QueryTerm> maybeProcessGlobalQueryTerm(QueryTerm qt) {
+        if ("as".equals(qt.action())) {
+            _name = qt.arg();
+            return Stream.empty();
+        } else return Stream.of(qt);
     }
     
     private Function<Stream<Bookmark>, Stream<Bookmark>> compile(Stack<QueryTerm> queryTerms) {
@@ -44,7 +57,7 @@ public class Query {
     }
 
     public Result execute(IBookmartian bm) {
-        return new Result("name",
+        return new Result(_name,
                             _raw,
                             Collections.unmodifiableList(
                                 _compiledQuery.apply(
@@ -73,16 +86,7 @@ public class Query {
         public String action() { return _action; }
         public String arg() { return _arg; }
     }
-        
-    public static void main(String[] args) throws Exception {
-//        Query2 qt2 = Query2.of("programming java created:7d by:most-recently-visited");
-        JsonConfig.init(); // TODO: move this to JsonDirBookmartian, etc.
-        IBookmartian bm = JsonDirBookmartian.in(Paths.get("/home/mlamb/bookmartian"));
-        
-        Query qt2 = Query.of("by:least-recently-created created:<2016/09/13 visit-count:1");
-        System.out.println(Json.toJson(qt2.execute(bm)));
-    }
-    
+            
     public static class Result {
         private final String _name, _query;
         private final List<Bookmark> _bookmarks;
@@ -94,4 +98,14 @@ public class Query {
             _bookmarks = bookmarks;
         }
     }
+    
+    public static void main(String[] args) throws Exception {
+//        Query2 qt2 = Query2.of("programming java created:7d by:most-recently-visited");
+        JsonConfig.init(); // TODO: move this to JsonDirBookmartian, etc.
+        IBookmartian bm = JsonDirBookmartian.in(Paths.get("/home/mlamb/bookmartian"));
+        
+        Query qt2 = Query.of("by:least-recently-created created:<2016/09/13 visit-count:1 as:my-test");
+        System.out.println(Json.toJson(qt2.execute(bm)));
+    }
+    
 }
