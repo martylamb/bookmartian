@@ -125,6 +125,9 @@ public class Queries {
             case "most-visited": return s -> s.sorted(Bookmark.MOST_VISITED_FIRST);
             case "least-visited": return s -> s.sorted(Bookmark.MOST_VISITED_FIRST.reversed());
             
+            case "title": return s -> s.sorted(Bookmark.BY_TITLE);
+            case "url": return s -> s.sorted(Bookmark.BY_URL);
+            
             default: return oops("invalid sort order '%s'", sortBy);
         }
     }

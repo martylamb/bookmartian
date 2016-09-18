@@ -60,6 +60,12 @@ The following actions are supported:
     last-modified time.  A modification is an edit of any of the bookmark's
     properties, including its tags.
 
+  * `by:title` - results will be sorted in ascending order by title
+    (case-insensitive).
+    
+  * `by:url` - results will be sorted in ascending order by url (case-
+    insensitive)
+    
   * `by:most-recently-created` - results will be sorted with most recently
     created bookmarks listed first.
     

@@ -8,6 +8,7 @@ import com.google.gson.JsonParseException;
 import com.martiansoftware.util.Check;
 import com.martiansoftware.util.Strings;
 import java.lang.reflect.Type;
+import java.text.Collator;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Optional;
@@ -23,10 +24,17 @@ public class Bookmark {
     private final Optional<Date> _created, _modified, _lastVisited;
     private final Optional<Long> _visitCount;
     
+    private static final Collator COLLATOR = Collator.getInstance();
+    static {
+        COLLATOR.setStrength(Collator.SECONDARY);
+    }
+    
     public static final Comparator<Bookmark> MOST_VISITED_FIRST = (a, b) -> Long.compare(b.cmpVisitCount(), a.cmpVisitCount());    
     public static final Comparator<Bookmark> MOST_RECENTLY_CREATED_FIRST = (a, b) -> Long.compare(b.cmpCreated(), a.cmpCreated());
     public static final Comparator<Bookmark> MOST_RECENTLY_VISITED_FIRST = (a, b) -> Long.compare(b.cmpLastVisited(), a.cmpLastVisited());
     public static final Comparator<Bookmark> MOST_RECENTLY_MODIFIED_FIRST = (a, b) -> Long.compare(b.cmpModified(), a.cmpModified());   
+    public static final Comparator<Bookmark> BY_TITLE = (a, b) -> COLLATOR.compare(a.title().orElse(""), b.title().orElse(""));
+    public static final Comparator<Bookmark> BY_URL = (a, b) -> COLLATOR.compare(a.lurl().toString(), b.lurl().toString());
     
     private Bookmark(Lurl lurl,
                         String title, 
@@ -63,7 +71,7 @@ public class Bookmark {
     private long cmpLastVisited() { return _lastVisited.map(d -> d.getTime()).orElse(Long.MIN_VALUE); }
     private long cmpModified() { return _modified.map(d -> d.getTime()).orElse(Long.MIN_VALUE); }
     private long cmpVisitCount() { return _visitCount.orElse(0l); }
-    
+
     public static Builder newBuilder() { return new Builder(); }
     public Builder toBuilder() {
         return newBuilder()
