@@ -23,7 +23,7 @@ import java.util.Date;
 public class Query {
 
     private final String _raw;
-    private String _name;
+    private String _name, _sort;
     
     // the query is compiled into a single function that is simply run against
     // the full bookmark collection
@@ -41,12 +41,13 @@ public class Query {
                             .collect(Collectors.toCollection(Stack::new));
         
         // if no sort is specified, default to most-recently created
-        if(!queryStack.stream()
-                .filter(qt -> "by".equals(qt.action()))
-                .findFirst().isPresent()) {
-            queryStack.push(QueryTerm.of("by:most-recently-created"));
-        }
-        
+        _sort = Strings.lower(
+                    queryStack.stream()                    
+                    .filter(qt -> "by".equals(qt.action()))                            
+                    .reduce((a, b) -> b) // essentially, "Stream.findLast()"
+                    .orElse(queryStack.push(QueryTerm.of("by:most-recently-created")))
+                    .toString());
+                
         _compiledQuery = compile(queryStack);                
     }
     
@@ -82,6 +83,7 @@ public class Query {
     public Result execute(IBookmartian bm) {
         return new Result(_name,
                             _raw,
+                            _sort,
                             Collections.unmodifiableList(
                                 _compiledQuery.apply(
                                     bm.bookmarks()
@@ -113,17 +115,21 @@ public class Query {
         }
         public String action() { return _action; }
         public String arg() { return _arg; }
+        public String toString() {
+            return String.format("%s:%s", action(), arg());
+        }
     }
             
     // the type returned by Query.execute()
     public static class Result {
-        private final String _name, _query;
+        private final String _name, _query, _sort;
         private final List<Bookmark> _bookmarks;
         private final Date _executed = new Date();
         
-        Result(String name, String query, List<Bookmark> bookmarks) {
+        Result(String name, String query, String sort, List<Bookmark> bookmarks) {
             _name = name;
             _query = query;
+            _sort = sort;
             _bookmarks = bookmarks;
         }
     }
