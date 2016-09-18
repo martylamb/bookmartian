@@ -20,6 +20,9 @@ The following actions are supported:
   * `tagged:TAG` or `TAG` - results will be limited to only those
      bookmarks tagged as `TAG`.
   
+  * `is:tagged` - results will be limited to only those bookmarks with
+    tags.
+  
   * `is:untagged` - results will be limited to only those bookmarks with
      no tags.
      

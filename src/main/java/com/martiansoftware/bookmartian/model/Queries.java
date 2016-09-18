@@ -28,7 +28,7 @@ public class Queries {
         switch(qt.action()) {
             // TODO: register actions via a map of action names to factory methods; this will support action aliases trivially
             
-            case "is": return isQuery(qt.arg());
+            case "is": return isQuery(Strings.lower(qt.arg()));
 
             case "tagged": return s -> s.filter(b -> b.tagNames().contains(TagName.of(qt.arg())));
             
@@ -49,10 +49,11 @@ public class Queries {
     }
     
     private static Function<Stream<Bookmark>, Stream<Bookmark>> isQuery(String siteArg) {
-        if ("untagged".equals(Strings.lower(siteArg))) {
-            return s -> s.filter(b -> b.tagNames().isEmpty());
+        switch(siteArg) {
+            case "untagged": return s -> s.filter(b -> b.tagNames().isEmpty());
+            case "tagged": return s -> s.filter(b -> !b.tagNames().isEmpty());
+            default: return oops("invalid argument for 'is' query: '%s'", siteArg);
         }
-        return oops("invalid argument for 'is' query: '%s'", siteArg);
     }
 
     private static Date stripTime(Date d) {
