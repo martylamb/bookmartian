@@ -1,9 +1,6 @@
 package com.martiansoftware.bookmartian.model;
 
-import com.martiansoftware.bookmartian.jsondir.JsonDirBookmartian;
-import com.martiansoftware.boom.Json;
 import com.martiansoftware.util.Strings;
-import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
