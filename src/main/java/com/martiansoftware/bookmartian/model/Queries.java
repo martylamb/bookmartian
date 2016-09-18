@@ -22,8 +22,16 @@ import static com.martiansoftware.util.Oops.oops;
  */
 public class Queries {
 
+    // regex used to parse strings that might start with a comparison operator
+    // result is two match groups: "op" with the operator and "arg" with the rest
     private static final Pattern COMPARISON_SPLITTER = Pattern.compile("^(?<op>(==|=|<=|<|>=|>))?(?<arg>.+)$");
     
+    /**
+     * Given a QueryTerm, convert it into a single Function for processing
+     * a Stream of Bookmarks
+     * @param qt the QueryTerm to convert
+     * @return a Function that implements the logic specified by the QueryTerm
+     */
     public static Function<Stream<Bookmark>, Stream<Bookmark>> of(QueryTerm qt) {
         switch(qt.action()) {
             // TODO: register actions via a map of action names to factory methods; this will support action aliases trivially
@@ -56,6 +64,9 @@ public class Queries {
         }
     }
 
+    // Dates also contain time data.  When we compare dates (e.g. "give me all
+    // Bookmarks created on 2016/09/17") it's convenient to drop the time data
+    // from the Bookmark's creation timestamp to simplify the comparison.
     private static Date stripTime(Date d) {
         if (d == null) return null;
         Calendar cal = Calendar.getInstance();
@@ -67,6 +78,11 @@ public class Queries {
         return cal.getTime();
     }
 
+    /**
+     * Generates a Function implementing Date-specific logic
+     * @param dateSource accessor method for obtaining the Date of interest from a Bookmark
+     * @param qt
+     */
     private static Function<Stream<Bookmark>, Stream<Bookmark>> dateQuery(Function<Bookmark, Optional<Date>> dateSource, QueryTerm qt) {
         Matcher m = COMPARISON_SPLITTER.matcher(qt.arg());
         if (!m.matches()) return oops("invalid %s param '%s'", qt.action(), qt.arg());
@@ -125,8 +141,10 @@ public class Queries {
      * BiPredicate that, given (a, b) returns a boolean indicating if "a OP b" is true.
      * 
      * A null or empty string is treated as "=="
-     * @param op
-     * @return 
+     * 
+     * This is used to filter results against user-specified expressions, like
+     * "visit-count:>20" or "created:2016/01/01".  If the field of interest is
+     * absent then the BiPredicate will return false.
      */
     private static <A extends Comparable<A>> BiPredicate<A, A> comparisonFunction(String op) {
         if (op == null) return comparisonFunction("==");
