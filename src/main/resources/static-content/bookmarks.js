@@ -312,11 +312,13 @@ function closeAction() {
 // toggle the display of the edit section of a bookmark table row
 function toggleEdits(e) {
     if (!$(e).data('on')) {
-        $(e).parent().next('.bookmark').css('background-color', '#e1e1e1');
+        $(e).parent().addClass('light-primary-color');
+        $(e).parent().next('.bookmark').addClass('light-primary-color');
         $(e).parent().parent().next('.bookmarkedits').show();
         $(e).data('on', 1);
     } else {
-        $(e).parent().next('.bookmark').css('background-color', 'white');
+        $(e).parent().addClass('table-color');
+        $(e).parent().next('.bookmark').addClass('table-color');
         $(e).parent().parent().next('.bookmarkedits').hide();
         $(e).data('on', 0);
     }
