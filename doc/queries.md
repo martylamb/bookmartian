@@ -52,6 +52,10 @@ The following actions are supported:
     For example, `created:2016/09/17` will limit results to only those
     created on September 17, 2016, whereas `created:>=2016/09/17` will
     limit results to those created either on or after that date.
+    Date expressions may also be presented as adjustments to the current
+    date, such as "7d" meaning "7 days ago", or "1y6m" meaning "one year
+    six months ago."  Years, months, weeks, and days are supported,
+    plus "today" and "yesterday"
     
   * `last-visited:EXPR` - same as `created:EXPR` but using the bookmark's
     last-visited time.
@@ -89,6 +93,10 @@ The following actions are supported:
     
   * `by:least-visited` - results will be sorted with least-visited (lowest
     visit-count) bookmarks listed first.
+    
+  * `by:title` - results will be sorted ascending by title (case-insensitive)
+  
+  * `by:url` - results will be sorted ascending by url
     
   * `limit:N` - results will be limited to the first N as specified
   
