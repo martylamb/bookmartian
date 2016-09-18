@@ -33,12 +33,21 @@ public class Query {
         _raw = Strings.safeTrim(rawQuery);
         _name = _raw;
         
-        _compiledQuery = compile(
+        Stack<QueryTerm> queryStack = 
                             Strings.splitOnWhitespaceAndCommas(rawQuery)
                             .stream()
                             .map(q -> QueryTerm.of(q))
                             .flatMap(qt -> maybeProcessGlobalQueryTerm(qt))
-                            .collect(Collectors.toCollection(Stack::new)));                
+                            .collect(Collectors.toCollection(Stack::new));
+        
+        // if no sort is specified, default to most-recently created
+        if(!queryStack.stream()
+                .filter(qt -> "by".equals(qt.action()))
+                .findFirst().isPresent()) {
+            queryStack.push(QueryTerm.of("by:most-recently-created"));
+        }
+        
+        _compiledQuery = compile(queryStack);                
     }
     
     // the vast majority of query terms are processed left-to-right and are

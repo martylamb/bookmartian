@@ -6,7 +6,10 @@ search string.  Multiple query terms may be specified in a single query.
 If multiple query terms are provided, they are evaluated left-to-right
 in the order specified.
 
-An empty query returns all Bookmarks.
+An empty query returns all bookmarks.
+
+If no ordering ("by:X") is specified, a default sort order of
+most-recently-created is used.
 
 Query Terms
 -----------
