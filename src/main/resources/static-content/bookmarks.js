@@ -259,7 +259,7 @@ function populateLinkTable(value) {
             var safeID = convertToSafeIDString(value);
             var linktable = $('#linktable_' + safeID)
 
-            bookmarkJSONArrays['linktable_' + safeID] = $(json);
+            bookmarkJSONArrays['linktable_' + safeID] = $(json.data.bookmarks);
             sortTable(linktable, "title");
             renderLinkTable(linktable, false);
 
@@ -398,7 +398,7 @@ function executeSearch(term, reset) {
         .done(function (json) {
             var searchtable = $('#searchtable');
 
-            bookmarkJSONArrays['searchtable'] = $(json);
+            bookmarkJSONArrays['searchtable'] = $(json.data.bookmarks);
             searchtable.attr('data-searchterm', searchterm);
             sortTable(searchtable, "title");
             renderLinkTable(searchtable, true);
@@ -515,7 +515,7 @@ $(document).ready(function () {
         // Code to run if the request succeeds (is done);
         // The response is passed to the function
         .done(function (json) {
-            $(json).each(function (index, element) {
+            $(json.data.bookmarks).each(function (index, element) {
                 var tile = $("#promotedlinktemplate").clone()
                 tile.attr("title", element.title);
                 tile.attr("id", element.title);
