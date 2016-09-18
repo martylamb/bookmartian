@@ -1,6 +1,7 @@
 package com.martiansoftware.bookmartian.model;
 
 import com.martiansoftware.bookmartian.model.Query.QueryTerm;
+import com.martiansoftware.util.Dates;
 import com.martiansoftware.util.Strings;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -64,20 +65,6 @@ public class Queries {
         }
     }
 
-    // Dates also contain time data.  When we compare dates (e.g. "give me all
-    // Bookmarks created on 2016/09/17") it's convenient to drop the time data
-    // from the Bookmark's creation timestamp to simplify the comparison.
-    private static Date stripTime(Date d) {
-        if (d == null) return null;
-        Calendar cal = Calendar.getInstance();
-        cal.setTime(d);
-        cal.set(Calendar.HOUR_OF_DAY, 0);
-        cal.set(Calendar.MINUTE, 0);
-        cal.set(Calendar.SECOND, 0);
-        cal.set(Calendar.MILLISECOND, 0);
-        return cal.getTime();
-    }
-
     /**
      * Generates a Function implementing Date-specific logic
      * @param dateSource accessor method for obtaining the Date of interest from a Bookmark
@@ -90,7 +77,7 @@ public class Queries {
         try {
             SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy/MM/dd");
             Date d = DATE_FORMAT.parse(m.group("arg"));
-            return s -> s.filter(b -> cmp.test(stripTime(dateSource.apply(b).orElse(null)), d));
+            return s -> s.filter(b -> cmp.test(Dates.stripTime(dateSource.apply(b).orElse(null)), d));
         } catch (ParseException p) {
             return oops("invalid %s param '%s' - use yyyy/mm/dd format.", qt.action(), m.group("arg"));
         }
