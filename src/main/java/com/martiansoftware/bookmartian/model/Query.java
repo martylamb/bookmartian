@@ -44,18 +44,35 @@ public class Query {
                             .collect(Collectors.toCollection(Stack::new)));                
     }
     
+    // the vast majority of query terms are processed left-to-right and are
+    // used to filter or organize the results.  it is possible, however, to
+    // have query terms that do something else to the query and don't filter
+    // results at all.  right now, the only one of these is the "as:query-name"
+    // term which names the query.
+    //
+    // this method also provides a hook to remove or insert queryterms in place
+    // in case that's ever useful for something else.
     private Stream<QueryTerm> maybeProcessGlobalQueryTerm(QueryTerm qt) {
         if ("as".equals(qt.action())) {
             _name = qt.arg();
-            return Stream.empty();
-        } else return Stream.of(qt);
+            return Stream.empty();   // remove this query term; its job is done
+        } else return Stream.of(qt); // leave query term as-is
     }
     
+    // compiles a stack of individual QueryTerms into a single function that
+    // can be evaluated against the full set of bookmarks.  query terms are
+    // initially all pushed onto a stack, then composed in reverse order to
+    // provide left-to-right evaluation.
     private Function<Stream<Bookmark>, Stream<Bookmark>> compile(Stack<QueryTerm> queryTerms) {
         if (queryTerms.isEmpty()) return s -> s;
         return s -> Queries.of(queryTerms.pop()).apply(compile(queryTerms).apply(s));
     }
 
+    /**
+     * Executes this Query against a bookmartian
+     * @param bm the bookmartian to query
+     * @return the results of the query, or all bookmarks if the query is empty
+     */
     public Result execute(IBookmartian bm) {
         return new Result(_name,
                             _raw,
@@ -65,12 +82,17 @@ public class Query {
                                         .stream()
                                 ).collect(Collectors.toList())));
     }
-    
+
+    /**
+     * Creates a new Query based on a user-specified "raw" query string
+     */
     public static Query of(String rawQuery) {
         return new Query(rawQuery);
     }
     
-    
+    // an individual "query term", consisting of an optional "action:" and an "argument"
+    // for example, "is:untagged" has an action of "is" and an argument of "untagged"
+    // if no action is specified, a default of "tagged" is used.
     static class QueryTerm {
         private static final Pattern QUERYTERM_SPLITTER = Pattern.compile("^((?<action>[^:]+):)?(?<arg>[^:]+)$");
         private final String _action, _arg;
@@ -87,6 +109,7 @@ public class Query {
         public String arg() { return _arg; }
     }
             
+    // the type returned by Query.execute()
     public static class Result {
         private final String _name, _query;
         private final List<Bookmark> _bookmarks;
@@ -98,14 +121,5 @@ public class Query {
             _bookmarks = bookmarks;
         }
     }
-    
-    public static void main(String[] args) throws Exception {
-//        Query2 qt2 = Query2.of("programming java created:7d by:most-recently-visited");
-        JsonConfig.init(); // TODO: move this to JsonDirBookmartian, etc.
-        IBookmartian bm = JsonDirBookmartian.in(Paths.get("/home/mlamb/bookmartian"));
         
-        Query qt2 = Query.of("by:least-recently-created created:<2016/09/13 visit-count:1 as:my-test");
-        System.out.println(Json.toJson(qt2.execute(bm)));
-    }
-    
 }
