@@ -93,6 +93,10 @@ The following actions are supported:
   * `by:least-visited` - results will be sorted with least-visited (lowest
     visit-count) bookmarks listed first.
     
+  * `by:title` - results will be sorted ascending by title (case-insensitive)
+  
+  * `by:url` - results will be sorted ascending by url
+    
   * `limit:N` - results will be limited to the first N as specified
   
   * `as:query-name` - resulting list of bookmarks will be named as

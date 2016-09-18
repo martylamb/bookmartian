@@ -45,7 +45,7 @@ public class Query {
                     queryStack.stream()                    
                     .filter(qt -> "by".equals(qt.action()))                            
                     .reduce((a, b) -> b) // essentially, "Stream.findLast()"      
-                    .orElseGet(() -> queryStack.push(QueryTerm.of("by:most-recently-created")))
+                    .orElseGet(() -> queryStack.push(QueryTerm.of("by:title")))
                     .toString());
                 
         _compiledQuery = compile(queryStack);                
