@@ -15,6 +15,8 @@ import java.util.stream.Stream;
 import static com.martiansoftware.util.Oops.oops;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -36,6 +38,7 @@ public class Queries {
         public Stream<String> help();
     }
     
+    // register all of the different query handlers
     private static final List<QTHandler> QT_HANDLERS;
     static {
         List<QTHandler> qtHandlers = new java.util.ArrayList<>();
@@ -113,110 +116,165 @@ public class Queries {
     }
 
     private static class By implements QTHandler {
+        private enum SORTS {
+            MOST_RECENTLY_CREATED(s -> s.sorted(Bookmark.MOST_RECENTLY_CREATED_FIRST)),
+            LEAST_RECENTLY_CREATED(s -> s.sorted(Bookmark.MOST_RECENTLY_CREATED_FIRST.reversed())),
+            MOST_RECENTLY_VISITED(s -> s.sorted(Bookmark.MOST_RECENTLY_VISITED_FIRST)),
+            LEAST_RECENTLY_VISITED(s -> s.sorted(Bookmark.MOST_RECENTLY_VISITED_FIRST.reversed())),
+            MOST_RECENTLY_MODIFIED(s -> s.sorted(Bookmark.MOST_RECENTLY_MODIFIED_FIRST)),
+            LEAST_RECENTLY_MODIFIED(s -> s.sorted(Bookmark.MOST_RECENTLY_MODIFIED_FIRST.reversed())),
+            MOST_VISITED(s -> s.sorted(Bookmark.MOST_VISITED_FIRST)),
+            LEAST_VISITED(s -> s.sorted(Bookmark.MOST_VISITED_FIRST.reversed())),
+            TITLE(s -> s.sorted(Bookmark.BY_TITLE)),
+            URL(s -> s.sorted(Bookmark.BY_URL));
+            
+            private final Function<Stream<Bookmark>, Stream<Bookmark>> _sorter;
+            private SORTS(Function<Stream<Bookmark>, Stream<Bookmark>> sorter) {
+                _sorter = sorter;
+            }
+            public Function<Stream<Bookmark>, Stream<Bookmark>> sorter() { return _sorter; }
+        }
+        
         @Override public boolean handles(QueryTerm qt) { return "by".equals(qt.action()); }
+        
         @Override public Function<Stream<Bookmark>, Stream<Bookmark>> handle(QueryTerm qt) {
-            switch(Strings.lower(qt.arg())) {
-                case "most-recently-created": return s -> s.sorted(Bookmark.MOST_RECENTLY_CREATED_FIRST);
-                case "least-recently-created": return s -> s.sorted(Bookmark.MOST_RECENTLY_CREATED_FIRST.reversed());
-                case "most-recently-visited": return s -> s.sorted(Bookmark.MOST_RECENTLY_VISITED_FIRST);
-                case "least-recently-visited": return s -> s.sorted(Bookmark.MOST_RECENTLY_VISITED_FIRST.reversed());
-                case "most-recently-modified": return s -> s.sorted(Bookmark.MOST_RECENTLY_MODIFIED_FIRST);
-                case "least-recently-modified": return s -> s.sorted(Bookmark.MOST_RECENTLY_MODIFIED_FIRST.reversed());
-                case "most-visited": return s -> s.sorted(Bookmark.MOST_VISITED_FIRST);
-                case "least-visited": return s -> s.sorted(Bookmark.MOST_VISITED_FIRST.reversed());
-                case "title": return s -> s.sorted(Bookmark.BY_TITLE);
-                case "url": return s -> s.sorted(Bookmark.BY_URL);
-                default: return oops("invalid sort order '%s'", qt.arg());
+            try {
+                return SORTS.valueOf(Strings.upper(Strings.safeTrim(qt.arg())).replace('-', '_')).sorter();
+            } catch (Exception e) {
+                return oops("bad sort order '%s'", qt.arg());
             }
         }
+        
         @Override public Stream<String> help() { 
-            return Stream.concat(
-                        Stream.of("recently-created", "recently-visited", "recently-modified", "visited")
-                            .flatMap(s -> Stream.of("most-" + s, "least-" + s)),
-                        Stream.of("title", "url")
-            ).map(s -> "by:" + s);
+            return Stream.of(SORTS.values())
+                    .map(s -> "by:" + Strings.lower(s.name()).replace('_', '-'));
         }        
     }
 
     private static class Visits implements QTHandler {
-        private final Pattern p = Pattern.compile("^visits(?<op>-over|-under)?$");
+        private static final String VISITS = "visits";
+        private final Pattern p = Pattern.compile("^" + VISITS + "(?<op>" + COMPARISONS.numRegex() + ")?$");
         @Override public boolean handles(QueryTerm qt) { return p.matcher(qt.action()).matches(); }
         @Override public Function<Stream<Bookmark>, Stream<Bookmark>> handle(QueryTerm qt) {
             Matcher m = p.matcher(qt.action());
             if (!m.matches()) oops("bad visit query: %s", qt.toString());
-            BiPredicate<Long, Long> cmp = comparisonFunction(m.group("op"));
+            BiPredicate<Long, Long> cmp = COMPARISONS.forNumSuffix(m.group("op")).asFunction();
             return s -> s.filter(b -> cmp.test(b.visitCount().orElse(null), Strings.asLong(qt.arg())));
         }
-        @Override public Stream<String> help() { return Stream.of("visits:N", "visits-over:N", "visits-under:N"); }
+        @Override public Stream<String> help() { return Stream.concat(Stream.of(""), COMPARISONS.numSuffixHelp()).map(s -> VISITS + s + ":N"); }
     }
     
     private static class Dates implements QTHandler {
-        private final Pattern p = Pattern.compile("^(?<field>created|modified|visited)(?<op>-on|-since|-before)?$");
+        // helper enum for reading fields by name.  enum names are uppercase forms of what
+        // the user may specify!
+        private enum FIELDS {
+            CREATED(b -> b.created()), MODIFIED(b -> b.modified()), VISITED(b -> b.lastVisited());
+            private final Function<Bookmark, Optional<Date>> _fieldGetter;
+            private FIELDS(Function<Bookmark, Optional<Date>> fieldGetter) { _fieldGetter = fieldGetter; }
+            public Optional<Date> readFrom(Bookmark b) { return _fieldGetter.apply(b); }
+            public static FIELDS forName(String s) {
+                String fname = Strings.upper(s);
+                for (FIELDS f : FIELDS.values()) if (fname.equals(f.name())) return f;
+                return oops("no such field '%s'", s);
+            }
+        }
+        
+        // dynamically generate the pattern so we don't have to repeat ourselves (and thus screw something up)
+        private final Pattern p = Pattern.compile("^(?<field>"
+                                                    + Stream.of(FIELDS.values()).map(f -> Strings.lower(f.toString())).collect(Collectors.joining("|"))
+                                                    + ")(?<op>"
+                                                    + COMPARISONS.dateRegex()
+                                                    + ")?$");
+        
         @Override public boolean handles(QueryTerm qt) { return p.matcher(qt.action()).matches(); }        
+        
         @Override public Function<Stream<Bookmark>, Stream<Bookmark>> handle(QueryTerm qt) {
             Matcher m = p.matcher(qt.action());            
             if (!m.matches()) oops("bad date query: %s", qt.toString());
-            BiPredicate<Date, Date> cmp = comparisonFunction(m.group("op"));
+            BiPredicate<Date, Date> cmp = COMPARISONS.forDateSuffix(m.group("op")).asFunction();
             return s -> s.filter(b -> cmp.test(
-                                            fieldReader(m.group("field")).apply(b).orElse(null),
+                                            FIELDS.forName(m.group("field")).readFrom(b).orElse(null),
                                             com.martiansoftware.util.Dates.stripTime(dateOf(qt.arg()))
-                                    )
-                                );
+                                      )
+                                 );
         }
+        
         private Date dateOf(String s) {
             try { return new SimpleDateFormat("yyyy/MM/dd").parse(s); } catch (Exception ignored) {}
             try { return RelativeDateParser.parse(s); } catch (Exception ignored) {}
             return oops("unable to interpret '%s' as a date", s);
         }
-        private Function<Bookmark, Optional<Date>> fieldReader(String fieldName) {
-            switch(fieldName) {
-                case "created": return b -> b.created();
-                case "modified": return b -> b.modified();
-                case "visited": return b -> b.lastVisited();
-                default: return oops("no such field: '%s'", fieldName);
-            }
-        }
+        
         @Override public Stream<String> help() {
-            return Stream.of("created", "modified", "visited")
-                    .flatMap(s -> Stream.of(s + "[-on]", s + "-since", s + "-after"))
+            return Stream.of(FIELDS.values())
+                    .map(f -> Strings.lower(f.name()))
+                    .flatMap(s -> COMPARISONS.dateSuffixHelp().map(dh -> s + dh))
                     .map(s -> s + ":DATE-EXPR");
         }        
     }
     
     /**
-     * Given an operator OP in the set "=", "==", "<", "<=", ">", ">=", returns a
-     * BiPredicate that, given (a, b) returns a boolean indicating if "a OP b" is true.
-     * 
-     * A null or empty string is treated as "=="
-     * 
-     * This is used to filter results against user-specified expressions, like
-     * "visit-count:>20" or "created:2016/01/01".  If the field of interest is
-     * absent then the BiPredicate will return false.
-     */
-    private static <A extends Comparable<A>> BiPredicate<A, A> comparisonFunction(String op) {
-        if (op == null) return comparisonFunction("==");
-        switch(op) {
-            case "":  // fall through
-            case "=": // fall through
-            case "-on":
-            case "==": return (a, b)-> a != null && b != null && a.compareTo(b) == 0;
-            case "-under":
-            case "-before":
-            case "<": return (a, b)-> a != null && b != null && a.compareTo(b) < 0;
-            case "<=": return (a, b)-> a != null && b != null && a.compareTo(b) <= 0;
-            case "-over":
-            case ">": return (a, b)-> a != null && b != null && a.compareTo(b) > 0;
-            case "-since":
-            case ">=": return (a, b)-> a != null && b != null && a.compareTo(b) >= 0;
-            default: return oops("invalid comparison operator '%s'", op);
+     * Given various suffixes for commands (e.g. "-since", "-under", ...), 
+     * provides a way to obtain a BiPredicate that performs an appropriate
+     * comparison of two values.
+     */    
+    private enum COMPARISONS {
+        GTE, LT, EQ;
+        
+        // maps query action suffixes to specific comparisons for dates
+        private static final Map<String, COMPARISONS> DATEMAP = new java.util.HashMap<>();
+
+        // maps query action suffixes to specific comparisons for numbers
+        private static final Map<String, COMPARISONS> NUMMAP = new java.util.HashMap<>();
+        
+        static {
+            DATEMAP.put("[-on]", EQ); DATEMAP.put(null, EQ); DATEMAP.put("", EQ); DATEMAP.put("-before", LT); DATEMAP.put("-since", GTE);
+            NUMMAP.put(null, EQ); NUMMAP.put("", EQ); NUMMAP.put("-under", LT); NUMMAP.put("-over", GTE);
         }
+        
+        // takes the keys of the specified map and converts them into a regex of the form a|b|c
+        private static String regex(Map<String, COMPARISONS> map) {            
+            return map.keySet().stream()
+                    .filter(s -> !Strings.isEmpty(s))
+                    .map(s -> s.replace("[", "").replace("]", "")) // square brackes are there for help usage.  drop them for the regex.
+                    .collect(Collectors.joining("|")); 
+        }
+        
+        // regex for the various date suffixes
+        public static String dateRegex() { return regex(DATEMAP); }
+        
+        // regex for the various number suffixes
+        public static String numRegex() { return regex(NUMMAP); }
+        
+        private static Stream<String> help(Map<String, COMPARISONS> map) {
+            return map.keySet().stream().filter(s -> !Strings.isEmpty(s));
+        }
+        
+        // suffixes that 
+        public static Stream<String> dateSuffixHelp() { return help(DATEMAP); }        
+        public static Stream<String> numSuffixHelp() { return help(NUMMAP); }
+        
+        public <A extends Comparable<A>> BiPredicate<A, A> asFunction() {
+            switch(this) {
+                case GTE: return (a, b)-> a != null && b != null && a.compareTo(b) >= 0;
+                case LT: return (a, b)-> a != null && b != null && a.compareTo(b) < 0;
+                case EQ: return (a, b)-> a != null && b != null && a.compareTo(b) == 0;
+                default: throw new IllegalStateException("invalid comparison");
+            }
+        }
+        
+        private static COMPARISONS forSuffix(Map<String, COMPARISONS> map, String suffix) {
+            return Optional.ofNullable(map.get(Strings.lower(Strings.safeTrimToNull(suffix)))).orElseGet(() -> oops("no comparison for suffix '%s'", suffix));
+        }
+        public static COMPARISONS forDateSuffix(String suffix) { return forSuffix(DATEMAP, suffix); }
+        public static COMPARISONS forNumSuffix(String suffix) { return forSuffix(NUMMAP, suffix); }
     }
     
     public static Stream<String> help() {
         return QT_HANDLERS.stream().flatMap(qth -> qth.help()).sorted();
     }
     
-//    public static void main(String[] args) {
-//        help().forEach(System.out::println);
-//    }
+    public static void main(String[] args) {
+        help().forEach(System.out::println);
+    }
 }

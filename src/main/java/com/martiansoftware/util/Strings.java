@@ -50,6 +50,16 @@ public class Strings {
     }
         
     /**
+     * Uppercases a String using the root Locale
+     * @param s the String to uppercase
+     * @return the uppercased String
+     */
+    public static String upper(String s) {
+        if (s == null) return null;
+        return s.toUpperCase(Locale.ROOT);
+    }
+
+    /**
      * Parses a String into a long, possibly throwing a RuntimeException
      * @param s the String to parse into a long
      * @return the parsed long
