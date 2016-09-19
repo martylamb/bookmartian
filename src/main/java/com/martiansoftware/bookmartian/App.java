@@ -6,6 +6,7 @@ import com.martiansoftware.bookmartian.model.IBookmartian;
 import com.martiansoftware.bookmartian.model.JsonConfig;
 import com.martiansoftware.bookmartian.jsondir.JsonDirBookmartian;
 import com.martiansoftware.bookmartian.model.Lurl;
+import com.martiansoftware.bookmartian.model.Queries;
 import com.martiansoftware.bookmartian.model.Query;
 import java.nio.file.Paths;
 import static com.martiansoftware.boom.Boom.*;
@@ -16,6 +17,7 @@ import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.util.Strings;
+import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
@@ -64,6 +66,7 @@ public class App {
         get("/api/bookmark", () -> getBookmark(bm));
         get("/api/bookmarks", () -> query(bm));
         get("/api/visit", () -> visit(bm));
+        get("/api/query-help", () -> JSend.success(Queries.help().collect(Collectors.toList())));
         
         options("/api/bookmark/update", () -> corsOptions());
         post("/api/bookmark/update", () -> updateBookmark(bm));
