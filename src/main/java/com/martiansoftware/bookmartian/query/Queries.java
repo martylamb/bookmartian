@@ -35,7 +35,7 @@ public class Queries {
     // QueryTerm, they can throw an exception which will eventually go to the user.
     private interface QTHandler {
         public boolean handles(QueryTerm qt);
-        public Function<Stream<Bookmark>, Stream<Bookmark>> handle(QueryTerm qt);
+        public QueryFunction handle(QueryTerm qt);
         public Stream<String> help();
     }
     
@@ -43,6 +43,7 @@ public class Queries {
     private static final List<QTHandler> QT_HANDLERS;
     static {
         List<QTHandler> qtHandlers = new java.util.ArrayList<>();
+        qtHandlers.add(new As());
         qtHandlers.add(new Is());
         qtHandlers.add(new Tagged());
         qtHandlers.add(new Site());
@@ -59,7 +60,7 @@ public class Queries {
      * @param qt the QueryTerm to convert
      * @return a Function that implements the logic specified by the QueryTerm
      */
-    public static Function<Stream<Bookmark>, Stream<Bookmark>> of(QueryTerm qt) {
+    public static QueryFunction of(QueryTerm qt) {
         return QT_HANDLERS
                 .stream()
                 .filter(qth -> qth.handles(qt))
@@ -68,13 +69,21 @@ public class Queries {
                 .orElseGet(() -> oops("invalid query action '%s'", qt.action()));
     }
 
+    private static class As implements QTHandler {
+        @Override public boolean handles(QueryTerm qt) { return "as".equals(qt.action()); }
+        @Override public QueryFunction handle(QueryTerm qt) {
+            return (s, r) -> { r.name(qt.arg()); return s; };
+        }
+        @Override public Stream<String> help() { return Stream.of("as:NAME"); }        
+    }
+    
     private static class Is implements QTHandler {
         @Override public boolean handles(QueryTerm qt) { return "is".equals(qt.action()); }
-        @Override public Function<Stream<Bookmark>, Stream<Bookmark>> handle(QueryTerm qt) {
+        @Override public QueryFunction handle(QueryTerm qt) {
             switch(Strings.lower(qt.arg())) {
-                case "untagged": return s -> s.filter(b -> b.tagNames().isEmpty());
-                case "tagged": return s -> s.filter(b -> !b.tagNames().isEmpty());
-                case "secure": return s -> s.filter(b -> b.lurl().toString().startsWith("https://"));
+                case "untagged": return (s, r) -> s.filter(b -> b.tagNames().isEmpty());
+                case "tagged": return (s, r) -> s.filter(b -> !b.tagNames().isEmpty());
+                case "secure": return (s, r) -> s.filter(b -> b.lurl().toString().startsWith("https://"));
                 default: return oops("invalid argument for 'is' query: '%s'", qt.arg());
             }        
         }
@@ -83,17 +92,17 @@ public class Queries {
 
     private static class Tagged implements QTHandler {
         @Override public boolean handles(QueryTerm qt) { return "tagged".equals(qt.action()); }
-        @Override public Function<Stream<Bookmark>, Stream<Bookmark>> handle(QueryTerm qt) {
-            return s -> s.filter(b -> b.tagNames().contains(TagName.of(qt.arg())));
+        @Override public QueryFunction handle(QueryTerm qt) {
+            return (s, r) -> s.filter(b -> b.tagNames().contains(TagName.of(qt.arg())));
         }
         @Override public Stream<String> help() { return Stream.of("[tagged:]TAG"); }        
     }
     
     private static class Site implements QTHandler {
         @Override public boolean handles(QueryTerm qt) { return "site".equals(qt.action()); }
-        @Override public Function<Stream<Bookmark>, Stream<Bookmark>> handle(QueryTerm qt) {
+        @Override public QueryFunction handle(QueryTerm qt) {
             String siteName = Strings.lower(qt.arg());
-            return s -> s.filter(
+            return (s, r) -> s.filter(
                 b -> {
                     try {
                         URL url = new URL(b.lurl().toString());
@@ -110,37 +119,40 @@ public class Queries {
 
     private static class Limit implements QTHandler {
         @Override public boolean handles(QueryTerm qt) { return "limit".equals(qt.action()); }
-        @Override public Function<Stream<Bookmark>, Stream<Bookmark>> handle(QueryTerm qt) {
-            return s -> s.limit(Strings.asLong(qt.arg()));
+        @Override public QueryFunction handle(QueryTerm qt) {
+            return (s, r) -> s.limit(Strings.asLong(qt.arg()));
         }
         @Override public Stream<String> help() { return Stream.of("limit:N"); }        
     }
 
     private static class By implements QTHandler {
         private enum SORTS {
-            MOST_RECENTLY_CREATED(s -> s.sorted(Bookmark.MOST_RECENTLY_CREATED_FIRST)),
-            LEAST_RECENTLY_CREATED(s -> s.sorted(Bookmark.MOST_RECENTLY_CREATED_FIRST.reversed())),
-            MOST_RECENTLY_VISITED(s -> s.sorted(Bookmark.MOST_RECENTLY_VISITED_FIRST)),
-            LEAST_RECENTLY_VISITED(s -> s.sorted(Bookmark.MOST_RECENTLY_VISITED_FIRST.reversed())),
-            MOST_RECENTLY_MODIFIED(s -> s.sorted(Bookmark.MOST_RECENTLY_MODIFIED_FIRST)),
-            LEAST_RECENTLY_MODIFIED(s -> s.sorted(Bookmark.MOST_RECENTLY_MODIFIED_FIRST.reversed())),
-            MOST_VISITED(s -> s.sorted(Bookmark.MOST_VISITED_FIRST)),
-            LEAST_VISITED(s -> s.sorted(Bookmark.MOST_VISITED_FIRST.reversed())),
-            TITLE(s -> s.sorted(Bookmark.BY_TITLE)),
-            URL(s -> s.sorted(Bookmark.BY_URL));
+            MOST_RECENTLY_CREATED((s, r) -> s.sorted(Bookmark.MOST_RECENTLY_CREATED_FIRST)),
+            LEAST_RECENTLY_CREATED((s, r) -> s.sorted(Bookmark.MOST_RECENTLY_CREATED_FIRST.reversed())),
+            MOST_RECENTLY_VISITED((s, r) -> s.sorted(Bookmark.MOST_RECENTLY_VISITED_FIRST)),
+            LEAST_RECENTLY_VISITED((s, r) -> s.sorted(Bookmark.MOST_RECENTLY_VISITED_FIRST.reversed())),
+            MOST_RECENTLY_MODIFIED((s, r) -> s.sorted(Bookmark.MOST_RECENTLY_MODIFIED_FIRST)),
+            LEAST_RECENTLY_MODIFIED((s, r) -> s.sorted(Bookmark.MOST_RECENTLY_MODIFIED_FIRST.reversed())),
+            MOST_VISITED((s, r) -> s.sorted(Bookmark.MOST_VISITED_FIRST)),
+            LEAST_VISITED((s, r) -> s.sorted(Bookmark.MOST_VISITED_FIRST.reversed())),
+            TITLE((s, r) -> s.sorted(Bookmark.BY_TITLE)),
+            URL((s, r) -> s.sorted(Bookmark.BY_URL));
             
-            private final Function<Stream<Bookmark>, Stream<Bookmark>> _sorter;
-            private SORTS(Function<Stream<Bookmark>, Stream<Bookmark>> sorter) {
+            private final QueryFunction _sorter;
+            private SORTS(QueryFunction sorter) {
                 _sorter = sorter;
             }
-            public Function<Stream<Bookmark>, Stream<Bookmark>> sorter() { return _sorter; }
+            public QueryFunction sorter() { return _sorter; }
         }
         
         @Override public boolean handles(QueryTerm qt) { return "by".equals(qt.action()); }
         
-        @Override public Function<Stream<Bookmark>, Stream<Bookmark>> handle(QueryTerm qt) {
+        @Override public QueryFunction handle(QueryTerm qt) {
             try {
-                return SORTS.valueOf(Strings.upper(Strings.safeTrim(qt.arg())).replace('-', '_')).sorter();
+                return (s, r) -> {
+                    r.sort(qt.toString());
+                    return SORTS.valueOf(Strings.upper(Strings.safeTrim(qt.arg())).replace('-', '_')).sorter().apply(s, r);
+                };
             } catch (Exception e) {
                 return oops("bad sort order '%s'", qt.arg());
             }
@@ -156,11 +168,11 @@ public class Queries {
         private static final String VISITS = "visits";
         private final Pattern p = Pattern.compile("^" + VISITS + "(?<op>" + COMPARISONS.numRegex() + ")?$");
         @Override public boolean handles(QueryTerm qt) { return p.matcher(qt.action()).matches(); }
-        @Override public Function<Stream<Bookmark>, Stream<Bookmark>> handle(QueryTerm qt) {
+        @Override public QueryFunction handle(QueryTerm qt) {
             Matcher m = p.matcher(qt.action());
             if (!m.matches()) oops("bad visit query: %s", qt.toString());
             BiPredicate<Long, Long> cmp = COMPARISONS.forNumSuffix(m.group("op")).asFunction();
-            return s -> s.filter(b -> cmp.test(b.visitCount().orElse(null), Strings.asLong(qt.arg())));
+            return (s, r) -> s.filter(b -> cmp.test(b.visitCount().orElse(null), Strings.asLong(qt.arg())));
         }
         @Override public Stream<String> help() { return Stream.concat(Stream.of(""), COMPARISONS.numSuffixHelp()).map(s -> VISITS + s + ":N"); }
     }
@@ -189,11 +201,11 @@ public class Queries {
         
         @Override public boolean handles(QueryTerm qt) { return p.matcher(qt.action()).matches(); }        
         
-        @Override public Function<Stream<Bookmark>, Stream<Bookmark>> handle(QueryTerm qt) {
+        @Override public QueryFunction handle(QueryTerm qt) {
             Matcher m = p.matcher(qt.action());            
             if (!m.matches()) oops("bad date query: %s", qt.toString());
             BiPredicate<Date, Date> cmp = COMPARISONS.forDateSuffix(m.group("op")).asFunction();
-            return s -> s.filter(b -> cmp.test(
+            return (s, r) -> s.filter(b -> cmp.test(
                                             FIELDS.forName(m.group("field")).readFrom(b).orElse(null),
                                             com.martiansoftware.util.Dates.stripTime(dateOf(qt.arg()))
                                       )

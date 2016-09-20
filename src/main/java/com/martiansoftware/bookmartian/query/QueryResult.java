@@ -10,20 +10,27 @@ import java.util.Date;
 import java.util.List;
 
 /**
- *
+ * a MUTABLE class for storing/returning query results and metadata.
+ * 
  * @author mlamb
  */
     // the type returned by Query.execute()
 class QueryResult {
-    private final String _name, _query, _sort;
-    private final List<Bookmark> _bookmarks;
+    private String _name, _query, _sort;
+    private List<Bookmark> _bookmarks;
     private final Date _executed = new Date();
+    private long _elapsedTimeMs;
+    private transient long _started = System.currentTimeMillis();
 
-    QueryResult(String name, String query, String sort, List<Bookmark> bookmarks) {
-        _name = name;
-        _query = query;
-        _sort = sort;
+    public QueryResult name(String name) { _name = name; return this; }
+    public QueryResult query(String query) { _query = query; return this;}
+    public boolean hasSort() { return _sort != null; }
+    public QueryResult sort(String sort) { _sort = sort; return this;}
+    
+    public QueryResult bookmarks(List<Bookmark> bookmarks) {
         _bookmarks = bookmarks;
+        _elapsedTimeMs = System.currentTimeMillis() - _started;
+        return this;
     }
 }
 
