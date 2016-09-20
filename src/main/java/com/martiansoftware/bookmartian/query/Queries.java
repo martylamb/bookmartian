@@ -15,8 +15,10 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import static com.martiansoftware.util.Oops.oops;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -126,40 +128,53 @@ public class Queries {
     }
 
     private static class By implements QTHandler {
-        private enum SORTS {
-            MOST_RECENTLY_CREATED((s, r) -> s.sorted(Bookmark.MOST_RECENTLY_CREATED_FIRST)),
-            LEAST_RECENTLY_CREATED((s, r) -> s.sorted(Bookmark.MOST_RECENTLY_CREATED_FIRST.reversed())),
-            MOST_RECENTLY_VISITED((s, r) -> s.sorted(Bookmark.MOST_RECENTLY_VISITED_FIRST)),
-            LEAST_RECENTLY_VISITED((s, r) -> s.sorted(Bookmark.MOST_RECENTLY_VISITED_FIRST.reversed())),
-            MOST_RECENTLY_MODIFIED((s, r) -> s.sorted(Bookmark.MOST_RECENTLY_MODIFIED_FIRST)),
-            LEAST_RECENTLY_MODIFIED((s, r) -> s.sorted(Bookmark.MOST_RECENTLY_MODIFIED_FIRST.reversed())),
-            MOST_VISITED((s, r) -> s.sorted(Bookmark.MOST_VISITED_FIRST)),
-            LEAST_VISITED((s, r) -> s.sorted(Bookmark.MOST_VISITED_FIRST.reversed())),
-            TITLE((s, r) -> s.sorted(Bookmark.BY_TITLE)),
-            URL((s, r) -> s.sorted(Bookmark.BY_URL));
-            
-            private final QueryFunction _sorter;
-            private SORTS(QueryFunction sorter) {
-                _sorter = sorter;
-            }
-            public QueryFunction sorter() { return _sorter; }
+        private static final Map<String, COMPARATOR> COMPARATORS_BY_NAME;
+        static {
+            COMPARATORS_BY_NAME = Stream.of(COMPARATOR.values())
+                            .collect(Collectors.toMap(
+                                s -> s.name().toLowerCase().replace('_', '-'),
+                                s -> s
+                            ));
         }
-        
+        private enum COMPARATOR {
+            MOST_RECENTLY_CREATED(Bookmark.MOST_RECENTLY_CREATED_FIRST),
+            LEAST_RECENTLY_CREATED(Bookmark.MOST_RECENTLY_CREATED_FIRST.reversed()),
+            MOST_RECENTLY_VISITED(Bookmark.MOST_RECENTLY_VISITED_FIRST),
+            LEAST_RECENTLY_VISITED(Bookmark.MOST_RECENTLY_VISITED_FIRST.reversed()),
+            MOST_RECENTLY_MODIFIED(Bookmark.MOST_RECENTLY_MODIFIED_FIRST),
+            LEAST_RECENTLY_MODIFIED(Bookmark.MOST_RECENTLY_MODIFIED_FIRST.reversed()),
+            MOST_VISITED(Bookmark.MOST_VISITED_FIRST),
+            LEAST_VISITED(Bookmark.MOST_VISITED_FIRST.reversed()),
+            TITLE(Bookmark.BY_TITLE),
+            URL(Bookmark.BY_URL);            
+            private final Comparator _comparator;
+            private COMPARATOR(Comparator sorter) { _comparator = sorter; }
+            public Comparator<Bookmark> comparator() { return _comparator; }
+        }
+        private Comparator<Bookmark> getComparator(String name) {
+            COMPARATOR c = COMPARATORS_BY_NAME.get(name);
+            return c == null ? Bookmark.BY_TAGNAME(TagName.of(name)) : c.comparator();            
+        }
         @Override public boolean handles(QueryTerm qt) { return "by".equals(qt.action()); }
         
         @Override public QueryFunction handle(QueryTerm qt) {
-            try {
-                return (s, r) -> {
-                    r.sort(qt.toString());
-                    return SORTS.valueOf(Strings.upper(Strings.safeTrim(qt.arg())).replace('-', '_')).sorter().apply(s, r);
-                };
-            } catch (Exception e) {
-                return oops("bad sort order '%s'", qt.arg());
+            List<String> sorts = Strings.splitOnWhitespaceAndCommas(Strings.lower(qt.arg()));
+            Comparator<Bookmark> cmp = null;
+            for (String sort : sorts) {
+                cmp = (cmp == null) ? getComparator(sort) : cmp.thenComparing(getComparator(sort));
             }
+            if (cmp == null) oops("no sort specified!");
+            
+            QueryTerm normalizedSort = QueryTerm.of("by", sorts.stream().collect(Collectors.joining(" ")));
+            Comparator finalComparator = cmp;
+            return(s, r) -> {
+                r.sort(normalizedSort.toString());
+                return s.sorted(finalComparator);
+            };
         }
         
         @Override public Stream<String> help() { 
-            return Stream.of(SORTS.values())
+            return Stream.of(COMPARATOR.values())
                     .map(s -> "by:" + Strings.lower(s.name()).replace('_', '-'));
         }        
     }

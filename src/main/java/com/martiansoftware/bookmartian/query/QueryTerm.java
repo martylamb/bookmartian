@@ -7,6 +7,7 @@ package com.martiansoftware.bookmartian.query;
 
 import com.martiansoftware.util.Check;
 import com.martiansoftware.util.Strings;
+import java.util.regex.Pattern;
 
 /**
  * an individual "query term", consisting of an "action" and an "argument"
@@ -27,7 +28,23 @@ import com.martiansoftware.util.Strings;
         }
         public String action() { return _action; }
         public String arg() { return _arg; }
+        
+        private String maybeQuote(String s) {
+            boolean needsQuotes = false;
+            StringBuilder sb = new StringBuilder();
+            for (char c : s.toCharArray()) {
+                if (QueryTermParser.isQuote(c)) {
+                    sb.append("\"\"");
+                    needsQuotes = true;
+                } else {
+                    sb.append(c);
+                    if (QueryTermParser.isDelimiter(c)) needsQuotes = true;
+                }
+            }
+            return needsQuotes ? String.format("\"%s\"", sb.toString()) : sb.toString();
+        }
+        
         public String toString() {
-            return String.format("%s:%s", action(), arg());
+            return String.format("%s:%s", action(), maybeQuote(arg()));
         }
     }

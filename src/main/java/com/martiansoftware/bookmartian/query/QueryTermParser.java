@@ -93,10 +93,10 @@ class QueryTermParser {
     }
     
     private boolean isEof(int c) { return c == -1; }
-    private boolean isDelimiter(int c) { return Character.isWhitespace(c) || c == ','; }
+    static boolean isDelimiter(int c) { return Character.isWhitespace(c) || c == ','; }
     private boolean isActionChar(int c) { return Character.isAlphabetic(c) || c == '-'; }
     private boolean isActionArgSeparator(int c) { return c == ':'; }
-    private boolean isQuote(int c) { return c == '"'; }
+    static boolean isQuote(int c) { return c == '"'; }
 
     private void emit(String action, String arg) {
         _queryTerms.add(QueryTerm.of(action, arg));
