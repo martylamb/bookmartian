@@ -1,6 +1,7 @@
-package com.martiansoftware.bookmartian.model;
+package com.martiansoftware.bookmartian.query;
 
-import com.martiansoftware.bookmartian.model.QueryTermParser.QueryTermParseException;
+import com.martiansoftware.bookmartian.query.QueryTermParser;
+import com.martiansoftware.bookmartian.query.QueryTermParser.QueryTermParseException;
 import org.junit.Test;
 import static org.junit.Assert.*;
 

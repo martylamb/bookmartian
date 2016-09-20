@@ -1,5 +1,7 @@
-package com.martiansoftware.bookmartian.model;
+package com.martiansoftware.bookmartian.query;
 
+import com.martiansoftware.bookmartian.model.Bookmark;
+import com.martiansoftware.bookmartian.model.IBookmartian;
 import com.martiansoftware.util.Check;
 import com.martiansoftware.util.Strings;
 import java.util.Collections;
