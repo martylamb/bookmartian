@@ -1,5 +1,6 @@
 package com.martiansoftware.bookmartian.model;
 
+import com.martiansoftware.util.Check;
 import com.martiansoftware.util.Strings;
 import java.util.Collections;
 import java.util.List;
@@ -34,9 +35,9 @@ public class Query {
         _name = _raw;
         
         Stack<QueryTerm> queryStack = 
-                            Strings.splitOnWhitespaceAndCommas(rawQuery)
+                            new QueryTermParser()
+                            .parse(rawQuery)
                             .stream()
-                            .map(q -> QueryTerm.of(q))
                             .flatMap(qt -> maybeProcessGlobalQueryTerm(qt))
                             .collect(Collectors.toCollection(Stack::new));
         
@@ -45,7 +46,7 @@ public class Query {
                     queryStack.stream()                    
                     .filter(qt -> "by".equals(qt.action()))                            
                     .reduce((a, b) -> b) // essentially, "Stream.findLast()"      
-                    .orElseGet(() -> queryStack.push(QueryTerm.of("by:title")))
+                    .orElseGet(() -> queryStack.push(QueryTerm.of("by", "title")))
                     .toString());
                 
         _compiledQuery = compile(queryStack);                
@@ -102,16 +103,13 @@ public class Query {
     // for example, "is:untagged" has an action of "is" and an argument of "untagged"
     // if no action is specified, a default of "tagged" is used.
     static class QueryTerm {
-        private static final Pattern QUERYTERM_SPLITTER = Pattern.compile("^((?<action>[^:]+):)?(?<arg>[^:]+)$");
         private final String _action, _arg;
         private QueryTerm(String action, String argument) {
-            _action = Strings.lower(Optional.ofNullable(Strings.safeTrimToNull(action)).orElse("tagged"));
-            _arg = Strings.safeTrimToNull(argument);
+            _action = Strings.lower(Check.arg(action, "action").notNullOrEmpty().value());
+            _arg = Check.arg(Strings.safeTrimToNull(argument), "argument").notNullOrEmpty().value();
         }
-        static QueryTerm of(String rawQueryTerm) {
-            Matcher m = QUERYTERM_SPLITTER.matcher(rawQueryTerm);
-            if (!m.matches()) return oops("invalid query term '%s'", rawQueryTerm);
-            return new QueryTerm(m.group("action"), m.group("arg"));
+        static QueryTerm of(String action, String arg) {
+            return new QueryTerm(action, arg);
         }
         public String action() { return _action; }
         public String arg() { return _arg; }
