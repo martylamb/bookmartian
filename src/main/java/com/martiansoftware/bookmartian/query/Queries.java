@@ -1,7 +1,6 @@
 package com.martiansoftware.bookmartian.query;
 
 import com.martiansoftware.bookmartian.model.Bookmark;
-import com.martiansoftware.bookmartian.query.Query.QueryTerm;
 import com.martiansoftware.bookmartian.model.TagName;
 import com.martiansoftware.util.Strings;
 import java.net.MalformedURLException;

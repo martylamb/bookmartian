@@ -2,19 +2,12 @@ package com.martiansoftware.bookmartian.query;
 
 import com.martiansoftware.bookmartian.model.Bookmark;
 import com.martiansoftware.bookmartian.model.IBookmartian;
-import com.martiansoftware.util.Check;
 import com.martiansoftware.util.Strings;
 import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
 import java.util.Stack;
 import java.util.function.Function;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-import static com.martiansoftware.util.Oops.oops;
-import java.util.Date;
 
 /**
  * A Bookmark query, created from a user-specified String.
@@ -83,8 +76,8 @@ public class Query {
      * @param bm the bookmartian to query
      * @return the results of the query, or all bookmarks if the query is empty
      */
-    public Result execute(IBookmartian bm) {
-        return new Result(_name,
+    public QueryResult execute(IBookmartian bm) {
+        return new QueryResult(_name,
                             _raw,
                             _sort,
                             Collections.unmodifiableList(
@@ -101,37 +94,7 @@ public class Query {
         return new Query(rawQuery);
     }
     
-    // an individual "query term", consisting of an optional "action:" and an "argument"
-    // for example, "is:untagged" has an action of "is" and an argument of "untagged"
-    // if no action is specified, a default of "tagged" is used.
-    static class QueryTerm {
-        private final String _action, _arg;
-        private QueryTerm(String action, String argument) {
-            _action = Strings.lower(Check.arg(action, "action").notNullOrEmpty().value());
-            _arg = Check.arg(Strings.safeTrimToNull(argument), "argument").notNullOrEmpty().value();
-        }
-        static QueryTerm of(String action, String arg) {
-            return new QueryTerm(action, arg);
-        }
-        public String action() { return _action; }
-        public String arg() { return _arg; }
-        public String toString() {
-            return String.format("%s:%s", action(), arg());
-        }
-    }
-            
-    // the type returned by Query.execute()
-    public static class Result {
-        private final String _name, _query, _sort;
-        private final List<Bookmark> _bookmarks;
-        private final Date _executed = new Date();
-        
-        Result(String name, String query, String sort, List<Bookmark> bookmarks) {
-            _name = name;
-            _query = query;
-            _sort = sort;
-            _bookmarks = bookmarks;
-        }
-    }
+
+
         
 }

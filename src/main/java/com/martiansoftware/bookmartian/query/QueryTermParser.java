@@ -1,10 +1,7 @@
 package com.martiansoftware.bookmartian.query;
 
-import com.martiansoftware.bookmartian.query.Query.QueryTerm;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  *
