@@ -34,7 +34,8 @@ import java.util.regex.Pattern;
             StringBuilder sb = new StringBuilder();
             for (char c : s.toCharArray()) {
                 if (QueryTermParser.isQuote(c)) {
-                    sb.append("\"\"");
+                    sb.append(QueryTermParser.QUOTE);
+                    sb.append(QueryTermParser.QUOTE);
                     needsQuotes = true;
                 } else {
                     sb.append(c);
@@ -44,7 +45,8 @@ import java.util.regex.Pattern;
             return needsQuotes ? String.format("\"%s\"", sb.toString()) : sb.toString();
         }
         
+        @Override
         public String toString() {
-            return String.format("%s:%s", action(), maybeQuote(arg()));
+            return String.format("%s%c%s", action(), QueryTermParser.ACTION_ARG_SEPARATOR, maybeQuote(arg()));
         }
     }

@@ -10,6 +10,8 @@ import java.util.stream.IntStream;
 class QueryTermParser {
 
     private static final String DEFAULT_ACTION = "tagged";
+    public static final char QUOTE = '"';
+    public static final char ACTION_ARG_SEPARATOR = ':';
     
     private enum STATE { DELIM, ACTION, PRE_ARG, QUOTED_ARG, UNQUOTED_ARG, ONE_QUOTE };
     
@@ -95,8 +97,8 @@ class QueryTermParser {
     private boolean isEof(int c) { return c == -1; }
     static boolean isDelimiter(int c) { return Character.isWhitespace(c) || c == ','; }
     private boolean isActionChar(int c) { return Character.isAlphabetic(c) || c == '-'; }
-    private boolean isActionArgSeparator(int c) { return c == ':'; }
-    static boolean isQuote(int c) { return c == '"'; }
+    private boolean isActionArgSeparator(int c) { return c == ACTION_ARG_SEPARATOR; }
+    static boolean isQuote(int c) { return c == QUOTE; }
 
     private void emit(String action, String arg) {
         _queryTerms.add(QueryTerm.of(action, arg));
