@@ -66,7 +66,7 @@ public class App {
         get("/api/bookmark", () -> getBookmark(bm));
         get("/api/bookmarks", () -> query(bm));
         get("/api/visit", () -> visit(bm));
-        get("/api/query-help", () -> JSend.success(Queries.help().collect(Collectors.toList())));
+        get("/api/query-help", () -> { response().redirect("/api/query-help.json"); return null; });
         
         options("/api/bookmark/update", () -> corsOptions());
         post("/api/bookmark/update", () -> updateBookmark(bm));

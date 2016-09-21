@@ -18,7 +18,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -38,7 +37,6 @@ public class Queries {
     private interface QTHandler {
         public boolean handles(QueryTerm qt);
         public QueryFunction handle(QueryTerm qt);
-        public Stream<String> help();
     }
     
     // register all of the different query handlers
@@ -76,7 +74,6 @@ public class Queries {
         @Override public QueryFunction handle(QueryTerm qt) {
             return (s, r) -> { r.name(qt.arg()); return s; };
         }
-        @Override public Stream<String> help() { return Stream.of("as:NAME"); }        
     }
     
     private static class Is implements QTHandler {
@@ -89,7 +86,6 @@ public class Queries {
                 default: return oops("invalid argument for 'is' query: '%s'", qt.arg());
             }        
         }
-        @Override public Stream<String> help() { return Stream.of("is:untagged", "is:tagged", "is:secure"); }
     }
 
     private static class Tagged implements QTHandler {
@@ -97,7 +93,6 @@ public class Queries {
         @Override public QueryFunction handle(QueryTerm qt) {
             return (s, r) -> s.filter(b -> b.tagNames().contains(TagName.of(qt.arg())));
         }
-        @Override public Stream<String> help() { return Stream.of("[tagged:]TAG"); }        
     }
     
     private static class Site implements QTHandler {
@@ -116,7 +111,6 @@ public class Queries {
                 }
             );
         }
-        @Override public Stream<String> help() { return Stream.of("site:SITE"); }        
     }
 
     private static class Limit implements QTHandler {
@@ -124,36 +118,25 @@ public class Queries {
         @Override public QueryFunction handle(QueryTerm qt) {
             return (s, r) -> s.limit(Strings.asLong(qt.arg()));
         }
-        @Override public Stream<String> help() { return Stream.of("limit:N"); }        
     }
 
     private static class By implements QTHandler {
-        private static final Map<String, COMPARATOR> COMPARATORS_BY_NAME;
+        private static final Map<String, Comparator<Bookmark>> c;        
         static {
-            COMPARATORS_BY_NAME = Stream.of(COMPARATOR.values())
-                            .collect(Collectors.toMap(
-                                s -> s.name().toLowerCase().replace('_', '-'),
-                                s -> s
-                            ));
+            c = new java.util.HashMap<>();
+            c.put("most-recently-created", Bookmark.MOST_RECENTLY_CREATED_FIRST);
+            c.put("least-recently-created", Bookmark.MOST_RECENTLY_CREATED_FIRST.reversed());
+            c.put("most-recently-visited", Bookmark.MOST_RECENTLY_VISITED_FIRST);
+            c.put("least-recently-visited", Bookmark.MOST_RECENTLY_VISITED_FIRST.reversed());
+            c.put("most-recently-modified", Bookmark.MOST_RECENTLY_MODIFIED_FIRST);
+            c.put("least-recently-modified", Bookmark.MOST_RECENTLY_MODIFIED_FIRST.reversed());
+            c.put("most-visited", Bookmark.MOST_VISITED_FIRST);
+            c.put("least-visited", Bookmark.MOST_VISITED_FIRST.reversed());
+            c.put("title", Bookmark.BY_TITLE);
+            c.put("url", Bookmark.BY_URL);
         }
-        private enum COMPARATOR {
-            MOST_RECENTLY_CREATED(Bookmark.MOST_RECENTLY_CREATED_FIRST),
-            LEAST_RECENTLY_CREATED(Bookmark.MOST_RECENTLY_CREATED_FIRST.reversed()),
-            MOST_RECENTLY_VISITED(Bookmark.MOST_RECENTLY_VISITED_FIRST),
-            LEAST_RECENTLY_VISITED(Bookmark.MOST_RECENTLY_VISITED_FIRST.reversed()),
-            MOST_RECENTLY_MODIFIED(Bookmark.MOST_RECENTLY_MODIFIED_FIRST),
-            LEAST_RECENTLY_MODIFIED(Bookmark.MOST_RECENTLY_MODIFIED_FIRST.reversed()),
-            MOST_VISITED(Bookmark.MOST_VISITED_FIRST),
-            LEAST_VISITED(Bookmark.MOST_VISITED_FIRST.reversed()),
-            TITLE(Bookmark.BY_TITLE),
-            URL(Bookmark.BY_URL);            
-            private final Comparator _comparator;
-            private COMPARATOR(Comparator sorter) { _comparator = sorter; }
-            public Comparator<Bookmark> comparator() { return _comparator; }
-        }
-        private Comparator<Bookmark> getComparator(String name) {
-            COMPARATOR c = COMPARATORS_BY_NAME.get(name);
-            return c == null ? Bookmark.BY_TAGNAME(TagName.of(name)) : c.comparator();            
+        private Comparator<Bookmark> getComparator(String name) {            
+            return c.getOrDefault(name, Bookmark.BY_TAGNAME(TagName.of(name)));
         }
         @Override public boolean handles(QueryTerm qt) { return "by".equals(qt.action()); }
         
@@ -172,11 +155,6 @@ public class Queries {
                 return s.sorted(finalComparator);
             };
         }
-        
-        @Override public Stream<String> help() { 
-            return Stream.of(COMPARATOR.values())
-                    .map(s -> "by:" + Strings.lower(s.name()).replace('_', '-'));
-        }        
     }
 
     private static class Visits implements QTHandler {
@@ -189,7 +167,6 @@ public class Queries {
             BiPredicate<Long, Long> cmp = COMPARISONS.forNumSuffix(m.group("op")).asFunction();
             return (s, r) -> s.filter(b -> cmp.test(b.visitCount().orElse(null), Strings.asLong(qt.arg())));
         }
-        @Override public Stream<String> help() { return Stream.concat(Stream.of(""), COMPARISONS.numSuffixHelp()).map(s -> VISITS + s + ":N"); }
     }
     
     private static class Dates implements QTHandler {
@@ -232,13 +209,6 @@ public class Queries {
             try { return RelativeDateParser.parse(s); } catch (Exception ignored) {}
             return oops("unable to interpret '%s' as a date", s);
         }
-        
-        @Override public Stream<String> help() {
-            return Stream.of(FIELDS.values())
-                    .map(f -> Strings.lower(f.name()))
-                    .flatMap(s -> COMPARISONS.dateSuffixHelp().map(dh -> s + dh))
-                    .map(s -> s + ":DATE-EXPR");
-        }        
     }
     
     /**
@@ -274,14 +244,6 @@ public class Queries {
         // regex for the various number suffixes
         public static String numRegex() { return regex(NUMMAP); }
         
-        private static Stream<String> help(Map<String, COMPARISONS> map) {
-            return map.keySet().stream().filter(s -> !Strings.isEmpty(s));
-        }
-        
-        // suffixes that 
-        public static Stream<String> dateSuffixHelp() { return help(DATEMAP); }        
-        public static Stream<String> numSuffixHelp() { return help(NUMMAP); }
-        
         public <A extends Comparable<A>> BiPredicate<A, A> asFunction() {
             switch(this) {
                 case GTE: return (a, b)-> a != null && b != null && a.compareTo(b) >= 0;
@@ -298,11 +260,4 @@ public class Queries {
         public static COMPARISONS forNumSuffix(String suffix) { return forSuffix(NUMMAP, suffix); }
     }
     
-    public static Stream<String> help() {
-        return QT_HANDLERS.stream().flatMap(qth -> qth.help()).sorted();
-    }
-    
-    public static void main(String[] args) {
-        help().forEach(System.out::println);
-    }
 }
