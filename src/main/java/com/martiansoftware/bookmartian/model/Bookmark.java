@@ -35,6 +35,13 @@ public class Bookmark {
     public static final Comparator<Bookmark> MOST_RECENTLY_MODIFIED_FIRST = (a, b) -> Long.compare(b.cmpModified(), a.cmpModified());   
     public static final Comparator<Bookmark> BY_TITLE = (a, b) -> COLLATOR.compare(a.title().orElse(""), b.title().orElse(""));
     public static final Comparator<Bookmark> BY_URL = (a, b) -> COLLATOR.compare(a.lurl().toString(), b.lurl().toString());
+    public static Comparator<Bookmark> BY_TAGNAME(TagName tn) {
+        return (a, b) -> {
+            long av = (a.tagNames().contains(tn)) ? 0 : 1;
+            long bv = (b.tagNames().contains(tn)) ? 0 : 1;
+            return Long.compare(av, bv);
+        };                
+    }
     
     private Bookmark(Lurl lurl,
                         String title, 

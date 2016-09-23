@@ -1,4 +1,4 @@
-package com.martiansoftware.bookmartian.model;
+package com.martiansoftware.bookmartian.query;
 
 import com.martiansoftware.util.Dates;
 import com.martiansoftware.util.Oops;

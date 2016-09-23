@@ -3,7 +3,7 @@ package com.martiansoftware.bookmartian.jsondir;
 import com.martiansoftware.bookmartian.model.Bookmark;
 import com.martiansoftware.bookmartian.model.IBookmartian;
 import com.martiansoftware.bookmartian.model.Lurl;
-import com.martiansoftware.bookmartian.model.Query;
+import com.martiansoftware.bookmartian.query.Query;
 import com.martiansoftware.bookmartian.model.Tag;
 import java.io.IOException;
 import java.nio.file.Files;
