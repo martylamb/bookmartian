@@ -15,7 +15,7 @@ function stringToIntegerHash(str) {
     if (str.length == 0) return hash;
     for (i = 0; i < str.length; i++) {
         char = str.charCodeAt(i);
-        hash = ((hash<<5)-hash)+char;
+        hash = ((hash << 5) - hash) + char;
         hash = hash & hash; // Convert to 32bit integer
     }
     return hash;
@@ -44,7 +44,7 @@ function buildBookmarkRow(element, withTags) {
     if (withTags) {
         var taglist = element.tags.toString().split(',');
         tags = " - "
-        taglist.forEach(function(tag) {
+        taglist.forEach(function (tag) {
             tags += "<span onclick=\"executeSearch('" + tag + "', false);\" class='tags secondary-text-color'>" + tag + "</span> ";
         }, this);
     }
@@ -82,7 +82,7 @@ function buildBookmarkRow(element, withTags) {
 function sortTable(thisTable, sortField) {
 
     var listDataJSON = bookmarkJSONArrays[thisTable.attr('id')];
-    
+
     // --------------------------------------------------------------------------
     // sort by title
     if (sortField === "title") {
@@ -200,7 +200,7 @@ function sortThisTable(e, sortField) {
 
     // if this is the search results table, make sure that we are still displaying tags after sort
     var withTags = false;
-    if (thisTable.attr('id') === 'searchtable') withTags = true; 
+    if (thisTable.attr('id') === 'searchtable') withTags = true;
 
     renderLinkTable(thisTable, withTags);
 }
@@ -222,14 +222,14 @@ function renderLinkTable(linktable, withTags) {
 
     // reset them all to normal weight
     sorttitlelink.css("font-weight", "normal");
-    sorttitlelink.html("title");   
+    sorttitlelink.html("title");
     sortlastvisitedlink.css("font-weight", "normal");
     sortlastvisitedlink.html("visited");
     sortcreatedlink.css("font-weight", "normal");
     sortcreatedlink.html("created");
-    
+
     // bold the active sort and insert an up or down arrow to reflect sort order
-    switch(linktable.attr('data-sort')) {
+    switch (linktable.attr('data-sort')) {
         case 'by:title':
         case 'by:title_asc':
             sorttitlelink.css("font-weight", "bold");
@@ -396,7 +396,7 @@ function editMark(e) {
 // term - tag or tags to be used in search, if null the value of the search text box is used
 // reset - if true, treat this as a new search. if false, treat this as a drill-down search
 function executeSearch(term, reset) {
-    var searchtable = $('#searchtable');    
+    var searchtable = $('#searchtable');
     var searchterm = "";
 
     if (term) {
@@ -465,20 +465,21 @@ $(document).ready(function () {
     $('#searchterm').focus();
 
     // --------------------------------------------------------------------------
-    // create promoted tag blocks from the querystring
+    // parse promoted queries from the querystring
     var qd = {};
     location.search.substr(1).split("&").forEach(function (item) { (item.split("=")[0] in qd) ? qd[item.split("=")[0]].push(item.split("=")[1]) : qd[item.split("=")[0]] = [item.split("=")[1]] })
+
+    // create a linkblock for each pinned tag
     var promotedTags = "";
     if (qd.pin) {
         var promotedTags = qd.pin.toString();
         var promotedTagArray = promotedTags.split(",");
     }
 
-    // create a linkblock for each pinned tag
     $.each(promotedTagArray, function (index, value) {
         var block = $("#linkblocktemplate").clone()
         block.css('display', 'inline-block');
-        var safeID = stringToIntegerHash(value); 
+        var safeID = stringToIntegerHash(value);
         var linktable = block.find('.linktable');
         linktable.attr("id", "linktable_" + safeID);
         block.appendTo('#content');
@@ -527,45 +528,46 @@ $(document).ready(function () {
         });
 
     // --------------------------------------------------------------------------
-    // retrieve promo tiles
-    $.ajax({
-        // The URL for the request
-        url: API_QueryBookmarks + "?q=promote",
+    // retrieve promoted tiles based on querystring query "tiles="
+    if (qd.tiles) {
+        $.ajax({
+            // The URL for the request
+            url: API_QueryBookmarks + "?q=" + qd.tiles.toString().replace(/\|/g, '+'),
 
-        // Whether this is a POST or GET request
-        type: "GET",
+            // Whether this is a POST or GET request
+            type: "GET",
 
-        // The type of data we expect back
-        dataType: "json"
-    })
-        // Code to run if the request succeeds (is done);
-        // The response is passed to the function
-        .done(function (json) {
-            $(json.data.bookmarks).each(function (index, element) {
-                var tile = $("#promotedlinktemplate").clone()
-                tile.attr("title", element.title);
-                tile.attr("id", element.title);
-                var image = tile.find("img");
-                if (element.imageUrl) {
-                    image.attr("src", element.imageUrl);
-                } else {
-                    image.attr("src", "https://icons.better-idea.org/icon?size=90&url=" + element.url);
-                }
-                var link = tile.find("a");
-                link.attr("href", API_VisitLink + "?url=" + escape(element.url))
-                tile.css("display", "inline-block");
-                $(".promotedsection").prepend(tile);
+            // The type of data we expect back
+            dataType: "json"
+        })
+            // Code to run if the request succeeds (is done);
+            // The response is passed to the function
+            .done(function (json) {
+                $(json.data.bookmarks).each(function (index, element) {
+                    var tile = $("#promotedlinktemplate").clone()
+                    tile.attr("title", element.title);
+                    tile.attr("id", element.title);
+                    var image = tile.find("img");
+                    if (element.imageUrl) {
+                        image.attr("src", element.imageUrl);
+                    } else {
+                        image.attr("src", "https://icons.better-idea.org/icon?size=90&url=" + element.url);
+                    }
+                    var link = tile.find("a");
+                    link.attr("href", API_VisitLink + "?url=" + escape(element.url))
+                    tile.css("display", "inline-block");
+                    $(".promotedsection").append(tile);
+                })
             })
-        })
-        // Code to run if the request fails; the raw request and
-        // status codes are passed to the function
-        .fail(function (xhr, status, errorThrown) {
-            console.log("Error: " + errorThrown);
-            console.log("Status: " + status);
-            console.dir(xhr);
-        })
-        // Code to run regardless of success or failure;
-        .always(function (xhr, status) {
-        });
-
+            // Code to run if the request fails; the raw request and
+            // status codes are passed to the function
+            .fail(function (xhr, status, errorThrown) {
+                console.log("Error: " + errorThrown);
+                console.log("Status: " + status);
+                console.dir(xhr);
+            })
+            // Code to run regardless of success or failure;
+            .always(function (xhr, status) {
+            });
+    }
 });

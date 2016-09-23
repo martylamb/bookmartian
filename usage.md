@@ -8,24 +8,25 @@ The querystring can be used to customize bookmartian's 'dashboard' display.
 
 Parameters:
 
-  * pins (optional): An ordered, comma-delimited list of tags sets to be highlighted on the dashboard. 
+  * pin (optional, repeated): tag query of a tag block to be displayed on the page.
+  * tiles (optional, once): tag query for the row of promoted tiles 
   
 
 Examples:
 
 ```
 # display just one tag block listing all bookmarks tagged with 'news'
-http://domain.com/index.html?pins=news
+http://domain.com/index.html?pin=news
 
-# display two tag blocks listing all bookmarks tagged with 'news' and recently created bookmarks
-http://domain.com/index.html?pins=news,is:recent
+# display just one tag block, bookmarks recently visited
+http://domain.com/index.html?last-visited:>1w+as:recent-visits+by:most-recently-visited
 
-# display just one tag block, but only list bookmarks tagged with both 'news' and 'pin'
-http://domain.com/index.html?pins=pin|news
+# display just one tag block, with a promoted tiles section
+http://domain.com/index.html?pin=news&tiles=promote+by:most-recently-visited
 
 # display two tag blocks, the first list bookmarks tagged with both 'news' and 'pin',
 #  the second lists bookmarks tagged with both 'work' and 'pin'.
-http://domain.com/index.html?pins=pin|news,pin|work
+http://domain.com/index.html?pin=pin+news&pin=pin+work
 ```
 
 Tag Conventions
