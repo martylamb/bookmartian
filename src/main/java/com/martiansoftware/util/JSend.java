@@ -47,6 +47,7 @@ public class JSend {
     }
     
     public static BoomResponse error(Exception e) {
+        log.error(e.getMessage(), e);
         return error(e.getMessage());
     }
 }

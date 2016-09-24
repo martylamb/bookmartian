@@ -13,14 +13,14 @@ import java.util.stream.Stream;
  */
 public class TagName implements Comparable<TagName> {
 
-    private static final Pattern VALID_TAG = Pattern.compile("^\\s*(?<tag>[^\\s,:]+)\\s*$");
+    private static final Pattern VALID_TAG = Pattern.compile("^\\s*(?<tag>[a-zA-Z0-9_.-]+)\\s*$");
     
     private final String _name;
     
     private TagName(String name) {
         Matcher m = VALID_TAG.matcher(name);
         if (!m.matches()) {
-            throw new IllegalArgumentException("Tags may only consist of letters, numbers, underscores, dots, and dashes - and may not start with a dot.");
+            throw new IllegalArgumentException("Tags may only consist of letters, numbers, underscores, dots, and dashes.");
         }
        _name = Strings.lower(m.group("tag"));
     }
@@ -29,6 +29,15 @@ public class TagName implements Comparable<TagName> {
         return new TagName(name);
     }
 
+    public static boolean isTagNameCharacter(int c) {
+        return (c >= 'a' && c <= 'z')
+                || (c >= 'A' && c <= 'Z')
+                || (c >= '0' && c <= '9')
+                || c == '_'
+                || c == '.'
+                || c == '-';
+    }
+    
     @Override
     public String toString() {
         return _name;

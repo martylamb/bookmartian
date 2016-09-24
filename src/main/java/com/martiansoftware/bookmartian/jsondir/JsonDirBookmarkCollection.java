@@ -79,8 +79,17 @@ public class JsonDirBookmarkCollection implements IBookmarkCollection {
             Bookmark original = get(b.lurl());
             Bookmark.Builder nb = b.toBuilder();
             Date now = new Date();
-            nb.created(original == null ? now : original.created().orElse(now));
-            nb.modified(now);
+
+            if (!b.created().isPresent()) { // creation timestamp override? (e.g. bookmark import)
+                nb.created(original != null && original.created().isPresent()
+                                ? original.created().get()
+                                : now);
+            }            
+
+            if (!b.modified().isPresent()) { // modification timestamp override? (e.g. bookmark import) 
+                nb.modified(now);
+            }
+
             Bookmark result = nb.build();
             _map.add(result);
             return result;

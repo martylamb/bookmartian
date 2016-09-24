@@ -1,5 +1,6 @@
 package com.martiansoftware.bookmartian.query;
 
+import com.martiansoftware.bookmartian.model.TagName;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -96,7 +97,7 @@ class QueryTermParser {
     
     private boolean isEof(int c) { return c == -1; }
     static boolean isDelimiter(int c) { return Character.isWhitespace(c) || c == ','; }
-    private boolean isActionChar(int c) { return Character.isAlphabetic(c) || c == '-'; }
+    private boolean isActionChar(int c) { return TagName.isTagNameCharacter(c); }
     private boolean isActionArgSeparator(int c) { return c == ACTION_ARG_SEPARATOR; }
     static boolean isQuote(int c) { return c == QUOTE; }
 

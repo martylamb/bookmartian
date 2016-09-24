@@ -6,6 +6,7 @@ import com.martiansoftware.bookmartian.model.IBookmartian;
 import com.martiansoftware.bookmartian.model.JsonConfig;
 import com.martiansoftware.bookmartian.jsondir.JsonDirBookmartian;
 import com.martiansoftware.bookmartian.model.Lurl;
+import com.martiansoftware.bookmartian.model.TagNameSet;
 import com.martiansoftware.bookmartian.query.Queries;
 import com.martiansoftware.bookmartian.query.Query;
 import java.nio.file.Paths;
@@ -17,7 +18,19 @@ import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.util.Strings;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.http.Part;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
@@ -72,6 +85,8 @@ public class App {
         post("/api/bookmark/update", () -> updateBookmark(bm));
         
         post("/api/bookmark/delete", () -> deleteBookmark(bm));
+        
+        post("/api/bookmarks/import", () -> importNetscapeBookmarksFile(bm));
     }
     
     private static BoomResponse query(IBookmartian bm) {
@@ -180,4 +195,41 @@ public class App {
         if (q != null) msg.append(String.format("?%s", q));
         log.info(msg.toString());
     }
+    
+    private static void uploading() throws IOException {
+        Request r = request();
+        if (r.raw().getAttribute("org.eclipse.jetty.multipartConfig") == null) {
+            MultipartConfigElement multipartConfigElement = new MultipartConfigElement(Files.createTempDirectory("bookmartian-").toString());
+            r.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
+        }        
+    }
+    
+    private static BoomResponse importNetscapeBookmarksFile(IBookmartian bm) {
+        try {
+            uploading();
+            String tags = q("tags");
+            Part part = request().raw().getPart("bookmarksFile");
+            Document doc = Jsoup.parse(part.getInputStream(), "UTF-8", "");
+            Elements links = doc.getElementsByTag("a");
+            for (Element link : links) {
+                log.info("Importing {}", link.attr("HREF"));
+                Bookmark.Builder b = Bookmark.newBuilder()
+                                        .url(link.attr("HREF"))
+                                        .title(link.text())
+                                        .tags(tags);
+               
+                String d = Strings.safeTrimToNull(link.attr("ADD_DATE"));
+                if (d != null) b.created(new Date(Long.valueOf(d) * 1000));
+                
+                d = Strings.safeTrimToNull(link.attr("LAST_MODIFIED"));
+                if (d != null) b.modified(new Date(Long.valueOf(d) * 1000));
+                
+                bm.replaceOrAdd(null, b.build());
+            }
+            return JSend.success(String.format("Imported %d bookmark%s.", links.size(), links.size() == 1 ? "" : "s"));
+        } catch (Exception e) {            
+            return JSend.error(e);
+        }
+    }
+ 
 }
