@@ -72,7 +72,7 @@ function buildBookmarkRow(element, withTags) {
         modified = "modified on " + modifiedDate.toDateString();
     }
 
-    var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "' onclick='toggleEdits(this);'></td><td class='bookmark'><a rel='noreferrer' href='" + API_VisitLink + "?url=" + escape(element.url) + "' data-url='" + element.url + "' data-tags='" + element.tags + "' data-notes='" + notes + "' data-imageurl='" + imageUrl + "' data-title='" + element.title + "'>" + element.title + "</a>" + padlock + tags + "</td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a onclick='deleteMark(this);'>delete</a><p class='dateinfo text-default-primary-color'>" + element.url + "</p><p class='dateinfo secondary-text-color'>" + created + "</br>" + modified + "</br>" + lastVisited + lastVisitedTime + "</p></td></tr>";
+    var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "'></td><td class='bookmark'><a rel='noreferrer' href='" + API_VisitLink + "?url=" + escape(element.url) + "' data-url='" + element.url + "' data-tags='" + element.tags + "' data-notes='" + notes + "' data-imageurl='" + imageUrl + "' data-title='" + element.title + "'>" + element.title + "</a>" + padlock + tags + "<i class='fa fa-angle-down edit-ellipsis tertiary-text-color' aria-hidden='true' onclick='toggleEdits(this)'></i></td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a onclick='deleteMark(this);'>delete</a><p class='dateinfo text-default-primary-color'>" + element.url + "</p><p class='dateinfo secondary-text-color'>" + created + "</br>" + modified + "</br>" + lastVisited + lastVisitedTime + "</p></td></tr>";
 
     return row;
 }
@@ -339,17 +339,21 @@ function closeAction() {
 // toggle the display of the edit section of a bookmark table row
 function toggleEdits(e) {
     if (!$(e).data('on')) {
+        $(e).removeClass('tertiary-text-color fa-angle-down');
+        $(e).addClass('text-primary-color fa-angle-up');
         $(e).parent().removeClass('table-color');
         $(e).parent().addClass('light-primary-color');
-        $(e).parent().next('.bookmark').removeClass('table-color');
-        $(e).parent().next('.bookmark').addClass('light-primary-color');
+        $(e).parent().prev('.favicon').removeClass('table-color');
+        $(e).parent().prev('.favicon').addClass('light-primary-color');
         $(e).parent().parent().next('.bookmarkedits').show();
         $(e).data('on', 1);
     } else {
+        $(e).removeClass('text-primary-color fa-angle-up');
+        $(e).addClass('tertiary-text-color fa-angle-down');
         $(e).parent().removeClass('light-primary-color');
         $(e).parent().addClass('table-color');
-        $(e).parent().next('.bookmark').removeClass('light-primary-color');
-        $(e).parent().next('.bookmark').addClass('table-color');
+        $(e).parent().prev('.favicon').removeClass('light-primary-color');
+        $(e).parent().prev('.favicon').addClass('table-color');
         $(e).parent().parent().next('.bookmarkedits').hide();
         $(e).data('on', 0);
     }

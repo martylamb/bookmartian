@@ -235,7 +235,14 @@ h3 {
 .favicon {
     width: 20px;
     text-align: center;
-    cursor: pointer;        
+}
+
+.edit-ellipsis {
+    text-align: right;
+    vertical-align: bottom;
+    float:right;
+    cursor: pointer;  
+    margin-top: 4px;  
 }
 
 .bookmarkedits {
