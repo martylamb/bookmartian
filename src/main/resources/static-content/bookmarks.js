@@ -27,7 +27,7 @@ function buildBookmarkRow(element, withTags) {
 
     var padlock = ""
     if (element.url.substr(0, 5) === "https") {
-        padlock = "<span style='color:green;'>&#x1f512;</span> ";
+        padlock = "&nbsp;&nbsp;<i class='fa fa-lock padlock'></i>";
     }
 
     var notes = "";
@@ -72,7 +72,7 @@ function buildBookmarkRow(element, withTags) {
         modified = "modified on " + modifiedDate.toDateString();
     }
 
-    var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "' onclick='toggleEdits(this);'></td><td class='bookmark'><a rel='noreferrer' href='" + API_VisitLink + "?url=" + escape(element.url) + "' data-url='" + element.url + "' data-tags='" + element.tags + "' data-notes='" + notes + "' data-imageurl='" + imageUrl + "' data-title='" + element.title + "'>" + padlock + element.title + "</a>" + tags + "</td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a onclick='deleteMark(this);'>delete</a><p class='dateinfo text-default-primary-color'>" + element.url + "</p><p class='dateinfo secondary-text-color'>" + created + "</br>" + modified + "</br>" + lastVisited + lastVisitedTime + "</p></td></tr>";
+    var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "' onclick='toggleEdits(this);'></td><td class='bookmark'><a rel='noreferrer' href='" + API_VisitLink + "?url=" + escape(element.url) + "' data-url='" + element.url + "' data-tags='" + element.tags + "' data-notes='" + notes + "' data-imageurl='" + imageUrl + "' data-title='" + element.title + "'>" + element.title + "</a>" + padlock + tags + "</td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a onclick='deleteMark(this);'>delete</a><p class='dateinfo text-default-primary-color'>" + element.url + "</p><p class='dateinfo secondary-text-color'>" + created + "</br>" + modified + "</br>" + lastVisited + lastVisitedTime + "</p></td></tr>";
 
     return row;
 }
@@ -233,29 +233,29 @@ function renderLinkTable(linktable, withTags) {
         case 'by:title':
         case 'by:title_asc':
             sorttitlelink.css("font-weight", "bold");
-            sorttitlelink.html("title &uarr;");
+            sorttitlelink.html("title <i class='fa fa-long-arrow-up' aria-hidden=true></i>");
             break;
         case 'by:title_desc':
             sorttitlelink.css("font-weight", "bold");
-            sorttitlelink.html("title &darr;");
+            sorttitlelink.html("title <i class='fa fa-long-arrow-down' aria-hidden=true></i>");
             break;
         case 'by:least-recently-visited':
             sortlastvisitedlink.css("font-weight", "bold");
-            sortlastvisitedlink.html("visited &uarr;");
+            sortlastvisitedlink.html("visited <i class='fa fa-long-arrow-up' aria-hidden=true></i>");
             break;
         case 'by:recently-visited':
         case 'by:most-recently-visited':
             sortlastvisitedlink.css("font-weight", "bold");
-            sortlastvisitedlink.html("visited &darr;");
+            sortlastvisitedlink.html("visited <i class='fa fa-long-arrow-down' aria-hidden=true></i>");
             break;
         case 'by:least-recently-created':
             sortcreatedlink.css("font-weight", "bold");
-            sortcreatedlink.html("created &uarr;");
+            sortcreatedlink.html("created <i class='fa fa-long-arrow-up' aria-hidden=true></i>");
             break;
         case 'by:recently-created':
         case 'by:most-recently-created':
             sortcreatedlink.css("font-weight", "bold");
-            sortcreatedlink.html("created &darr;");
+            sortcreatedlink.html("created <i class='fa fa-long-arrow-down' aria-hidden=true></i>");
             break;
     }
 }
