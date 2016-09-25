@@ -36,18 +36,17 @@ h3 {
 }
 
 .iconbutton {
-    width: 24px;
-    height: 24px;
     cursor: pointer;
+    color: white;
 }
 
 .addbutton {
-    margin: 6px 8px;    
+    margin: 4px 6px;    
 }
 
 .searchbutton {
     float:right;
-    margin: 6px 8px;
+    margin: 9px 8px 9px 4px;
 }
 
 .searchbox {
