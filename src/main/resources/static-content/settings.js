@@ -1,5 +1,3 @@
-var API_ImportBookmark = "/api/bookmarks/import";
-
 var currentSettingsForm = null;
 
 function importBookmarks() {
