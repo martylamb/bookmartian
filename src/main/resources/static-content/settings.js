@@ -34,14 +34,16 @@ function loadSettingsForm (name) {
     $('.settingSelected').removeClass("settingSelected");
     $('#setting_' + name).addClass("settingSelected");
 
-    currentSettingsForm.hide();
-    $('#settingform_' + name).show();
+    if ($('#settingform_' + name).length == 0) {
+        $('#settingsform').load('./settings_' + name + '.html');
+    }
+
     currentSettingsForm = $('#settingform_' + name);
 }
 
 // ==========================================================================
 // When the document is fully loaded, load the dynamic elements into the page
 $(document).ready(function () {
-    currentSettingsForm = $('#settingform_about');
+    loadSettingsForm ('about');
 
 });

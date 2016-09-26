@@ -1,0 +1,21 @@
+<div id="settingform_import">
+    <p>
+        You can import bookmarks into Bookmartian from an existing file. The file must be formatted in the
+        <a href='https://msdn.microsoft.com/en-us/library/aa753582(v=vs.85).aspx' target="_blank">Netscape Bookmark file format</a>.
+    </p>
+    <form id=import name=import action=post>
+        <p><strong>Step 1.</strong> Find the file on your local file system.</p>
+        <input class="importtagsfield" type="file" name="bookmarksFile" accept=".html,.htm">
+        <p><strong>Step 2.</strong> Provide one or more tags that should automatically applied to the bookmarks in this import.
+            Separate the tags with spaces or commas. Tags prefixed with a period (.) will be created, but will not be visible
+            in your tag cloud.</p>
+        <input class="importtagsfield" id="importtags" type="text" name="tags" value="">
+        <script>
+                        var now = new Date(Date.now());
+                        $('#importtags').val(".imported_" + now.toISOString().replace(/[T:]/g,'-').substring(0,19) + " ");
+                    </script>
+        <p><strong>Step 3.</strong> Upload the file for import!</p>
+        <input type="button" value="Import the bookmarks now" name="importsubmit" onclick="importBookmarks();">
+    </form>
+    <div class='message' id='importStatusMessage'></div>
+</div>
