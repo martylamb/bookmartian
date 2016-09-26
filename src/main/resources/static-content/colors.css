@@ -9,6 +9,7 @@
 .primary-text-color    { color: #212121; }
 .secondary-text-color  { color: #757575; }
 .tertiary-text-color   { color: #cccccc; }
+.error-text-color      { color: #ff0000; }
 .divider-color         { background: #BDBDBD; }
 
 .paper-color           { background: #f3f3f3; }

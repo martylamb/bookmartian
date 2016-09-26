@@ -9,6 +9,7 @@ hr {
     margin: 12px;
     height: 1px; 
     border: 0;
+    clear:both;
 }
 
 h1 {
@@ -279,4 +280,42 @@ h3 {
     font-size: small;
     margin-right: 12px;
     margin-bottom: 24px;
+}
+
+/* ======================================================================= */
+/* settings */
+
+.settingslist {
+    width: 20%;
+    text-align: left;
+    float:left;
+}
+
+.settingspage {
+    width: 80%;
+    min-height: 200px;
+    text-align: left;
+    float: right;
+    margin-bottom: 12px;
+}
+
+.settingsform {
+    padding: 10px;
+}
+
+.setting {
+    margin-bottom: 6px;
+    cursor: pointer;
+}
+
+.importtagsfield {
+    width: 400px;
+}
+
+.message {
+    margin-top: 12px;
+}
+
+.settingSelected {
+    font-weight: bold;
 }

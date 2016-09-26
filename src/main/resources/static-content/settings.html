@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Bookmartian Settings</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="stylesheet" href="/font-awesome-4.6.3/css/font-awesome.min.css">
+    <link REL=StyleSheet HREF="style.css" TYPE="text/css" MEDIA=screen>
+    <link REL=StyleSheet HREF="style.mobile.css" TYPE="text/css" MEDIA='only screen and (max-width: 800px)'>
+    <link REL=StyleSheet HREF="colors.css" TYPE="text/css" MEDIA=screen>
+</head>
+
+<body class="paper-color">
+    <script src="jquery-3.1.0.min.js"></script>
+    <script src="settings.js"></script>
+
+    <!-- bar at top of page -->
+    <div class="header default-primary-color">
+        <i class="fa fa-2x fa-home iconbutton addbutton" aria-hidden="true" onclick="window.location.href = '/index.html';"></i>
+    </div>
+
+    <!-- action panel (hidden at start) -->
+    <div class="action light-primary-color" id="actionpanel">
+        <div id="addpanel" class="addpanel primary-text-color">
+
+        </div>
+    </div>
+
+    <div class="content" id="content">
+        <h2>Advanced Settings</h2>
+        <div class="settingslist" id="settingspage">
+            <div id="setting_about" class="setting settingSelected" onclick="loadSettingsForm('about');">About</div>
+            <div id="setting_import" class="setting" onclick="loadSettingsForm('import');">Import bookmarks</div>
+        </div>
+        <div class="settingspage table-color" id="settingspage">
+            <div class='settingsform'>
+
+                <div id="settingform_about">
+                    <p>
+                        The bookmartian is a self-hosted, personal bookmark database intended to make saving, finding, and using bookmarks simple but powerful. Designed to be easily hosted on your home machine or on a cloud server, bookmartian is self-contained with no external software dependencies.
+                    </p>
+                    <p>
+                        Enjoy!
+                    </p>
+                    <p>
+                        2016<br>
+                        Marty Lamb<br>
+                        John Mutchek<br>
+                    </p>
+                </div>
+
+                <!-- import bookmarks form (hidden at start) -->
+                <div id="settingform_import" style="display:none">
+                    <p>
+                        You can import bookmarks into Bookmartian from an existing file. The file must be formatted in the
+                        <a href='https://msdn.microsoft.com/en-us/library/aa753582(v=vs.85).aspx' target="_blank">Netscape Bookmark file format</a>.
+                    </p>
+                    <form id=import name=import action=post>
+                        <p><strong>Step 1.</strong> Find the file on your local file system.</p>
+                        <input class="importtagsfield" type="file" name="bookmarksFile" accept=".html,.htm">
+                        <p><strong>Step 2.</strong> Provide one or more tags that should automatically applied to the bookmarks
+                            in this import. Separate the tags with spaces or commas. Tags prefixed with a period (.) will
+                            be created, but will not be visible in your tag cloud.</p>
+                        <input class="importtagsfield" id="importtags" type="text" name="tags" value="">
+                        <script>
+                        var now = new Date(Date.now());
+                        $('#importtags').val(".imported_" + now.toISOString().replace(/[T:]/g,'-').substring(0,19) + " ");
+                    </script>
+                        <p><strong>Step 3.</strong> Upload the file for import!</p>
+                        <input type="button" value="Import the bookmarks now" name="importsubmit" onclick="importBookmarks();">
+                    </form>
+                    <div class='message' id='importStatusMessage'></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <hr class="divider-color" style="" />
+    <div class='footer secondary-text-color'>
+        the bookmartian | 2016 | mlamb/jmutchek |
+        <a href="settings.html">settings</a> | source on <a href="https://github.com/martylamb/bookmartian">github</a> |
+        get this <a id='bookmarklet' href="#">bookmarklet</a>
+    </div>
+
+    <script>
+        // --------------------------------------------------------------------------
+        // update the bookmarklet on the page to reflect the current protocol and host        
+        var http = location.protocol;
+        var slashes = http.concat("//");
+        var host = slashes.concat(window.location.host);
+        $('#bookmarklet').attr("href", "javascript:(function(){if(window.myBookmarklet!==undefined){myBookmarklet();}else{var bs=document.createElement('script');bs.id='bookmartian_scriptblock';bs.src='" + host + "/bookmarklet.js';document.body.appendChild(bs);}})();")
+    </script>
+
+</body>
+
+</html>
