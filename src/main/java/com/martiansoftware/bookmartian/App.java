@@ -26,6 +26,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.MultipartConfigElement;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -35,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
+import spark.utils.IOUtils;
 
 /**
  *
@@ -87,6 +89,9 @@ public class App {
         post("/api/bookmark/delete", () -> deleteBookmark(bm));
         
         post("/api/bookmarks/import", () -> importNetscapeBookmarksFile(bm));
+        
+        get("/", (req, rsp) -> IOUtils.toString(App.class.getResourceAsStream("/static-content/index.html")));
+        get("/index.html", (req, rsp) -> { rsp.redirect("/", HttpServletResponse.SC_MOVED_PERMANENTLY); return null; });
     }
     
     private static BoomResponse query(IBookmartian bm) {
