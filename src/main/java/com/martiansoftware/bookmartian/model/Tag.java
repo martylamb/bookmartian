@@ -1,6 +1,6 @@
 package com.martiansoftware.bookmartian.model;
 
-import com.martiansoftware.util.Check;
+import com.martiansoftware.validation.Hope;
 
 /**
  *
@@ -12,7 +12,7 @@ public class Tag {
     private final Color _color;
 
     private Tag(TagName tagName, Color color) {
-        _name = Check.arg(tagName, "tagName").notNull().value();
+        _name = Hope.that(tagName).named("tagName").isNotNull().value();
         _color = (color == null) ? Color.BLACK : color;
     }
     

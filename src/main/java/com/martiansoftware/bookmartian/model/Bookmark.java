@@ -5,8 +5,8 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
-import com.martiansoftware.util.Check;
 import com.martiansoftware.util.Strings;
+import com.martiansoftware.validation.Hope;
 import java.lang.reflect.Type;
 import java.text.Collator;
 import java.util.Comparator;
@@ -53,7 +53,7 @@ public class Bookmark {
                         Date lastVisited,
                         long visitCount) {
         
-        _url = Check.arg(lurl, "url").notNull().value();
+        _url = Hope.that(lurl).named("url").isNotNull().value();
         _title = Optional.ofNullable(Strings.safeTrimToNull(title));
         _notes = Optional.ofNullable(Strings.safeTrimToNull(notes));
         _imageUrl = Optional.ofNullable(Strings.safeTrimToNull(imageUrl));
