@@ -20,7 +20,10 @@ import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.util.Strings;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -68,12 +71,16 @@ public class App {
         }
         
         JsonConfig.init();
-        IBookmartian bm = JsonDirBookmartian.in(Paths.get(cmd.getString(ARG_BOOKMARTIAN_DIR)));
+        Path bmHome = Paths.get(cmd.getString(ARG_BOOKMARTIAN_DIR));
+        IBookmartian bm = JsonDirBookmartian.in(bmHome);
+        
         
         Runtime.getRuntime().addShutdownHook(new Thread(() -> bm.shutdown()));
         
         before("/*", (req, rsp) -> log(req, rsp));
         before("/*", (req, rsp) -> disableCaching(req, rsp));
+        
+        loadPlugins(bmHome);
         
         get("/api/tags", () -> json(bm.tags()));
         
@@ -237,4 +244,34 @@ public class App {
         }
     }
  
+    private static void loadPlugins(Path bmHome) throws Exception {
+        log.info("loading plugins");
+        File authFile = bmHome.resolve("users").resolve("anonymous").resolve("auth.properties").toFile();
+        System.setProperty("BOOKMARTIAN_AUTH_FILE", authFile.getAbsolutePath());
+        
+        Path pluginDir = bmHome.resolve("plugins");
+        if (Files.isDirectory(pluginDir)) {
+            Files.list(bmHome.resolve("plugins")).filter(p -> p.getFileName().toString().toLowerCase().endsWith(".jar")).forEach(p -> loadPlugin(p));
+        } else {
+            log.info("no plugins found");
+        }
+        log.info("finished loading plugins");
+    }
+    
+    private static void loadPlugin(Path plugin) {
+        log.info("loading {}", plugin.toAbsolutePath());
+        try {
+            URL[] urls = { plugin.toUri().toURL() };
+            ClassLoader pcl = new URLClassLoader(urls);
+            Class c = pcl.loadClass("com.martiansoftware.bookmartian.auth.AuthPlugin"); // TODO: don't hardcode class here (duh)
+            log.info("creating auth plugin");
+            Runnable r = (Runnable) c.newInstance();
+            log.info("running auth plugin");
+            r.run();
+            log.info("finished loading plugins");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            System.exit(1);
+        }
+    }
 }
