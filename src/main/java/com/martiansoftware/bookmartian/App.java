@@ -20,12 +20,16 @@ import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.util.Strings;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import javax.servlet.MultipartConfigElement;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -35,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
+import spark.utils.IOUtils;
 
 /**
  *
@@ -66,12 +71,16 @@ public class App {
         }
         
         JsonConfig.init();
-        IBookmartian bm = JsonDirBookmartian.in(Paths.get(cmd.getString(ARG_BOOKMARTIAN_DIR)));
+        Path bmHome = Paths.get(cmd.getString(ARG_BOOKMARTIAN_DIR));
+        IBookmartian bm = JsonDirBookmartian.in(bmHome);
+        
         
         Runtime.getRuntime().addShutdownHook(new Thread(() -> bm.shutdown()));
         
         before("/*", (req, rsp) -> log(req, rsp));
         before("/*", (req, rsp) -> disableCaching(req, rsp));
+        
+        loadPlugins(bmHome);
         
         get("/api/tags", () -> json(bm.tags()));
         
@@ -87,6 +96,9 @@ public class App {
         post("/api/bookmark/delete", () -> deleteBookmark(bm));
         
         post("/api/bookmarks/import", () -> importNetscapeBookmarksFile(bm));
+        
+        get("/", (req, rsp) -> IOUtils.toString(App.class.getResourceAsStream("/static-content/index.html")));
+        get("/index.html", (req, rsp) -> { rsp.redirect("/", HttpServletResponse.SC_MOVED_PERMANENTLY); return null; });
     }
     
     private static BoomResponse query(IBookmartian bm) {
@@ -232,4 +244,34 @@ public class App {
         }
     }
  
+    private static void loadPlugins(Path bmHome) throws Exception {
+        log.info("loading plugins");
+        File authFile = bmHome.resolve("users").resolve("anonymous").resolve("auth.properties").toFile();
+        System.setProperty("BOOKMARTIAN_AUTH_FILE", authFile.getAbsolutePath());
+        
+        Path pluginDir = bmHome.resolve("plugins");
+        if (Files.isDirectory(pluginDir)) {
+            Files.list(bmHome.resolve("plugins")).filter(p -> p.getFileName().toString().toLowerCase().endsWith(".jar")).forEach(p -> loadPlugin(p));
+        } else {
+            log.info("no plugins found");
+        }
+        log.info("finished loading plugins");
+    }
+    
+    private static void loadPlugin(Path plugin) {
+        log.info("loading {}", plugin.toAbsolutePath());
+        try {
+            URL[] urls = { plugin.toUri().toURL() };
+            ClassLoader pcl = new URLClassLoader(urls);
+            Class c = pcl.loadClass("com.martiansoftware.bookmartian.auth.AuthPlugin"); // TODO: don't hardcode class here (duh)
+            log.info("creating auth plugin");
+            Runnable r = (Runnable) c.newInstance();
+            log.info("running auth plugin");
+            r.run();
+            log.info("finished loading plugins");
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            System.exit(1);
+        }
+    }
 }

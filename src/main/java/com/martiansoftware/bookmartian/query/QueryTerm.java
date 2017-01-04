@@ -1,12 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.martiansoftware.bookmartian.query;
 
-import com.martiansoftware.util.Check;
 import com.martiansoftware.util.Strings;
+import com.martiansoftware.validation.Hope;
 import java.util.regex.Pattern;
 
 /**
@@ -20,8 +15,8 @@ import java.util.regex.Pattern;
     class QueryTerm {
         private final String _action, _arg;
         private QueryTerm(String action, String argument) {
-            _action = Strings.lower(Check.arg(action, "action").notNullOrEmpty().value());
-            _arg = Check.arg(Strings.safeTrimToNull(argument), "argument").notNullOrEmpty().value();
+            _action = Hope.that(action).named("action").isNotNullOrEmpty().map(s -> Strings.lower(s)).value();
+            _arg = Hope.that(Strings.safeTrimToNull(argument)).named("argument").isNotNullOrEmpty().value();
         }
         static QueryTerm of(String action, String arg) {
             return new QueryTerm(action, arg);

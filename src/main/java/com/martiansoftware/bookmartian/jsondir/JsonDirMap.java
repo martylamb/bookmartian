@@ -1,8 +1,8 @@
 package com.martiansoftware.bookmartian.jsondir;
 
 import com.martiansoftware.boom.Json;
-import com.martiansoftware.util.Check;
 import com.martiansoftware.util.Strings;
+import com.martiansoftware.validation.Hope;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -32,9 +32,9 @@ class JsonDirMap<K, V> {
     private final Map<K, ValueAndFilename<V>> _map = new java.util.TreeMap<>();
     
     private JsonDirMap(Path dir, Class<V> vClass, Function<V, K> keyGetter, String kDesc) throws IOException {
-        _dir = Check.arg(dir, "path").notNull().value();
-        _vClass = Check.arg(vClass, "value class").notNull().value();
-        _keyGetter = Check.arg(keyGetter, "keyGetter").notNull().value();
+        _dir = Hope.that(dir).named("path").isNotNull().value();
+        _vClass = Hope.that(vClass).named("value class").isNotNull().value();
+        _keyGetter = Hope.that(keyGetter).named("keyGetter").isNotNull().value();
         _kDesc = kDesc == null ? "key" : kDesc;
         load();
     }

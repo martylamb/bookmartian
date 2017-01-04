@@ -1,7 +1,7 @@
 package com.martiansoftware.bookmartian.model;
 
-import com.martiansoftware.util.Check;
 import com.martiansoftware.util.Strings;
+import com.martiansoftware.validation.Hope;
 import java.util.Objects;
 import java.util.stream.Stream;
 
@@ -17,9 +17,10 @@ public class Color {
 
     private Color(String color) {
         _color = Strings.lower(
-                    Check.arg(color, "color")
-                    .notNullOrEmpty()
-                    .isTrue(color.matches("#[0-9a-zA-Z]{6}"), "color must be of the form #ffffff")
+                    Hope.that(color)
+                    .named("color")
+                    .isNotNullOrEmpty()
+                    .matches("^#[0-9a-zA-Z]{6}$")
                     .value()
         );
     }
