@@ -27,6 +27,7 @@ import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletResponse;
@@ -98,7 +99,11 @@ public class App {
         post("/api/bookmarks/import", () -> importNetscapeBookmarksFile(bm));
         
         get("/", (req, rsp) -> IOUtils.toString(App.class.getResourceAsStream("/static-content/index.html")));
-        get("/index.html", (req, rsp) -> { rsp.redirect("/", HttpServletResponse.SC_MOVED_PERMANENTLY); return null; });
+        get("/index.html", (req, rsp) -> {             
+            String q = req.raw().getQueryString();
+            String dest = String.format("/%s%s", Strings.isEmpty(q) ? "" : "?", Strings.isEmpty(q) ? "" : q);
+            rsp.redirect(dest, HttpServletResponse.SC_MOVED_PERMANENTLY); return null; 
+        });
     }
     
     private static BoomResponse query(IBookmartian bm) {
