@@ -440,6 +440,12 @@ function executeSearch(term, reset) {
 $(document).ready(function () {
 
     // --------------------------------------------------------------------------
+    // capture the querystring in a cookie for use when navigating back to the dashboard
+    if (location.search.substr(1).length > 0) {
+        setCookie('querystring', location.search.substr(1));
+    }
+
+    // --------------------------------------------------------------------------
     // wire an event handler to capture the search box ENTER key
     $('#searchterm').keypress(function (event) {
 
@@ -452,9 +458,15 @@ $(document).ready(function () {
     $('#searchterm').focus();
 
     // --------------------------------------------------------------------------
-    // parse promoted queries from the querystring
+    // parse promoted queries from the querystring or from a cookie if the querystring for this session has been set
     var qd = {};
-    location.search.substr(1).split("&").forEach(function (item) { (item.split("=")[0] in qd) ? qd[item.split("=")[0]].push(item.split("=")[1]) : qd[item.split("=")[0]] = [item.split("=")[1]] })
+    var qs = '';
+    if (location.search.substr(1).length > 0) {
+        qs = location.search.substr(1);
+    } else {
+        qs = getCookie('querystring');
+    }
+    qs.split("&").forEach(function (item) { (item.split("=")[0] in qd) ? qd[item.split("=")[0]].push(item.split("=")[1]) : qd[item.split("=")[0]] = [item.split("=")[1]] })
 
     // create a linkblock for each pinned tag
     var promotedTags = "";
