@@ -419,7 +419,7 @@ function executeSearch(term, reset) {
             searchtable.attr('data-sort', json.data.sort);
             renderLinkTable(searchtable, true);
 
-            $('#search').show();
+            $('#searchresults').show();
             $('#searchhr').show();
         })
         // Code to run if the request fails; the raw request and
