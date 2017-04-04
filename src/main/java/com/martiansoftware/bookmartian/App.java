@@ -1,13 +1,12 @@
 package com.martiansoftware.bookmartian;
 
+import com.martiansoftware.bookmartian.auth.FormAuthenticator;
 import com.martiansoftware.util.JSend;
 import com.martiansoftware.bookmartian.model.Bookmark;
 import com.martiansoftware.bookmartian.model.IBookmartian;
 import com.martiansoftware.bookmartian.model.JsonConfig;
 import com.martiansoftware.bookmartian.jsondir.JsonDirBookmartian;
 import com.martiansoftware.bookmartian.model.Lurl;
-import com.martiansoftware.bookmartian.model.TagNameSet;
-import com.martiansoftware.bookmartian.query.Queries;
 import com.martiansoftware.bookmartian.query.Query;
 import java.nio.file.Paths;
 import static com.martiansoftware.boom.Boom.*;
@@ -17,18 +16,12 @@ import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
+import com.martiansoftware.jsap.Switch;
 import com.martiansoftware.util.Strings;
-import java.io.File;
 import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Date;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
@@ -40,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
+import spark.Spark;
 import spark.utils.IOUtils;
 
 /**
@@ -48,17 +42,29 @@ import spark.utils.IOUtils;
  */
 public class App {
     
-    private static final String ARG_BOOKMARTIAN_DIR = "BOOKMARTIAN_DIR";
+    private static final String JSAP_DIR = "bookmartian-dir";
+    private static final String JSAP_REQUIRELOGIN = "require-login";
+    
     private static Logger log = LoggerFactory.getLogger(App.class);
 
     private static JSAP jsap() throws JSAPException {
         JSAP jsap = new JSAP();
 
-        jsap.registerParameter(new FlaggedOption(ARG_BOOKMARTIAN_DIR)
+        String defaultDir = System.getProperty("user.dir");
+        jsap.registerParameter(new FlaggedOption(JSAP_DIR)
                                 .setShortFlag('d')
                                 .setLongFlag("dir")
-                                .setDefault(System.getProperty("user.dir"))
-                                .setRequired(true));
+                                .setDefault(defaultDir)
+                                .setRequired(true)
+                                .setHelp("specifies the bookmartian data directory (defaults to current directory: " + defaultDir + ")")
+        );
+        
+        jsap.registerParameter(new Switch(JSAP_REQUIRELOGIN)
+                                .setShortFlag('l')
+                                .setLongFlag("login")
+                                .setHelp("requires login")
+        )
+                ;
         return jsap;
     }
 
@@ -72,16 +78,18 @@ public class App {
         }
         
         JsonConfig.init();
-        Path bmHome = Paths.get(cmd.getString(ARG_BOOKMARTIAN_DIR));
+        Path bmHome = Paths.get(cmd.getString(JSAP_DIR));
         IBookmartian bm = JsonDirBookmartian.in(bmHome);
-        
-        
+                
         Runtime.getRuntime().addShutdownHook(new Thread(() -> bm.shutdown()));
         
         before("/*", (req, rsp) -> log(req, rsp));
         before("/*", (req, rsp) -> disableCaching(req, rsp));
         
-        loadPlugins(bmHome);
+        if (cmd.getBoolean(JSAP_REQUIRELOGIN)) {
+            Spark.awaitInitialization();
+            initAuth(bmHome);
+        }
         
         get("/api/tags", () -> json(bm.tags()));
         
@@ -249,34 +257,14 @@ public class App {
         }
     }
  
-    private static void loadPlugins(Path bmHome) throws Exception {
-        log.info("loading plugins");
-        File authFile = bmHome.resolve("users").resolve("anonymous").resolve("auth.properties").toFile();
-        System.setProperty("BOOKMARTIAN_AUTH_FILE", authFile.getAbsolutePath());
+    private static void initAuth(Path bmHome) throws Exception {
+        final FormAuthenticator fa = FormAuthenticator
+                                        .newBuilder()
+                                        .authFile(bmHome.resolve("users").resolve("anonymous").resolve("auth.properties"))
+                                        .build();
+     	fa.secure("/");
+     	fa.secure("/index.html");
+     	fa.secure("/api/*");
+    }
         
-        Path pluginDir = bmHome.resolve("plugins");
-        if (Files.isDirectory(pluginDir)) {
-            Files.list(bmHome.resolve("plugins")).filter(p -> p.getFileName().toString().toLowerCase().endsWith(".jar")).forEach(p -> loadPlugin(p));
-        } else {
-            log.info("no plugins found");
-        }
-        log.info("finished loading plugins");
-    }
-    
-    private static void loadPlugin(Path plugin) {
-        log.info("loading {}", plugin.toAbsolutePath());
-        try {
-            URL[] urls = { plugin.toUri().toURL() };
-            ClassLoader pcl = new URLClassLoader(urls);
-            Class c = pcl.loadClass("com.martiansoftware.bookmartian.auth.AuthPlugin"); // TODO: don't hardcode class here (duh)
-            log.info("creating auth plugin");
-            Runnable r = (Runnable) c.newInstance();
-            log.info("running auth plugin");
-            r.run();
-            log.info("finished loading plugins");
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            System.exit(1);
-        }
-    }
 }
