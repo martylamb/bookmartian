@@ -40,9 +40,9 @@ public class FormAuthenticator implements ConfigFactory {
         if (renderLoginFormWith == null) {
             _renderLoginFormWith = (req, rsp) -> {
                 return "<form action=\"" + loginPostAt() + "\" method=\"POST\">\n"
-                        + "<input type=\"text\" name=\"username\" value=\"\" />\n"
+                        + "Username: <input type=\"text\" name=\"username\" value=\"\" />\n"
                         + "<p/>\n"
-                        + "<input type=\"password\" name=\"password\" value=\"\" />\n"
+                        + "Passphrase: <input type=\"password\" name=\"password\" value=\"\" />\n"
                         + "<p />\n"
                         + "<input type=\"submit\" name=\"submit\" value=\"Submit\" />\n"
                         + "</form>";                
