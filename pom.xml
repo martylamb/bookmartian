@@ -17,6 +17,10 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
+        <logback.version>1.2.3</logback.version>
+        <boom.version>0.1.1</boom.version>
+        <commons-codec.version>1.10</commons-codec.version>
+        <jsoup.version>1.10.2</jsoup.version>
         <sparkPac4j.version>1.2.1</sparkPac4j.version>
         <pac4j.version>1.9.2</pac4j.version>        
     </properties>
@@ -32,7 +36,7 @@
         <dependency>
             <groupId>com.martiansoftware</groupId>
             <artifactId>boom</artifactId>
-            <version>0.1.0-SNAPSHOT</version>            
+            <version>${boom.version}</version>            
         </dependency>
         <dependency>
             <groupId>com.martiansoftware</groupId>
@@ -42,12 +46,12 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>1.1.7</version>
+            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
-            <version>1.1.7</version>
+            <version>${logback.version}</version>
         </dependency>
         <dependency>
             <groupId>com.martiansoftware</groupId>
@@ -57,7 +61,7 @@
         <dependency>
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
-            <version>1.9.2</version>
+            <version>${jsoup.version}</version>
         </dependency>
         <dependency>
             <groupId>org.pac4j</groupId>
@@ -72,7 +76,7 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.9</version>
+            <version>${commons-codec.version}</version>
         </dependency>                   
     </dependencies>
     
