@@ -466,7 +466,10 @@ $(document).ready(function () {
     } else {
         qs = getCookie('querystring');
     }
-    qs.split("&").forEach(function (item) { (item.split("=")[0] in qd) ? qd[item.split("=")[0]].push(item.split("=")[1]) : qd[item.split("=")[0]] = [item.split("=")[1]] })
+    
+    if (qs != null) {
+        qs.split("&").forEach(function (item) { (item.split("=")[0] in qd) ? qd[item.split("=")[0]].push(item.split("=")[1]) : qd[item.split("=")[0]] = [item.split("=")[1]] })
+    }
 
     // create a linkblock for each pinned tag
     var promotedTags = "";
