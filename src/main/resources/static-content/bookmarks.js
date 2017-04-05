@@ -396,8 +396,6 @@ function executeSearch(term, reset) {
     }
 
     closeAction();
-    $('#searchtable').children().remove();
-    $('#searchresultstitle').text('search results for \'' + searchterm + '\'');
 
     $.ajax({
         // The URL for the request
@@ -425,6 +423,7 @@ function executeSearch(term, reset) {
         // Code to run if the request fails; the raw request and
         // status codes are passed to the function
         .fail(function (xhr, status, errorThrown) {
+            $('#errormessage').html("unable to connect to server").show();
             console.log("Error: " + errorThrown);
             console.log("Status: " + status);
             console.dir(xhr);
@@ -432,6 +431,9 @@ function executeSearch(term, reset) {
         // Code to run regardless of success or failure;
         .always(function (xhr, status) {
         });
+
+    $('#searchtable').children().remove();
+    $('#searchresultstitle').text('search results for \'' + searchterm + '\'');
 
 }
 
@@ -466,7 +468,7 @@ $(document).ready(function () {
     } else {
         qs = getCookie('querystring');
     }
-    
+
     if (qs != null) {
         qs.split("&").forEach(function (item) { (item.split("=")[0] in qd) ? qd[item.split("=")[0]].push(item.split("=")[1]) : qd[item.split("=")[0]] = [item.split("=")[1]] })
     }
