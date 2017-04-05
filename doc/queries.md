@@ -29,41 +29,37 @@ The following actions are supported:
   * `is:untagged` - results will be limited to only those bookmarks with
      no tags.
      
+  * `is:secure` - only results with the protocol "https" will be returned
+     
   * `site:foo.com` - results will be limited to only those bookmarks with
     urls hosted at foo.com or its subdomains (e.g. searching for "foo.com"
     will match bookmarks for "foo.com", "www.foo.com", and "www.bar.foo.com").
     
-  * `visit-count:EXPR` - results will be limited to only those bookmarks
-    with a visit count that matches the specified expression.  The expression
-    may be a number (in which case only those bookmarks visited exactly
-    that number of times will be included in results) or may start with
-    a comparison operator: ">", ">=", "<", or "<=" followed immediately
-    by a number, in which case only the results depend upon the operator
-    and the following number.  For convenience, both "=" and "==" are
-    supported and are equivalent to specifying no operator at all.  For
-    example, `visit-count:10` will limit results to only those bookmarks
-    visited exactly ten times, while `visit-count:>=10` will instead
-    limit results to those bookmarks visited ten times or more.
+  * `created-before:EXPR` results will be limited to only those bookmarks
+    created before the specified expression.  The expression may be 
+    an explicit date in the form yyyy/MM/dd, or a relative date such as
+    "1y3m" meaning "1 year 3 months ago"  Relative dates may be specified
+    using years, months, weeks, and days.  Relative dates may also be
+    the fixed values "today" or "yesterday"
     
-  * `created:EXPR` - results will be limited to only those bookmarks with
-    a creation time that matches the specified expression.  The expression
-    may be a date in the format "yyyy/mm/dd", or a comparison operator
-    (as described above for `visit-count`) followed immediately by a date.
-    For example, `created:2016/09/17` will limit results to only those
-    created on September 17, 2016, whereas `created:>=2016/09/17` will
-    limit results to those created either on or after that date.
-    Date expressions may also be presented as adjustments to the current
-    date, such as "7d" meaning "7 days ago", or "1y6m" meaning "one year
-    six months ago."  Years, months, weeks, and days are supported,
-    plus "today" and "yesterday"
+  * `created-since:EXPR` results will be limited to only those bookmarks
+    created on or after the date described in EXPR.  See created-before
+    for syntax.
     
-  * `last-visited:EXPR` - same as `created:EXPR` but using the bookmark's
-    last-visited time.
+  * `created:EXPR` or `created-on:EXPR` - results will be limited to
+    only those bookmarks created on the the specified date.
     
-  * `last-modified:EXPR` - same as `created:EXPR` but using the bookmark's
-    last-modified time.  A modification is an edit of any of the bookmark's
-    properties, including its tags.
-
+  * `modified-before:EXPR`, `modified-since:EXPR`, `modified:EXPR`, `modified-on:EXPR` -
+    results will be limited to only those bookmarks modified according
+    to the specified expression.
+    
+  * `visited-before:EXPR`, `visited-since:EXPR`, `visited:EXPR`, `visiteded-on:EXPR` -
+    results will be limited to only those bookmarks last visited according
+    to the specified expression.
+       
+  * `visits-over:N`, `visits-under:N`, `visits:N` - results will be limited
+    to only those bookmarks with visit counts according to the specified expression.
+    
   * `by:title` - results will be sorted in ascending order by title
     (case-insensitive).
     
@@ -93,11 +89,7 @@ The following actions are supported:
     
   * `by:least-visited` - results will be sorted with least-visited (lowest
     visit-count) bookmarks listed first.
-    
-  * `by:title` - results will be sorted ascending by title (case-insensitive)
-  
-  * `by:url` - results will be sorted ascending by url
-    
+        
   * `limit:N` - results will be limited to the first N as specified
   
   * `as:query-name` - resulting list of bookmarks will be named as
