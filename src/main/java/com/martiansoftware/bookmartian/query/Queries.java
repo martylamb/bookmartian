@@ -226,7 +226,7 @@ public class Queries {
         private static final Map<String, COMPARISONS> NUMMAP = new java.util.HashMap<>();
         
         static {
-            DATEMAP.put("[-on]", EQ); DATEMAP.put(null, EQ); DATEMAP.put("", EQ); DATEMAP.put("-before", LT); DATEMAP.put("-since", GTE);
+            DATEMAP.put("-on", EQ); DATEMAP.put(null, EQ); DATEMAP.put("", EQ); DATEMAP.put("-before", LT); DATEMAP.put("-since", GTE);
             NUMMAP.put(null, EQ); NUMMAP.put("", EQ); NUMMAP.put("-under", LT); NUMMAP.put("-over", GTE);
         }
         
