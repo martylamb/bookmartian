@@ -20,7 +20,7 @@ function buildBookmarkRow(element, withTags) {
     }
 
     var tags = "";
-    if (withTags) {
+    if (withTags && element.tags != null) {
         var taglist = element.tags.toString().split(',');
         tags = " - "
         taglist.forEach(function (tag) {
@@ -465,13 +465,15 @@ $(document).ready(function () {
     var qs = '';
     if (location.search.substr(1).length > 0) {
         qs = location.search.substr(1);
-    } else {
+    } else if (getCookie('querystring') != null) {
         qs = getCookie('querystring');
+    } else {
+        qs = "pin=created-since:2w+as:recent-saves+by:most-recently-created&pin=visited-since:2w+as:recent-visits+by:most-recently-visited&pin=is:untagged+as:untagged&tiles=by:most-visited+limit:5";
     }
 
     if (qs != null) {
         qs.split("&").forEach(function (item) { (item.split("=")[0] in qd) ? qd[item.split("=")[0]].push(item.split("=")[1]) : qd[item.split("=")[0]] = [item.split("=")[1]] })
-    }
+    } 
 
     // create a linkblock for each pinned tag
     var promotedTags = "";
