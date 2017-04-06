@@ -11,6 +11,7 @@ public interface ITagCollection {
     
     public List<Tag> all();
     public void add(Tag tag) throws IOException;
+    public Tag remove(TagName tag) throws IOException;
     public Tag get(TagName name);
     public boolean contains(TagName name);
     

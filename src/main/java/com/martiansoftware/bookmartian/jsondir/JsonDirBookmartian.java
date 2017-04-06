@@ -5,6 +5,7 @@ import com.martiansoftware.bookmartian.model.IBookmartian;
 import com.martiansoftware.bookmartian.model.Lurl;
 import com.martiansoftware.bookmartian.query.Query;
 import com.martiansoftware.bookmartian.model.Tag;
+import com.martiansoftware.bookmartian.model.TagNameSet;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -119,11 +120,25 @@ public class JsonDirBookmartian implements IBookmartian {
         }
     }
     
+    private void removeEmptyTags(TagNameSet tags) {
+        if (tags == null) return;
+        tags.asSet().stream().forEach(t -> {
+            try {
+                if (Query.of(t.toString()).execute(this).isEmpty()) {
+                    log.info("autoremoving unused tag {}", t);
+                    _tags.remove(t);
+                }
+            } catch (IOException ignored) {}
+        });                
+    }
+    
     @Override
     public Bookmark remove(Lurl lurl) throws IOException {
         synchronized(_lock) {
             checkShutdown();
-            return _bookmarks.remove(lurl);
+            Bookmark result = _bookmarks.remove(lurl);
+            if (result != null) removeEmptyTags(result.tagNames());
+            return result;
         }
     }    
 

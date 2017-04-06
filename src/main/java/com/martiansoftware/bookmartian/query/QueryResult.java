@@ -15,7 +15,7 @@ import java.util.List;
  * @author mlamb
  */
     // the type returned by Query.execute()
-class QueryResult {
+public class QueryResult {
     private String _name, _query, _sort;
     private List<Bookmark> _bookmarks;
     private final Date _executed = new Date();
@@ -26,6 +26,7 @@ class QueryResult {
     public QueryResult query(String query) { _query = query; return this;}
     public boolean hasSort() { return _sort != null; }
     public QueryResult sort(String sort) { _sort = sort; return this;}
+    public boolean isEmpty() { return _bookmarks == null || _bookmarks.isEmpty(); }
     
     public QueryResult bookmarks(List<Bookmark> bookmarks) {
         _bookmarks = bookmarks;

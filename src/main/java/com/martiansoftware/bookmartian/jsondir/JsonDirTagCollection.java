@@ -56,4 +56,11 @@ public class JsonDirTagCollection implements ITagCollection {
     public boolean contains(TagName name) {
         return get(name) != null;
     }
+    
+    @Override
+    public Tag remove(TagName name) throws IOException {
+        synchronized(_lock) {
+            return _map.remove(name);
+        }
+    }
 }
