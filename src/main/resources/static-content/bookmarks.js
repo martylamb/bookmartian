@@ -6,7 +6,7 @@ function buildBookmarkRow(element, withTags) {
 
     var title = "";
     if (typeof element.title != 'undefined') {
-        title = element.title;
+        title = element.title.replace(/\'/g, '&apos;');
     }
 
     var padlock = ""
@@ -16,7 +16,7 @@ function buildBookmarkRow(element, withTags) {
 
     var notes = "";
     if (typeof element.notes != 'undefined') {
-        notes = element.notes;
+        notes = element.notes.replace(/\'/g, '&apos;');
     }
 
     var imageUrl = "";
