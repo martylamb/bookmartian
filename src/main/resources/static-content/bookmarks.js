@@ -4,6 +4,11 @@ var bookmarkJSONArrays = new Array();
 // construct an HTML table row string to visualize a single bookmark and its edit/delete/detail capabilities
 function buildBookmarkRow(element, withTags) {
 
+    var title = "";
+    if (typeof element.title != 'undefined') {
+        title = element.title;
+    }
+
     var padlock = ""
     if (element.url.substr(0, 5) === "https") {
         padlock = "&nbsp;&nbsp;<i class='fa fa-lock padlock'></i>";
@@ -20,7 +25,7 @@ function buildBookmarkRow(element, withTags) {
     }
 
     var tags = "";
-    if (withTags && element.tags != null) {
+    if (withTags && typeof element.tags != 'undefined') {
         var taglist = element.tags.toString().split(',');
         tags = " - "
         taglist.forEach(function (tag) {
@@ -51,7 +56,7 @@ function buildBookmarkRow(element, withTags) {
         modified = "modified on " + modifiedDate.toDateString();
     }
 
-    var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "'></td><td class='bookmark'><a rel='noreferrer' href='" + API_VisitLink + "?url=" + escape(element.url) + "' data-url='" + element.url + "' data-tags='" + element.tags + "' data-notes='" + notes + "' data-imageurl='" + imageUrl + "' data-title='" + element.title + "'>" + element.title + "</a>" + padlock + tags + "<i class='fa fa-angle-down edit-ellipsis tertiary-text-color' aria-hidden='true' onclick='toggleEdits(this)'></i></td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a onclick='deleteMark(this);'>delete</a><p class='dateinfo text-default-primary-color'>" + element.url + "</p><p class='dateinfo secondary-text-color'>" + created + "</br>" + modified + "</br>" + lastVisited + lastVisitedTime + "</p></td></tr>";
+    var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "'></td><td class='bookmark'><a rel='noreferrer' href='" + API_VisitLink + "?url=" + escape(element.url) + "' data-url='" + element.url + "' data-tags='" + tags + "' data-notes='" + notes + "' data-imageurl='" + imageUrl + "' data-title='" + title + "'>" + title + "</a>" + padlock + tags + "<i class='fa fa-angle-down edit-ellipsis tertiary-text-color' aria-hidden='true' onclick='toggleEdits(this)'></i></td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a onclick='deleteMark(this);'>delete</a><p class='dateinfo text-default-primary-color'>" + element.url + "</p><p class='dateinfo secondary-text-color'>" + created + "</br>" + modified + "</br>" + lastVisited + lastVisitedTime + "</p></td></tr>";
 
     return row;
 }
