@@ -198,7 +198,7 @@ public class Queries {
             if (!m.matches()) oops("bad date query: %s", qt.toString());
             BiPredicate<Date, Date> cmp = COMPARISONS.forDateSuffix(m.group("op")).asFunction();
             return (s, r) -> s.filter(b -> cmp.test(
-                                            FIELDS.forName(m.group("field")).readFrom(b).orElse(null),
+                                            com.martiansoftware.util.Dates.stripTime(FIELDS.forName(m.group("field")).readFrom(b).orElse(null)),
                                             com.martiansoftware.util.Dates.stripTime(dateOf(qt.arg()))
                                       )
                                  );
@@ -206,7 +206,7 @@ public class Queries {
         
         private Date dateOf(String s) {
             try { return new SimpleDateFormat("yyyy/MM/dd").parse(s); } catch (Exception ignored) {}
-            try { return RelativeDateParser.parse(s); } catch (Exception ignored) {}
+            try { return RelativeDateParser.parse(s); } catch (Exception ignored) {ignored.printStackTrace();}
             return oops("unable to interpret '%s' as a date", s);
         }
     }

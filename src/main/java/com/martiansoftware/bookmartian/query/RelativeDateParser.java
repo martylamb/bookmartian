@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -18,11 +19,11 @@ import java.util.stream.Stream;
  */
 public class RelativeDateParser {
     
-    private static final Map<String, String> MACROS = new java.util.HashMap<>();
+    private static final Map<String, Supplier<Date>> MACROS = new java.util.HashMap<>();
     
     static {
-        MACROS.put("today", "0d");
-        MACROS.put("yesterday", "1d");
+        MACROS.put("today", () -> Dates.today());
+        MACROS.put("yesterday", () -> Dates.yesterday());
     }
     
     enum UNITS { 
@@ -69,7 +70,7 @@ public class RelativeDateParser {
     
     public static Date parse(String s) {
         String d = Strings.lower(s);
-        if (MACROS.containsKey(d)) return parse(MACROS.get(d));
+        if (MACROS.containsKey(d)) return MACROS.get(d).get();
         
         Matcher m = MULTIPLE_ADJUSTMENTS.matcher(d);
         if (!m.matches()) Oops.oops("not a valid relative date: '%s'", s);
@@ -81,9 +82,5 @@ public class RelativeDateParser {
         }        
         return Dates.stripTime(cal.getTime());
     }
- 
-    
-    public static void main(String[] args) {
-        System.out.println(parse("today"));
-    }
+
 }

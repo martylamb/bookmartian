@@ -1,5 +1,7 @@
 package com.martiansoftware.util;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -21,6 +23,16 @@ public class Dates {
         cal.set(Calendar.SECOND, 0);
         cal.set(Calendar.MILLISECOND, 0);
         return cal.getTime();
+    }
+    
+    public static Date today() {
+        return stripTime(new Date());
+    }
+    
+    public static Date yesterday() {
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+        return stripTime(cal.getTime());
     }
     
 }
