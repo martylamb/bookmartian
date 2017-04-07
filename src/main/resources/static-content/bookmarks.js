@@ -294,6 +294,52 @@ function populateLinkTable(value) {
 }
 
 // ==========================================================================
+// rebuild the tag cloud at the top of the page
+function populateTagCloud() {
+    var tagColors = new Array();
+
+    $(".tagcloud").empty();
+
+    $.ajax({
+        // The URL for the request
+        url: API_QueryTags,
+
+        // Whether this is a POST or GET request
+        type: "GET",
+
+        // The type of data we expect back
+        dataType: "json"
+    })
+        // Code to run if the request succeeds (is done);
+        // The response is passed to the function
+        .done(function (json) {
+            $(json).each(function (index, element) {
+                if (element.name.substr(0, 1) !== ".") {
+                    var link = "<a onclick=\"executeSearch('" + element.name + "', true);\" style=color:" + element.color + " id=" + element.name + ">" + element.name + "</a>";
+                    $(".tagcloud").append(link).append(" &nbsp;");
+                    tagColors[element.name] = element.color;
+                }
+            })
+        })
+        // Code to run if the request fails; the raw request and
+        // status codes are passed to the function
+        .fail(function (xhr, status, errorThrown) {
+            console.log("Error: " + errorThrown);
+            console.log("Status: " + status);
+            console.dir(xhr);
+        })
+        // Code to run regardless of success or failure;
+        .always(function (xhr, status) {
+            // color the hearing of each linkblock for pinned tags
+            $.each(promotedTagArray, function (index, value) {
+                var cleanHeading = value.replace(/\.[^|]+/g, '').replace(/\|/g, '');
+                var heading = $("#content").find("h1:contains('" + cleanHeading + "')");
+                heading.css('color', tagColors[cleanHeading]);
+            });
+        });
+}
+
+// ==========================================================================
 // POST the bookmark back to the service to save it
 function saveBookmark() {
 
@@ -307,6 +353,7 @@ function saveBookmark() {
 
     $.post(API_UpdateBookmark, serializedFormData)
         .done(function () {
+            populateTagCloud();
             closeAction();
         })
         .fail(function () {
@@ -363,6 +410,7 @@ function deleteMark(e) {
             console.log('delete POST successful');
             $(e).parent().remove();
             bookmark.parent().parent().remove();
+            populateTagCloud();            
         })
         .fail(function () {
             console.log("delete POST failed");
@@ -504,44 +552,7 @@ $(document).ready(function () {
 
     // --------------------------------------------------------------------------
     // retrieve tag cloud
-    var tagColors = new Array();
-    $.ajax({
-        // The URL for the request
-        url: API_QueryTags,
-
-        // Whether this is a POST or GET request
-        type: "GET",
-
-        // The type of data we expect back
-        dataType: "json"
-    })
-        // Code to run if the request succeeds (is done);
-        // The response is passed to the function
-        .done(function (json) {
-            $(json).each(function (index, element) {
-                if (element.name.substr(0, 1) !== ".") {
-                    var link = "<a onclick=\"executeSearch('" + element.name + "', true);\" style=color:" + element.color + " id=" + element.name + ">" + element.name + "</a>";
-                    $(".tagcloud").append(link).append(" &nbsp;");
-                    tagColors[element.name] = element.color;
-                }
-            })
-        })
-        // Code to run if the request fails; the raw request and
-        // status codes are passed to the function
-        .fail(function (xhr, status, errorThrown) {
-            console.log("Error: " + errorThrown);
-            console.log("Status: " + status);
-            console.dir(xhr);
-        })
-        // Code to run regardless of success or failure;
-        .always(function (xhr, status) {
-            // color the hearing of each linkblock for pinned tags
-            $.each(promotedTagArray, function (index, value) {
-                var cleanHeading = value.replace(/\.[^|]+/g, '').replace(/\|/g, '');
-                var heading = $("#content").find("h1:contains('" + cleanHeading + "')");
-                heading.css('color', tagColors[cleanHeading]);
-            });
-        });
+    populateTagCloud();
 
     // --------------------------------------------------------------------------
     // retrieve promoted tiles based on querystring query "tiles="
