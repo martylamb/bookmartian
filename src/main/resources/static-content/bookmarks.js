@@ -1,4 +1,5 @@
 var bookmarkJSONArrays = new Array();
+var promotedTagArray;
 
 // ==========================================================================
 // construct an HTML table row string to visualize a single bookmark and its edit/delete/detail capabilities
@@ -468,15 +469,21 @@ function executeSearch(term, reset) {
         // Code to run if the request succeeds (is done);
         // The response is passed to the function
         .done(function (json) {
-            var searchtable = $('#searchtable');
+            if (json.status == "success") {
+                var searchtable = $('#searchtable');
 
-            bookmarkJSONArrays['searchtable'] = $(json.data.bookmarks);
-            searchtable.attr('data-searchterm', searchterm);
-            searchtable.attr('data-sort', json.data.sort);
-            renderLinkTable(searchtable, true);
+                bookmarkJSONArrays['searchtable'] = $(json.data.bookmarks);
+                searchtable.attr('data-searchterm', searchterm);
+                searchtable.attr('data-sort', json.data.sort);
+                renderLinkTable(searchtable, true);
 
-            $('#searchresults').show();
-            $('#searchhr').show();
+                $('#errormessage').html("").hide();
+                $('#searchresults').show();
+                $('#searchhr').show();
+            } else {
+                $('#errormessage').html(json.message).show();
+            }
+        
         })
         // Code to run if the request fails; the raw request and
         // status codes are passed to the function
@@ -535,9 +542,10 @@ $(document).ready(function () {
 
     // create a linkblock for each pinned tag
     var promotedTags = "";
+    
     if (qd.pin) {
-        var promotedTags = qd.pin.toString();
-        var promotedTagArray = promotedTags.split(",");
+        promotedTags = qd.pin.toString();
+        promotedTagArray = promotedTags.split(",");
     }
 
     $.each(promotedTagArray, function (index, value) {
