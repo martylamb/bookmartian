@@ -51,18 +51,28 @@ function buildBookmarkRow(element, withTags) {
     }
 
     var created = "";
+    var createdTime = "";
     if (typeof element.created != 'undefined') {
         var createdDate = new Date(element.created);
+        // if the bookmark was created in the last 8 hours, also display the time of the creation
+        if (Date.now() - createdDate < 28800000) {
+            createdTime = " at " + createdDate.toLocaleTimeString() + " ";
+        }
         created = "created on " + createdDate.toDateString();
     }
 
     var modified = "";
+    var modifiedTime = "";
     if (typeof element.modified != 'undefined') {
         var modifiedDate = new Date(element.modified);
+        // if the bookmark was modified in the last 8 hours, also display the time of the mod
+        if (Date.now() - modifiedDate < 28800000) {
+            modifiedTime = " at " + modifiedDate.toLocaleTimeString() + " ";
+        }
         modified = "modified on " + modifiedDate.toDateString();
     }
 
-    var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "'></td><td class='bookmark'><a rel='noreferrer' href='" + API_VisitLink + "?url=" + escape(element.url) + "' data-url='" + element.url + "' data-tags='" + tagsplain + "' data-notes='" + notes + "' data-imageurl='" + imageUrl + "' data-title='" + title + "'>" + title + "</a>" + padlock + tags + "<i class='fa fa-angle-down edit-ellipsis tertiary-text-color' aria-hidden='true' onclick='toggleEdits(this)'></i></td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a onclick='deleteMark(this);'>delete</a><p class='dateinfo text-default-primary-color'>" + element.url + "</p><p class='dateinfo secondary-text-color'>" + created + "</br>" + modified + "</br>" + lastVisited + lastVisitedTime + "</p></td></tr>";
+    var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "'></td><td class='bookmark'><a rel='noreferrer' href='" + API_VisitLink + "?url=" + escape(element.url) + "' data-url='" + element.url + "' data-tags='" + tagsplain + "' data-notes='" + notes + "' data-imageurl='" + imageUrl + "' data-title='" + title + "'>" + title + "</a>" + padlock + tags + "<i class='fa fa-angle-down edit-ellipsis tertiary-text-color' aria-hidden='true' onclick='toggleEdits(this)'></i></td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a onclick='deleteMark(this);'>delete</a><p class='dateinfo text-default-primary-color'>" + element.url + "</p><p class='dateinfo secondary-text-color'>" + created + createdTime + "</br>" + modified + modifiedTime + "</br>" + lastVisited + lastVisitedTime + "</p></td></tr>";
 
     return row;
 }
