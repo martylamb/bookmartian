@@ -206,6 +206,18 @@ function sortThisTable(e, sortField) {
 }
 
 // ==========================================================================
+// open all links in the table in tabs
+function openAllLinksinTabs(e) {
+    var thisTable = $(e).parent().parent().find("table");
+    var listDataJSON = bookmarkJSONArrays[thisTable.attr('id')];
+
+    for (i=0; i < listDataJSON.length; i++) {
+        window.open(listDataJSON[i]["url"]);
+    }
+    window.focus();
+}
+
+// ==========================================================================
 // render link table
 function renderLinkTable(linktable, withTags) {
     // clear the table out
