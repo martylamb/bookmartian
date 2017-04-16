@@ -78,7 +78,7 @@ public class App {
         JSAP jsap = jsap();
         JSAPResult cmd = jsap().parse(args);
         if (!cmd.success()) {
-            System.err.format("Usage: bookmartian %s", jsap.getUsage());
+            System.err.format("Usage: bookmartian %s%n", jsap.getUsage());
             System.exit(1);
         }
         
