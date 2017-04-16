@@ -7,10 +7,13 @@ import com.martiansoftware.bookmartian.model.IBookmartian;
 import com.martiansoftware.bookmartian.model.JsonConfig;
 import com.martiansoftware.bookmartian.jsondir.JsonDirBookmartian;
 import com.martiansoftware.bookmartian.model.Lurl;
+import com.martiansoftware.bookmartian.model.Tag;
 import com.martiansoftware.bookmartian.query.Query;
 import java.nio.file.Paths;
 import static com.martiansoftware.boom.Boom.*;
 import com.martiansoftware.boom.BoomResponse;
+import com.martiansoftware.boom.Json;
+import com.martiansoftware.boom.MimeType;
 import com.martiansoftware.boom.StatusPage;
 import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
@@ -21,6 +24,8 @@ import com.martiansoftware.util.Strings;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.http.HttpServletResponse;
@@ -98,6 +103,7 @@ public class App {
         get("/api/bookmarks", () -> query(bm));
         get("/api/visit", () -> visit(bm));
         get("/api/query-help", () -> { response().redirect("/api/query-help.json"); return null; });
+        get("/api/backup", () -> backup(bm));
         
         options("/api/bookmark/update", () -> corsOptions());
         post("/api/bookmark/update", () -> updateBookmark(bm));
@@ -185,6 +191,14 @@ public class App {
         }
     }
     
+    private static BoomResponse backup(IBookmartian bm) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
+        
+        return new BoomResponse(Json.toJson(new Backup(bm)))
+                        .as(MimeType.BIN)
+                        .named(String.format("backup-%s.bookmartian", sdf.format(new Date())));
+    }
+    
     private static BoomResponse visit(IBookmartian bm) {
         String url = q("url");
         if (url == null) halt(400, "a URL is required");
@@ -267,4 +281,13 @@ public class App {
      	fa.secure("/api/*");
     }
         
+    private static class Backup {        
+        private final Collection<Tag> tags;
+        private final Collection<Bookmark> bookmarks;
+        
+        public Backup(IBookmartian bm) {
+            tags = bm.tags();
+            bookmarks = bm.bookmarks();
+        }
+    }
 }
