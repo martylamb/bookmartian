@@ -1,11 +1,12 @@
 package com.martiansoftware.bookmartian;
 
 import com.martiansoftware.bookmartian.auth.FormAuthenticator;
+import com.martiansoftware.bookmartian.db.Database;
 import com.martiansoftware.util.JSend;
 import com.martiansoftware.bookmartian.model.Bookmark;
-import com.martiansoftware.bookmartian.model.IBookmartian;
 import com.martiansoftware.bookmartian.model.JsonConfig;
 import com.martiansoftware.bookmartian.jsondir.JsonDirBookmartian;
+import com.martiansoftware.bookmartian.model.Bookmartian;
 import com.martiansoftware.bookmartian.model.Lurl;
 import com.martiansoftware.bookmartian.model.Tag;
 import com.martiansoftware.bookmartian.query.Query;
@@ -40,6 +41,8 @@ import spark.Request;
 import spark.Response;
 import spark.Spark;
 import spark.utils.IOUtils;
+import com.martiansoftware.bookmartian.model.User;
+import java.util.Optional;
 
 /**
  *
@@ -52,49 +55,51 @@ public class App {
     
     private static Logger log = LoggerFactory.getLogger(App.class);
 
-    private static JSAP jsap() throws JSAPException {
-        JSAP jsap = new JSAP();
-
-        String defaultDir = System.getProperty("user.dir");
-        jsap.registerParameter(new FlaggedOption(JSAP_DIR)
-                                .setShortFlag('d')
-                                .setLongFlag("dir")
-                                .setDefault(defaultDir)
-                                .setRequired(true)
-                                .setHelp("specifies the bookmartian data directory (defaults to current directory: " + defaultDir + ")")
-        );
-        
-        jsap.registerParameter(new Switch(JSAP_REQUIRELOGIN)
-                                .setShortFlag('l')
-                                .setLongFlag("login")
-                                .setHelp("requires login")
-        )
-                ;
-        return jsap;
-    }
+//    private static JSAP jsap() throws JSAPException {
+//        JSAP jsap = new JSAP();
+//
+//        String defaultDir = System.getProperty("user.dir");
+//        jsap.registerParameter(new FlaggedOption(JSAP_DIR)
+//                                .setShortFlag('d')
+//                                .setLongFlag("dir")
+//                                .setDefault(defaultDir)
+//                                .setRequired(true)
+//                                .setHelp("specifies the bookmartian data directory (defaults to current directory: " + defaultDir + ")")
+//        );
+//        
+//        jsap.registerParameter(new Switch(JSAP_REQUIRELOGIN)
+//                                .setShortFlag('l')
+//                                .setLongFlag("login")
+//                                .setHelp("requires login")
+//        )
+//                ;
+//        return jsap;
+//    }
 
     public static void main(String[] args) throws Exception {
         
-        JSAP jsap = jsap();
-        JSAPResult cmd = jsap().parse(args);
-        if (!cmd.success()) {
-            System.err.format("Usage: bookmartian %s%n", jsap.getUsage());
-            System.exit(1);
-        }
+// TODO       JSAP jsap = jsap();
+//        JSAPResult cmd = jsap().parse(args);
+//        if (!cmd.success()) {
+//            System.err.format("Usage: bookmartian %s%n", jsap.getUsage());
+//            System.exit(1);
+//        }
         
         JsonConfig.init();
-        Path bmHome = Paths.get(cmd.getString(JSAP_DIR));
-        IBookmartian bm = JsonDirBookmartian.in(bmHome);
-                
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> bm.shutdown()));
+//        Path bmHome = Paths.get(cmd.getString(JSAP_DIR));
+//        Old_IBookmartian bm = JsonDirBookmartian.in(bmHome);
+        Database db = new Database(Paths.get("/home/mlamb/bookmartian-db"));
+        Bookmartian bm = db.bookmartianFor(User.ANONYMOUS);
+
+// TODO        Runtime.getRuntime().addShutdownHook(new Thread(() -> bm.shutdown()));
         
         before("/*", (req, rsp) -> log(req, rsp));
         before("/*", (req, rsp) -> disableCaching(req, rsp));
         
-        if (cmd.getBoolean(JSAP_REQUIRELOGIN)) {
-            Spark.awaitInitialization();
-            initAuth(bmHome);
-        }
+// TODO       if (cmd.getBoolean(JSAP_REQUIRELOGIN)) {
+//            Spark.awaitInitialization();
+//            initAuth(bmHome);
+//        }
         
         get("/api/tags", () -> json(bm.tags()));
         
@@ -120,7 +125,7 @@ public class App {
         });
     }
     
-    private static BoomResponse query(IBookmartian bm) {
+    private static BoomResponse query(Bookmartian bm) {
         try {
             return JSend.success(Query.of(q("q")).execute(bm));
         } catch (Exception e) {
@@ -152,7 +157,7 @@ public class App {
         return Strings.safeTrimToNull(request().queryParams(key));
     }
     
-    private static BoomResponse updateBookmark(IBookmartian bm) {
+    private static BoomResponse updateBookmark(Bookmartian bm) {
         String url = q("url");
         if (url == null) return JSend.fail("a URL is required");
         try {
@@ -167,31 +172,32 @@ public class App {
                             .imageUrl(q("imageUrl"))
                             .notes(q("notes"))
                             .tags(q("tags"))
+                            .modifying() // forces current time when saved
                             .build();
 
             corsHeaders();
-            return JSend.success(bm.replaceOrAdd(oldLurl, b));
+            return JSend.success(bm.update(oldLurl, b));
         } catch (Exception e) {
             return JSend.error(e);
         }
     }
     
-    private static BoomResponse getBookmark(IBookmartian bm) {
+    private static BoomResponse getBookmark(Bookmartian bm) {
         String url = q("url");
         if (url == null) return JSend.fail("a URL is required");
         try {
             Lurl lurl = Lurl.of(url);
             log.debug("searching for bookmark: {}", lurl);
-            Bookmark b = bm.get(lurl);
+            Optional<Bookmark> b = bm.get(lurl);
             corsHeaders();
-            return (b == null) ? JSend.fail("no such bookmark: " + url) : JSend.success(b);
+            return b.map(result -> JSend.success(result)).orElse(JSend.fail("no such bookmark: " + url));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             return JSend.error(e);
         }
     }
     
-    private static BoomResponse backup(IBookmartian bm) {
+    private static BoomResponse backup(Bookmartian bm) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
         
         return new BoomResponse(Json.toJson(new Backup(bm)))
@@ -199,15 +205,15 @@ public class App {
                         .named(String.format("backup-%s.bookmartian", sdf.format(new Date())));
     }
     
-    private static BoomResponse visit(IBookmartian bm) {
+    private static BoomResponse visit(Bookmartian bm) {
         String url = q("url");
         if (url == null) halt(400, "a URL is required");
         try {
             assert(url != null);
             Lurl lurl = Lurl.of(url);
-            Bookmark b = bm.visit(lurl);
-            if (b == null) return StatusPage.of(404, "Not Found");
-            response().redirect(b.lurl().toString());
+            Optional<Bookmark> ob = bm.visit(lurl);
+            if (!ob.isPresent()) return StatusPage.of(404, "Not Found");
+            response().redirect(ob.get().lurl().toString());
             return null;
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -215,13 +221,13 @@ public class App {
         }
     }
     
-    private static BoomResponse deleteBookmark(IBookmartian bm) {
+    private static BoomResponse deleteBookmark(Bookmartian bm) {
         String url = q("url");
         if (url == null) return JSend.fail("a URL is required");
         log.warn("deleting bookmark: {}", url);
         try {
-            Bookmark b = bm.remove(Lurl.of(url));
-            return (b == null) ? JSend.fail("no such bookmark: " + url) : JSend.success(b);
+            Optional<Bookmark> ob = bm.remove(Lurl.of(url));
+            return ob.map(b -> JSend.success(b)).orElse(JSend.fail("no such bookmark: " + url));
         } catch (Exception e) {
             return JSend.error(e);
         }
@@ -243,7 +249,7 @@ public class App {
         }        
     }
     
-    private static BoomResponse importNetscapeBookmarksFile(IBookmartian bm) {
+    private static BoomResponse importNetscapeBookmarksFile(Bookmartian bm) {
         try {
             uploading();
             String tags = q("tags");
@@ -263,7 +269,7 @@ public class App {
                 d = Strings.safeTrimToNull(link.attr("LAST_MODIFIED"));
                 if (d != null) b.modified(new Date(Long.valueOf(d) * 1000));
                 
-                bm.replaceOrAdd(null, b.build());
+                bm.update(null, b.build());
             }
             return JSend.success(String.format("Imported %d bookmark%s.", links.size(), links.size() == 1 ? "" : "s"));
         } catch (Exception e) {            
@@ -285,7 +291,7 @@ public class App {
         private final Collection<Tag> tags;
         private final Collection<Bookmark> bookmarks;
         
-        public Backup(IBookmartian bm) {
+        public Backup(Bookmartian bm) {
             tags = bm.tags();
             bookmarks = bm.bookmarks();
         }

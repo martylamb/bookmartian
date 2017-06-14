@@ -6,6 +6,8 @@ import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -13,11 +15,13 @@ import java.util.stream.Stream;
  */
 public class TagName implements Comparable<TagName> {
 
+    private static final Logger log = LoggerFactory.getLogger(TagName.class);
+
     private static final Pattern VALID_TAG = Pattern.compile("^\\s*(?<tag>[a-zA-Z0-9_.-]+)\\s*$");
-    
     private final String _name;
     
     private TagName(String name) {
+        log.info("creating tag with name [{}]", name);
         Matcher m = VALID_TAG.matcher(name);
         if (!m.matches()) {
             throw new IllegalArgumentException("Tags may only consist of letters, numbers, underscores, dots, and dashes.");

@@ -1,7 +1,6 @@
 package com.martiansoftware.bookmartian.jsondir;
 
 import com.martiansoftware.bookmartian.model.Bookmark;
-import com.martiansoftware.bookmartian.model.IBookmartian;
 import com.martiansoftware.bookmartian.model.Lurl;
 import com.martiansoftware.bookmartian.query.Query;
 import com.martiansoftware.bookmartian.model.Tag;
@@ -17,12 +16,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.martiansoftware.bookmartian.model.Old_IBookmartian;
 
 /**
  *
  * @author mlamb
  */
-public class JsonDirBookmartian implements IBookmartian {
+public class JsonDirBookmartian implements Old_IBookmartian {
     
     private static final Logger log = LoggerFactory.getLogger(JsonDirBookmartian.class);
     
@@ -121,15 +121,15 @@ public class JsonDirBookmartian implements IBookmartian {
     }
     
     private void removeEmptyTags(TagNameSet tags) {
-        if (tags == null) return;
-        tags.asSet().stream().forEach(t -> {
-            try {
-                if (Query.of(t.toString()).execute(this).isEmpty()) {
-                    log.info("autoremoving unused tag {}", t);
-                    _tags.remove(t);
-                }
-            } catch (IOException ignored) {}
-        });                
+//        if (tags == null) return;
+//        tags.asSet().stream().forEach(t -> {
+//            try {
+//                if (Query.of(t.toString()).execute(this).isEmpty()) {
+//                    log.info("autoremoving unused tag {}", t);
+//                    _tags.remove(t);
+//                }
+//            } catch (IOException ignored) {}
+//        });                
     }
     
     @Override

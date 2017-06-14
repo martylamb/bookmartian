@@ -18,7 +18,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -26,6 +29,8 @@ import java.util.stream.Collectors;
  */
 public class Queries {
 
+    private static final Logger log = LoggerFactory.getLogger(Queries.class);
+    
     // regex used to parse strings that might start with a comparison operator
     // result is two match groups: "op" with the operator and "arg" with the rest
     private static final Pattern COMPARISON_SPLITTER = Pattern.compile("^(?<op>(==|=|<=|<|>=|>))?(?<arg>.+)$");
@@ -88,10 +93,17 @@ public class Queries {
         }
     }
 
+    private static Predicate<? super Bookmark> loggingBmFilter(String s, Predicate<? super Bookmark> wrapped) {
+        return b -> {
+            boolean result = wrapped.test(b);
+            log.info("{} - {} ({})", result, s, b.lurl());
+            return result;
+        };
+    }
     private static class Tagged implements QTHandler {
         @Override public boolean handles(QueryTerm qt) { return "tagged".equals(qt.action()); }
         @Override public QueryFunction handle(QueryTerm qt) {
-            return (s, r) -> s.filter(b -> b.tagNames().contains(TagName.of(qt.arg())));
+            return (s, r) -> s.filter(loggingBmFilter(qt.arg(), b -> b.tagNames().contains(TagName.of(qt.arg()))));
         }
     }
     

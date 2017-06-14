@@ -9,7 +9,7 @@ import java.util.Set;
  *
  * @author mlamb
  */
-public interface IBookmartian {
+public interface Old_IBookmartian {
     
     public Collection<Tag> tags();
     public Collection<Bookmark> bookmarks();    

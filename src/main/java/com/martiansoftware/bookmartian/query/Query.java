@@ -1,13 +1,16 @@
 package com.martiansoftware.bookmartian.query;
 
 import com.martiansoftware.bookmartian.model.Bookmark;
-import com.martiansoftware.bookmartian.model.IBookmartian;
+import com.martiansoftware.bookmartian.model.Bookmartian;
 import com.martiansoftware.util.Strings;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 import java.util.stream.Collectors;
+import com.martiansoftware.bookmartian.model.Old_IBookmartian;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A Bookmark query, created from a user-specified String.
@@ -18,6 +21,7 @@ import java.util.stream.Collectors;
  */
 public class Query {
 
+    private static final Logger log = LoggerFactory.getLogger(Query.class);
     private static final QueryFunction DEFAULT_SORT = Queries.of(QueryTerm.of("by", "title"));
     
     // the raw query as specified by the user
@@ -55,10 +59,11 @@ public class Query {
      * @param bm the bookmartian to query
      * @return the results of the query, or all bookmarks if the query is empty
      */
-    public QueryResult execute(IBookmartian bm) {
+    public QueryResult execute(Bookmartian bm) {
         QueryResult qr = new QueryResult().name(_raw);
-        
-        List<Bookmark> bookmarks = eval(_compiledQuery, bm.bookmarks(), qr);        
+        Collection<Bookmark> allBookmarks = bm.bookmarks();
+        log.info("Executing query against {} bookmarks", allBookmarks.size());
+        List<Bookmark> bookmarks = eval(_compiledQuery, allBookmarks, qr);        
         if (!qr.hasSort()) bookmarks = eval(DEFAULT_SORT, bookmarks, qr);
         
         return qr.bookmarks(bookmarks);

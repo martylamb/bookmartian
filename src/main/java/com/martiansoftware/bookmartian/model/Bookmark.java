@@ -12,6 +12,8 @@ import java.text.Collator;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Optional;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
 
 /**
  *
@@ -79,6 +81,55 @@ public class Bookmark {
     private long cmpModified() { return _modified.map(d -> d.getTime()).orElse(Long.MIN_VALUE); }
     private long cmpVisitCount() { return _visitCount.orElse(0l); }
 
+
+
+    // supports merge(Optional<Bookmark>) below, merging fields when both may or may not exist
+    private <T> void merge(Optional<T> t1, Optional<T> t2, BiFunction<T, T, T> selector, Consumer<T> mergeAction) {
+        T mergedValue = null;
+        if (t1.isPresent() && t2.isPresent()) {
+            mergedValue = selector.apply(t1.get(), t2.get());
+        } else if (t1.isPresent()) {
+            mergedValue = t1.get();
+        } else if (t2.isPresent()) {
+            mergedValue = t2.get();
+        }
+        if (mergedValue != null) mergeAction.accept(mergedValue);
+    }
+    
+    /**
+     * Merges another bookmark into this one.  This is used to update internal
+     * fields when a Bookmark is being edited
+     * @param Optional<Bookmark> other the Bookmark to merge, which may or may not exist
+     * @return a new Bookmark with the result of the merge
+     */
+    public Bookmark merge(Optional<Bookmark> oother) {
+        if (!oother.isPresent()) return this;
+        Bookmark other = oother.get();
+        Bookmark.Builder b = this.toBuilder();
+
+        // merging logic:
+        //     created: use the oldest
+        // if both are present, use the oldest, else if one is present, use the one, else do nothing
+        merge(created(),
+                other.created(),
+                (d1, d2) -> d1.compareTo(d2) < 0 ? d1 : d2,
+                d -> b.created(d));
+
+        //     lastvisited: use the most recent
+        merge(lastVisited(),
+                other.lastVisited(),
+                (d1, d2) -> d1.compareTo(d2) < 0 ? d2 : d1,
+                d -> b.lastVisited(d));
+
+        //     visitcount: use the higher number
+        merge(visitCount(),
+                other.visitCount(),
+                Math::max,
+                c -> b.visitCount(c));
+
+        return b.build();
+    }
+    
     public static Builder newBuilder() { return new Builder(); }
     public Builder toBuilder() {
         return newBuilder()
@@ -139,6 +190,11 @@ public class Bookmark {
         
         public Builder created(Date created) {
             _created = created;
+            return this;
+        }
+
+        public Builder modifying() {
+            modified(null);
             return this;
         }
         
