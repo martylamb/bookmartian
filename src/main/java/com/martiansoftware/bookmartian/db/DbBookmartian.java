@@ -18,6 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.martiansoftware.bookmartian.model.User;
 import java.util.Collections;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -53,6 +55,7 @@ class DbBookmartian implements Bookmartian {
         return _db.call(conn -> {
             Optional<Bookmark> old = loadBookmarkByLurl(conn, lurl);
             deleteBookmarkByLurl(conn, lurl);
+            cleanupTags(conn);
             return old;
         });
     }
@@ -85,7 +88,9 @@ class DbBookmartian implements Bookmartian {
                 b = bookmark.merge(loadBookmarkByLurl(conn, replacing));
                 if (!bookmark.lurl().equals(replacing)) deleteBookmarkByLurl(conn, replacing);
             }
-            return saveBookmark(conn, b);
+            Bookmark result = saveBookmark(conn, b);
+            cleanupTags(conn);
+            return result;
         });
     }
 
@@ -144,7 +149,7 @@ class DbBookmartian implements Bookmartian {
     }
 
     private Collection<Bookmark> loadAllBookmarks(Connection conn) throws SQLException {
-        Collection<Bookmark> results = new java.util.HashSet<>();//TreeSet<>(Bookmark.MOST_RECENTLY_CREATED_FIRST); 
+        Collection<Bookmark> results = new java.util.HashSet<>();//TODO: TreeSet<>(Bookmark.MOST_RECENTLY_CREATED_FIRST); 
         try (PreparedStatement q = conn.prepareStatement("SELECT * FROM BOOKMARKS WHERE USERNAME = ?;")) {
             q.setString(1, _userName);
             ResultSet rs = q.executeQuery();
@@ -187,7 +192,7 @@ class DbBookmartian implements Bookmartian {
     }
 
     private Collection<Tag> loadAllTags(Connection conn) throws SQLException {
-        Collection<Tag> results = new java.util.TreeSet<>(); 
+        Collection<Tag> results = new TreeSet<>(); 
         try (PreparedStatement q = conn.prepareStatement("SELECT * FROM TAGS WHERE USERNAME = ?;")) {
             q.setString(1, _userName);
             ResultSet rs = q.executeQuery();
@@ -208,4 +213,43 @@ class DbBookmartian implements Bookmartian {
         return Optional.empty();
     }
     
+    private void removeTag(Connection conn, TagName tn) throws SQLException {
+        try (PreparedStatement u = conn.prepareStatement("DELETE FROM TAGS WHERE USERNAME = ? AND TAGNAME = ?;")) {
+            u.setString(1, _userName);
+            u.setString(2, tn.toString());
+            u.executeUpdate();
+        }
+    }
+    
+    private void saveTag(Connection conn, Tag tag) throws SQLException {
+        try (PreparedStatement u = conn.prepareStatement("MERGE INTO TAGS "
+                                    //     1         2       3
+                                    + "(USERNAME, TAGNAME, COLOR) "
+                                    + "VALUES (?,?,?);")) {
+            u.setString(1, _userName);
+            u.setString(2, tag.tagName().toString());
+            u.setString(3, tag.color().toString());
+            u.executeUpdate();
+        }        
+    }
+    
+    private void cleanupTags(Connection conn) throws SQLException {
+        Set<TagName> tagNamesInTagTable = loadAllTags(conn).stream()
+                                                .map(t -> t.tagName())
+                                                .collect(Collectors.toCollection(TreeSet::new));
+        
+        Set<TagName> tagNamesInBookmarks = loadAllBookmarks(conn).stream()
+                                                .flatMap(bm -> bm.tagNames().asSet().stream())
+                                                .collect(Collectors.toCollection(TreeSet::new));
+        
+        // tags in tag table that are not in use by bookmarks should be removed from tag table
+        for (TagName tn : tagNamesInTagTable) {
+            if (!tagNamesInBookmarks.contains(tn)) removeTag(conn, tn);
+        }       
+        
+        // tags in use by bookmarks that are not in tag table should be added to tag table
+        for (TagName tn : tagNamesInBookmarks) {
+            if (!tagNamesInTagTable.contains(tn)) saveTag(conn, Tag.newBuilder().name(tn.toString()).build());
+        }
+    }
 }

@@ -32,7 +32,7 @@ public class Database implements AutoCloseable {
         String dbUrl = String.format("jdbc:h2:%s;%s", dbPath, dbOptions());
         log.info("Opening {}", dbUrl);
         _conn = DriverManager.getConnection(dbUrl, "sa", "");
-        org.h2.tools.Console.main("-web", "-browser");
+//        org.h2.tools.Console.main("-web", "-browser");
     }
 
     private String dbOptions() {
@@ -68,6 +68,7 @@ public class Database implements AutoCloseable {
         try {
             return result.get();
         } catch (Exception e) {
+            // TODO: ROLLBACK TX
             log.error("Error executing db operation: " + e.getMessage(), e);
             if (e instanceof RuntimeException) throw (RuntimeException) e;
             throw new RuntimeException(e);
