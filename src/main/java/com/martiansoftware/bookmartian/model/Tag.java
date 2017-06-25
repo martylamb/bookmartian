@@ -6,7 +6,7 @@ import com.martiansoftware.validation.Hope;
  *
  * @author mlamb
  */
-public class Tag {
+public class Tag implements Comparable<Tag> {
 
     private final TagName _name;
     private final Color _color;
@@ -26,6 +26,15 @@ public class Tag {
 
     public static Builder newBuilder() {
         return new Builder();
+    }
+
+    @Override
+    public int compareTo(Tag t) {
+        int result = _name.compareTo(t._name);
+        if (result == 0) {
+            result = _color.compareTo(t._color);
+        }
+        return result;
     }
 
     public static class Builder {
