@@ -104,6 +104,14 @@ class DbBookmartian implements Bookmartian {
         return _db.call(conn -> loadTagByTagName(conn, tn));
     }
 
+    @Override
+    public void shutdown() {
+        try {
+            _db.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 // ----------------------------------------------------------------------------
         
     private Bookmark loadBookmark(ResultSet rs) throws SQLException {

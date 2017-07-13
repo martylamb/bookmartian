@@ -45,6 +45,8 @@ public class Database implements AutoCloseable {
     
     @Override
     public void close() throws SQLException {
+        log.error("SHUTTING DOWN DATABASE");
+        Thread.dumpStack();
         _executor.shutdown();
         try {
             _executor.awaitTermination(5, TimeUnit.SECONDS);

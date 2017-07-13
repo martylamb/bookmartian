@@ -25,7 +25,7 @@ import static org.junit.Assert.*;
  *
  * @author mlamb
  */
-public class DbBookmartianIntegrationTests extends DbTests {
+public class DbBookmartianIntegrationTest extends DbTests {
     
     private User user(String s) throws Exception {
         UserManager um = getDb().userManager();
@@ -39,7 +39,7 @@ public class DbBookmartianIntegrationTests extends DbTests {
     }
     
     private Bookmartian testBookmartian(String testname) throws Exception {
-        return getDb().bookmartianFor(user("testBookmarks"));   
+        return getDb().bookmartianFor(user(testname));   
     }
     
     /**
@@ -61,6 +61,28 @@ public class DbBookmartianIntegrationTests extends DbTests {
 
         assertEquals(1, dbb.bookmarks().size());
         assertEquals(3, dbb.tags().size());
+        for (int i = 0; i < 10; ++i) System.out.println("****************************************");
+    }
+    
+    @Test
+    public void testTags() throws Exception {
+        Bookmartian dbb = testBookmartian("testTags");
+        
+        assertEquals(0, dbb.tags().size());
+        Bookmark b1 = Bookmark.newBuilder()
+                        .url("http://testing.tags")
+                        .tags("tag1 TAG2 tag2")
+                        .build();
+        
+        dbb.update(null, b1);
+        
+        assertEquals(2, dbb.tags().size());
+        assertTrue(dbb.get(TagName.of("tag1")).isPresent());
+        assertTrue(dbb.get(TagName.of("tag2")).isPresent());
+        assertFalse(dbb.get(TagName.of("tag3")).isPresent());
+        
+        
+        
     }
     
 }
