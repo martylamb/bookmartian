@@ -72,14 +72,6 @@ class DbBookmartian implements Bookmartian {
         });        
     }
     
-    private <T> Stream<T> mergeStream(Function<Bookmark, T> f, Optional<Bookmark>... toMerge) {
-        return Stream.of(toMerge)
-                .filter(tm -> tm.isPresent())
-                .map(tm -> tm.get())
-                .map(f::apply)
-                .filter(d -> d != null);
-    }
-    
     @Override
     public Bookmark update(Lurl replacing, Bookmark bookmark) {
         return _db.call(conn -> {            

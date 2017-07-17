@@ -61,7 +61,29 @@ public class DbBookmartianIntegrationTest extends DbTests {
 
         assertEquals(1, dbb.bookmarks().size());
         assertEquals(3, dbb.tags().size());
-        for (int i = 0; i < 10; ++i) System.out.println("****************************************");
+                
+        // lookup
+        Optional<Bookmark> ob2 = dbb.get(Lurl.of("http://no_such_lurl"));
+        assertFalse(ob2.isPresent());        
+        ob2 = dbb.get(Lurl.of("http://some/site"));
+        assertTrue(ob2.isPresent());
+        
+        // visits
+        assertEquals(0, (long) ob2.get().visitCount().get());
+        assertFalse(ob2.get().lastVisited().isPresent());
+        
+        dbb.visit(ob2.get().lurl());
+        
+        Bookmark b3 = dbb.get(ob2.get().lurl()).get();
+        assertEquals(1, (long) b3.visitCount().get());
+        assertTrue(System.currentTimeMillis() - b3.lastVisited().get().getTime() <= 10000);  // visited within last 10 seconds        
+        
+        // removal
+        dbb.remove(Lurl.of("http://no_such_lurl"));
+        assertEquals(1, dbb.bookmarks().size());        
+        dbb.remove(b1.lurl());
+        assertEquals(0, dbb.bookmarks().size());
+
     }
     
     @Test
@@ -81,7 +103,13 @@ public class DbBookmartianIntegrationTest extends DbTests {
         assertTrue(dbb.get(TagName.of("tag2")).isPresent());
         assertFalse(dbb.get(TagName.of("tag3")).isPresent());
         
+        // force a deletion from tags table by no longer using tag2
+        b1 = b1.toBuilder().tags("tag1").build();
+        dbb.update(b1.lurl(), b1);
         
+        assertEquals(1, dbb.tags().size());
+        assertTrue(dbb.get(TagName.of("tag1")).isPresent());
+        assertFalse(dbb.get(TagName.of("tag2")).isPresent());
         
     }
     
