@@ -5,8 +5,8 @@ CADDYFILE="/tmp/caddyfile"
 
 if [ -n "${SSL}" ]; then
 	echo "starting ssl proxy for ${SSL}..."
-	mkdir -p "${DATA_DIR}/.caddy" 2>/dev/null
-	ln -s "${DATA_DIR}/.caddy" /root/.caddy 2>/dev/null
+	mkdir -p "${DATA_DIR}/.caddy"
+	ln -sf "${DATA_DIR}/.caddy" /root/.caddy
 
 	[ -n "${EMAIL}" ] && CADDY_EMAIL="tls ${EMAIL}"
 	
