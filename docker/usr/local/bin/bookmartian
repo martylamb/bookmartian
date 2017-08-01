@@ -1,0 +1,29 @@
+#!/bin/sh
+
+DATA_DIR="/data"
+CADDYFILE="/tmp/caddyfile"
+
+if [ -n "${SSL}" ]; then
+	echo "starting ssl proxy for ${SSL}..."
+	mkdir -p "${DATA_DIR}/.caddy" 2>/dev/null
+	ln -s "${DATA_DIR}/.caddy" /root/.caddy 2>/dev/null
+
+	[ -n "${EMAIL}" ] && CADDY_EMAIL="tls ${EMAIL}"
+	
+cat > ${CADDYFILE} <<EOF
+${SSL} {
+	${CADDY_EMAIL}
+    proxy / localhost:4567
+
+    redir 301 {
+        if {>X-Forwarded-Proto} is http
+        /  https://{host}{uri}
+    }
+
+}
+EOF
+
+	/opt/caddy/caddy -agree -conf ${CADDYFILE} &
+fi
+
+java -cp /opt/bookmartian/bookmartian.jar com.martiansoftware.bookmartian.App -d "${DATA_DIR}"
