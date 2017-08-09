@@ -1,11 +1,10 @@
 package com.martiansoftware.bookmartian;
 
 import com.martiansoftware.bookmartian.auth.FormAuthenticator;
-import com.martiansoftware.bookmartian.db.Database;
+import com.martiansoftware.bookmartian.journal.JournalBookmartian;
 import com.martiansoftware.util.JSend;
 import com.martiansoftware.bookmartian.model.Bookmark;
 import com.martiansoftware.bookmartian.model.JsonConfig;
-import com.martiansoftware.bookmartian.jsondir.JsonDirBookmartian;
 import com.martiansoftware.bookmartian.model.Bookmartian;
 import com.martiansoftware.bookmartian.model.Lurl;
 import com.martiansoftware.bookmartian.model.Tag;
@@ -16,11 +15,6 @@ import com.martiansoftware.boom.BoomResponse;
 import com.martiansoftware.boom.Json;
 import com.martiansoftware.boom.MimeType;
 import com.martiansoftware.boom.StatusPage;
-import com.martiansoftware.jsap.FlaggedOption;
-import com.martiansoftware.jsap.JSAP;
-import com.martiansoftware.jsap.JSAPException;
-import com.martiansoftware.jsap.JSAPResult;
-import com.martiansoftware.jsap.Switch;
 import com.martiansoftware.util.Strings;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -39,9 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
-import spark.Spark;
 import spark.utils.IOUtils;
-import com.martiansoftware.bookmartian.model.User;
 import java.util.Optional;
 
 /**
@@ -49,47 +41,14 @@ import java.util.Optional;
  * @author mlamb
  */
 public class App {
-    
-    private static final String JSAP_DIR = "bookmartian-dir";
-    private static final String JSAP_REQUIRELOGIN = "require-login";
-    
+       
     private static Logger log = LoggerFactory.getLogger(App.class);
-
-//    private static JSAP jsap() throws JSAPException {
-//        JSAP jsap = new JSAP();
-//
-//        String defaultDir = System.getProperty("user.dir");
-//        jsap.registerParameter(new FlaggedOption(JSAP_DIR)
-//                                .setShortFlag('d')
-//                                .setLongFlag("dir")
-//                                .setDefault(defaultDir)
-//                                .setRequired(true)
-//                                .setHelp("specifies the bookmartian data directory (defaults to current directory: " + defaultDir + ")")
-//        );
-//        
-//        jsap.registerParameter(new Switch(JSAP_REQUIRELOGIN)
-//                                .setShortFlag('l')
-//                                .setLongFlag("login")
-//                                .setHelp("requires login")
-//        )
-//                ;
-//        return jsap;
-//    }
 
     public static void main(String[] args) throws Exception {
         
-// TODO       JSAP jsap = jsap();
-//        JSAPResult cmd = jsap().parse(args);
-//        if (!cmd.success()) {
-//            System.err.format("Usage: bookmartian %s%n", jsap.getUsage());
-//            System.exit(1);
-//        }
-        
         JsonConfig.init();
-//        Path bmHome = Paths.get(cmd.getString(JSAP_DIR));
-//        Old_IBookmartian bm = JsonDirBookmartian.in(bmHome);
-        Database db = new Database(Paths.get("/home/mlamb/bookmartian-db"));
-        Bookmartian bm = db.bookmartianFor(User.ANONYMOUS);
+        // TODO: implement a cache by username and retrieve from there on demand
+        Bookmartian bm = new JournalBookmartian(Paths.get("/home/mlamb/anonymous.bookmartian"));
 
 // TODO        Runtime.getRuntime().addShutdownHook(new Thread(() -> bm.shutdown()));
         

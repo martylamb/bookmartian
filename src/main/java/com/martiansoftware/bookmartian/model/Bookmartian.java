@@ -21,6 +21,7 @@ public interface Bookmartian {
     
     public Collection<Tag> tags(); // all tags
     public Optional<Tag> get(TagName tn);
+    // TODO add tag manipulators (remove, update)
     
     public void shutdown();
 }
