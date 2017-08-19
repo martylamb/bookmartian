@@ -69,6 +69,10 @@ public class App {
         get("/api/visit", () -> visit(bm));
         get("/api/query-help", () -> { response().redirect("/api/query-help.json"); return null; });
         get("/api/backup", () -> backup(bm));
+        
+        // example usages:
+        // http -f post 127.0.0.1:4567/api/restore backup@backup.json
+        // curl --form "backup=@backup.json" 127.0.0.1:4567/api/restore
         post("/api/restore", () -> restore(bm));
         
         options("/api/bookmark/update", () -> corsOptions());
