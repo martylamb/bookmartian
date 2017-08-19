@@ -17,6 +17,7 @@ import com.martiansoftware.boom.MimeType;
 import com.martiansoftware.boom.StatusPage;
 import com.martiansoftware.util.Strings;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -68,6 +69,7 @@ public class App {
         get("/api/visit", () -> visit(bm));
         get("/api/query-help", () -> { response().redirect("/api/query-help.json"); return null; });
         get("/api/backup", () -> backup(bm));
+        post("/api/restore", () -> restore(bm));
         
         options("/api/bookmark/update", () -> corsOptions());
         post("/api/bookmark/update", () -> updateBookmark(bm));
@@ -162,6 +164,22 @@ public class App {
         return new BoomResponse(Json.toJson(new Backup(bm)))
                         .as(MimeType.BIN)
                         .named(String.format("backup-%s.bookmartian", sdf.format(new Date())));
+    }
+    
+    private static BoomResponse restore(Bookmartian bm) {
+        try {
+            uploading();
+            Part part = request().raw().getPart("backup");
+            Backup backup = Json.fromJson(new InputStreamReader(part.getInputStream()), Backup.class);
+            
+            for (Bookmark b : backup.bookmarks) bm.update(null, b);
+            for (Tag t : backup.tags) bm.update(t);
+            
+            return JSend.success(String.format("%d bookmarks, %d tags", backup.bookmarks.size(), backup.tags.size()));
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
+            return StatusPage.of(e);
+        }
     }
     
     private static BoomResponse visit(Bookmartian bm) {

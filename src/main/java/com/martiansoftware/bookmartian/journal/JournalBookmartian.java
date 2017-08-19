@@ -97,6 +97,16 @@ public class JournalBookmartian implements Bookmartian {
     }
 
     @Override
+    public Tag update(Tag tag) {
+        synchronized(_lock) {
+            BMJournalEntry je = new BMJournalEntry();
+            je.add(tag);
+            writeAndApply(je);
+            return tag;
+        }
+    }
+    
+    @Override
     public Bookmark update(Lurl replacing, Bookmark bookmark) {
         synchronized(_lock) {
             BMJournalEntry je = new BMJournalEntry();

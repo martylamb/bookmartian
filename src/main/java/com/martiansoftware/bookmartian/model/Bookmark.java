@@ -99,7 +99,7 @@ public class Bookmark {
     /**
      * Merges another bookmark into this one.  This is used to update internal
      * fields when a Bookmark is being edited
-     * @param Optional<Bookmark> other the Bookmark to merge, which may or may not exist
+     * @param oother the Bookmark to merge, which may or may not exist
      * @return a new Bookmark with the result of the merge
      */
     public Bookmark merge(Optional<Bookmark> oother) {
