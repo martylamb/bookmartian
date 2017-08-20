@@ -9,11 +9,14 @@ import com.martiansoftware.boom.Json;
 import com.martiansoftware.tinyjournal.TinyFileJournal;
 import com.martiansoftware.tinyjournal.TinyJournal;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -26,9 +29,21 @@ public class JournalBookmartian implements Bookmartian {
     private final Map<Lurl, Bookmark> _bookmarks = new java.util.TreeMap<>();
     private final Map<TagName, Tag> _tags = new java.util.TreeMap<>();
     private final Object _lock = new Object();
+    private static final Logger log = LoggerFactory.getLogger(JournalBookmartian.class);
     
     public JournalBookmartian(Path journalPath) throws IOException {
         _journalPath = journalPath;
+        
+        log.info("using bookmark journal: {}", journalPath);
+        Path parent = journalPath.getParent();
+        if (!Files.exists(parent)) {
+            log.info("creating directory: {}", parent);
+            Files.createDirectories(parent);
+        }
+        if (!Files.isDirectory(parent)) {
+            log.error("{} is not a directory!", parent);
+            throw new IOException(parent + " is not a directory!");
+        }
         _journal = new TinyFileJournal(journalPath);
         _journal.stream(e -> e.printStackTrace())
             .map(journalEntry -> BMJournalEntry.from(journalEntry))
