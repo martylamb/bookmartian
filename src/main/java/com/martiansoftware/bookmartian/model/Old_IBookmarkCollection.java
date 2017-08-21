@@ -7,7 +7,7 @@ import java.util.List;
  *
  * @author mlamb
  */
-public interface IBookmarkCollection {
+public interface Old_IBookmarkCollection {
     
     public Bookmark get(Lurl lurl);
     public Bookmark remove(Bookmark b) throws IOException;

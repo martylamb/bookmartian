@@ -1,7 +1,6 @@
 package com.martiansoftware.bookmartian.jsondir;
 
 import com.martiansoftware.bookmartian.model.Bookmark;
-import com.martiansoftware.bookmartian.model.IBookmarkCollection;
 import com.martiansoftware.bookmartian.model.Lurl;
 import java.io.IOException;
 import java.nio.file.Path;
@@ -11,12 +10,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.martiansoftware.bookmartian.model.Old_IBookmarkCollection;
 
 /**
  *
  * @author mlamb
  */
-public class JsonDirBookmarkCollection implements IBookmarkCollection {
+public class JsonDirBookmarkCollection implements Old_IBookmarkCollection {
 
     private static final Logger log = LoggerFactory.getLogger(JsonDirBookmarkCollection.class);
     

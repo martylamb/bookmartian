@@ -7,7 +7,7 @@ import java.util.List;
  *
  * @author mlamb
  */
-public interface ITagCollection {
+public interface Old_ITagCollection {
     
     public List<Tag> all();
     public void add(Tag tag) throws IOException;

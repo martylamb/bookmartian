@@ -9,7 +9,7 @@ import java.util.stream.Stream;
  *
  * @author mlamb
  */
-public class Color {
+public class Color implements Comparable<Color> {
 
     public static final Color BLACK = Color.of("#000000");
     
@@ -57,6 +57,11 @@ public class Color {
             return false;
         }
         return true;
+    }
+
+    @Override
+    public int compareTo(Color t) {
+        return _color.compareTo(t._color);
     }
 
     // gson helper

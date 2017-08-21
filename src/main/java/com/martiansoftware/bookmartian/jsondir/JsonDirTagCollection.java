@@ -1,6 +1,5 @@
 package com.martiansoftware.bookmartian.jsondir;
 
-import com.martiansoftware.bookmartian.model.ITagCollection;
 import com.martiansoftware.bookmartian.model.Tag;
 import com.martiansoftware.bookmartian.model.TagName;
 import java.io.IOException;
@@ -8,12 +7,13 @@ import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import com.martiansoftware.bookmartian.model.Old_ITagCollection;
 
 /**
  *
  * @author mlamb
  */
-public class JsonDirTagCollection implements ITagCollection {
+public class JsonDirTagCollection implements Old_ITagCollection {
     
     private final JsonDirMap<TagName, Tag> _map;    
     private final Object _lock = new Object();
