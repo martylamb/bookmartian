@@ -22,7 +22,6 @@ public class BMJournalEntry {
     private List<Tag> _t = null;
     
     public static BMJournalEntry from(JournalEntry s) {
-        System.out.println(s.readString());
         return Json.fromJson(s.readString(), BMJournalEntry.class);
     }
         
@@ -75,14 +74,4 @@ public class BMJournalEntry {
         return _t == null ? Stream.empty() : _t.stream();
     }
     
-    public static void test(Bookmartian bm) {
-        BMJournalEntry e = new BMJournalEntry();
-        for (Bookmark b: bm.bookmarks()) {
-            e.add(b);
-        }
-        e.add(Tag.newBuilder().color(Color.BLACK).name("deleteme").build());
-        e.delete(TagName.of("deleteme"));
-        e.delete(Lurl.of("http://martylamb.com"));
-        System.out.println(Json.toJson(e));
-    }
 }

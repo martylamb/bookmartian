@@ -48,6 +48,7 @@ public class JournalBookmartian implements Bookmartian {
         _journal.stream(e -> e.printStackTrace())
             .map(journalEntry -> BMJournalEntry.from(journalEntry))
             .forEach(je -> apply(je));
+        log.info("finished loading {}", journalPath);
     }
 
     private void apply(BMJournalEntry je) {

@@ -63,11 +63,7 @@ public class Lurl implements Comparable<Lurl> {
                                                                 + "$");
     
     private final String _lurl;
-        
-    static {
-        System.out.println(LONG_UNC.pattern());
-    }
-    
+           
     private Lurl(String url) {
         _lurl = normalize(url);
     }
@@ -204,9 +200,4 @@ public class Lurl implements Comparable<Lurl> {
         @Override public Stream<Class> classes() { return Stream.of(Lurl.class); }
     }
  
-    
-    public static void main(String[] args) throws Exception {
-        Lurl l = Lurl.of("\\\\?\\UNC\\Thing\\with\\Path");
-        System.out.println(l);
-    }
 }

@@ -21,7 +21,7 @@ public class TagName implements Comparable<TagName> {
     private final String _name;
     
     private TagName(String name) {
-        log.info("creating tag with name [{}]", name);
+        log.trace("creating tag with name [{}]", name);
         Matcher m = VALID_TAG.matcher(name);
         if (!m.matches()) {
             throw new IllegalArgumentException("Tags may only consist of letters, numbers, underscores, dots, and dashes.");
