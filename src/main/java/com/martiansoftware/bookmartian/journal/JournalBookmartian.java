@@ -5,6 +5,7 @@ import com.martiansoftware.bookmartian.model.Bookmartian;
 import com.martiansoftware.bookmartian.model.Lurl;
 import com.martiansoftware.bookmartian.model.Tag;
 import com.martiansoftware.bookmartian.model.TagName;
+import com.martiansoftware.bookmartian.model.TagNameSet;
 import com.martiansoftware.boom.Json;
 import com.martiansoftware.tinyjournal.TinyFileJournal;
 import com.martiansoftware.tinyjournal.TinyJournal;
@@ -31,6 +32,7 @@ public class JournalBookmartian implements Bookmartian {
     private final Object _lock = new Object();
     private static final Logger log = LoggerFactory.getLogger(JournalBookmartian.class);
     
+    
     public JournalBookmartian(Path journalPath) throws IOException {
         _journalPath = journalPath;
         
@@ -48,6 +50,7 @@ public class JournalBookmartian implements Bookmartian {
         _journal.stream(e -> e.printStackTrace())
             .map(journalEntry -> BMJournalEntry.from(journalEntry))
             .forEach(je -> apply(je));
+        ensureTagsForAllBookmarks();
         log.info("finished loading {}", journalPath);
     }
 
@@ -131,6 +134,7 @@ public class JournalBookmartian implements Bookmartian {
                 b = bookmark.merge(get(replacing));
                 if (!bookmark.lurl().equals(replacing)) je.delete(replacing);
             }
+            ensureTags(b.tagNames(), je);
             je.add(b);
             // TODO cleanup tags?
             writeAndApply(je);
@@ -156,6 +160,29 @@ public class JournalBookmartian implements Bookmartian {
     public void shutdown() {
         synchronized(_lock) {
             _journal.close();
+        }
+    }
+    
+    private void ensureTags(TagNameSet tagNames, BMJournalEntry je) {
+        synchronized(_lock) {
+            tagNames.asSet().stream()
+                .filter(tn -> !_tags.containsKey(tn))
+                .map(tn -> Tag.of(tn))
+                .forEach(t -> je.add(t));
+        }                    
+    }
+    
+    private void ensureTagsForAllBookmarks() {
+        synchronized(_lock) {
+            BMJournalEntry je = new BMJournalEntry();
+            _bookmarks.values().stream()
+                .flatMap(bm -> bm.tagNames().asSet().stream())
+                .filter(tn -> !_tags.containsKey(tn))
+                .distinct()                    
+                .map(tn -> Tag.of(tn))
+                .forEach(tag -> je.add(tag));
+            
+            if (je.tags().findFirst().isPresent()) writeAndApply(je);
         }
     }
     

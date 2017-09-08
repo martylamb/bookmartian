@@ -13,7 +13,11 @@ public class Tag implements Comparable<Tag> {
 
     private Tag(TagName tagName, Color color) {
         _name = Hope.that(tagName).named("tagName").isNotNull().value();
-        _color = (color == null) ? Color.BLACK : color;
+        _color = (color == null) ? Color.BLACK : color; // TODO: randomly choose a color?
+    }
+    
+    public static Tag of(TagName tagName) {
+        return new Tag(tagName, null);
     }
     
     public TagName tagName() {
