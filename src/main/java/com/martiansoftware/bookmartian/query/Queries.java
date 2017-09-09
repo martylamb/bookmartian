@@ -96,7 +96,7 @@ public class Queries {
     private static Predicate<? super Bookmark> loggingBmFilter(String s, Predicate<? super Bookmark> wrapped) {
         return b -> {
             boolean result = wrapped.test(b);
-            log.info("{} - {} ({})", result, s, b.lurl());
+            log.debug("{} - {} ({})", result, s, b.lurl());
             return result;
         };
     }
