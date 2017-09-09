@@ -232,7 +232,7 @@ public class App {
     private static BoomResponse deleteBookmark(Bookmartian bm) {
         String url = q("url");
         if (url == null) return JSend.fail("a URL is required");
-        log.warn("deleting bookmark: {}", url);
+        log.info("deleting bookmark: [{}]", url);
         try {
             Optional<Bookmark> ob = bm.remove(Lurl.of(url));
             return ob.map(b -> JSend.success(b)).orElse(JSend.fail("no such bookmark: " + url));
@@ -246,7 +246,7 @@ public class App {
         msg.append(String.format("%s: %s %s", req.ip(), req.requestMethod(), req.url()));
         String q = req.queryString();
         if (q != null) msg.append(String.format("?%s", q));
-        log.info(msg.toString());
+        log.debug(msg.toString());
     }
     
     private static void uploading() throws IOException {
@@ -265,7 +265,7 @@ public class App {
             Document doc = Jsoup.parse(part.getInputStream(), "UTF-8", "");
             Elements links = doc.getElementsByTag("a");
             for (Element link : links) {
-                log.info("Importing {}", link.attr("HREF"));
+                log.info("importing {}", link.attr("HREF"));
                 Bookmark.Builder b = Bookmark.newBuilder()
                                         .url(link.attr("HREF"))
                                         .title(link.text())

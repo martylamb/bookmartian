@@ -29,19 +29,23 @@ public class TagNameSet {
         _tagNames = Collections.unmodifiableSet(tagNames);
     }
     
+    public static TagNameSet of(Set<TagName> tagNames) {
+        return new TagNameSet(new java.util.TreeSet<>(tagNames));
+    }
+    
     public static TagNameSet of(String multipleTags) {
         return new TagNameSet(scrub(Strings.splitOnWhitespaceAndCommas(multipleTags)));
     }
     
-    public static TagNameSet of(Collection<String> tags) {
-        return new TagNameSet(scrub(tags));
+    public static TagNameSet of(Collection<String> tagNames) {
+        return new TagNameSet(scrub(tagNames));
     }
         
-    private static Set<TagName> scrub(Collection<String> tags) {
+    private static Set<TagName> scrub(Collection<String> tagNames) {
         return (Set<TagName>) (
-                tags == null
+                tagNames == null
                 ? EMPTY
-                : tags.stream()
+                : tagNames.stream()
                     .map(s -> TagName.of(s))
                     .collect(Collectors.toCollection(java.util.TreeSet::new))
         );

@@ -16,6 +16,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +54,7 @@ public class JournalBookmartian implements Bookmartian {
             .map(journalEntry -> BMJournalEntry.from(journalEntry))
             .forEach(je -> apply(je));
         ensureTagsForAllBookmarks();
+        autoDeleteUnusedTags(TagNameSet.of(_tags.keySet()));
         log.info("finished loading {}", journalPath);
     }
 
@@ -62,7 +66,7 @@ public class JournalBookmartian implements Bookmartian {
         je.bookmarksToDelete().forEach(lurl -> _bookmarks.remove(lurl));
         je.tagsToDelete().forEach(tagName -> _tags.remove(tagName));
         je.bookmarks().forEach(b -> _bookmarks.put(b.lurl(), b));
-        je.tags().forEach(t -> _tags.put(t.tagName(), t));        
+        je.tags().forEach(t -> _tags.put(t.tagName(), t));
     }
 
     private void writeAndApply(BMJournalEntry je) throws JournalException {
@@ -91,8 +95,11 @@ public class JournalBookmartian implements Bookmartian {
     @Override
     public Optional<Bookmark> remove(Lurl lurl) {
         synchronized(_lock) {
-            Optional<Bookmark> result = Optional.ofNullable(_bookmarks.remove(lurl));
-            result.ifPresent(b -> writeAndApply(new BMJournalEntry().delete(lurl)));
+            Optional<Bookmark> result = Optional.ofNullable(_bookmarks.get(lurl));            
+            if (result.isPresent()) {
+                writeAndApply(new BMJournalEntry().delete(lurl));
+                autoDeleteUnusedTags(result.get().tagNames());
+            }
             return result;
         }
     }
@@ -129,15 +136,27 @@ public class JournalBookmartian implements Bookmartian {
     public Bookmark update(Lurl replacing, Bookmark bookmark) {
         synchronized(_lock) {
             BMJournalEntry je = new BMJournalEntry();
+            Bookmark orig = _bookmarks.get(bookmark.lurl());
             Bookmark b = bookmark.merge(get(bookmark.lurl()));
             if (replacing != null) {
                 b = bookmark.merge(get(replacing));
+                orig = _bookmarks.get(replacing);
                 if (!bookmark.lurl().equals(replacing)) je.delete(replacing);
             }
             ensureTags(b.tagNames(), je);
             je.add(b);
-            // TODO cleanup tags?
             writeAndApply(je);
+            
+            // skip tag cleanup if there's no way any tags have been removed
+            // (i.e., it's a new bookmark or an edited one with the same tag set)
+            if (orig != null && !orig.tagNames().equals(b.tagNames())) {
+                TagNameSet maybeUnusedTags = TagNameSet.of(
+                    Stream.concat(orig.tagNames().asSet().stream(), b.tagNames().asSet().stream())
+                            .collect(Collectors.toSet())
+                );                        
+                autoDeleteUnusedTags(maybeUnusedTags);
+            }
+            
             return b;
         }
     }
@@ -182,7 +201,25 @@ public class JournalBookmartian implements Bookmartian {
                 .map(tn -> Tag.of(tn))
                 .forEach(tag -> je.add(tag));
             
-            if (je.tags().findFirst().isPresent()) writeAndApply(je);
+            if (je.tags().count() > 0) writeAndApply(je);
+        }
+    }
+    
+    // of the specified tagnames, auto-delete the ones that no bookmark uses
+    private void autoDeleteUnusedTags(TagNameSet tagsToMaybeDelete) {
+        if (tagsToMaybeDelete.isEmpty()) return;
+        synchronized(_lock) {
+            Set<TagName> tagsToDelete = new java.util.HashSet<>(tagsToMaybeDelete.asSet());
+            tagsToDelete.removeAll(_bookmarks.values().stream()
+                                    .flatMap(b -> b.tagNames().asSet().stream())
+                                    .collect(Collectors.toCollection(java.util.HashSet::new)));
+            
+            BMJournalEntry je = new BMJournalEntry();
+            for (TagName tn : tagsToDelete) {
+                log.info("auto-deleting tag [{}]", tn);
+                je.delete(tn);
+            }
+            if (je.tagsToDelete().count() > 0) writeAndApply(je);            
         }
     }
     
