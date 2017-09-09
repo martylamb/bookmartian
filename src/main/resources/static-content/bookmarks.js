@@ -321,7 +321,7 @@ function populateLinkTable(value) {
 function populateTagCloud() {
     var tagColors = new Array();
 
-    $(".tagcloud").empty();
+    $("#tagcloud").empty();
 
     $.ajax({
         // The URL for the request
@@ -338,8 +338,8 @@ function populateTagCloud() {
         .done(function (json) {
             $(json).each(function (index, element) {
                 if (element.name.substr(0, 1) !== ".") {
-                    var link = "<a onclick=\"executeSearch('" + element.name + "', true);\" style=color:" + element.color + " id=" + element.name + ">" + element.name + "</a>";
-                    $(".tagcloud").append(link).append(" &nbsp;");
+                    var link = "<a onclick=\"executeSearch('" + element.name + "', true);\" style=color:" + (element.color!="#000000"?element.color:"") + " id=" + element.name + ">" + element.name + "</a>";
+                    $("#tagcloud").append(link).append("</br>");
                     tagColors[element.name] = element.color;
                 }
             })
@@ -601,6 +601,7 @@ $(document).ready(function () {
             // Code to run if the request succeeds (is done);
             // The response is passed to the function
             .done(function (json) {
+                // $("#promotedlinkheading").append(json.data.name);
                 $(json.data.bookmarks).each(function (index, element) {
                     var tile = $("#promotedlinktemplate").clone()
                     tile.attr("title", element.title);

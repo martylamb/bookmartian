@@ -16,10 +16,39 @@
     <script src="bookmarks.js"></script>
 
     <!-- bar at top of page -->
-    <div class="header default-primary-color">
+<!--     <div class="header default-primary-color">
         <i class="fa fa-2x fa-plus iconbutton addbutton" aria-hidden="true" onclick="$('#actionpanel').slideDown('fast')"></i>
         <i class="fa fa-lg fa-search iconbutton searchbutton" aria-hidden="true" onclick="executeSearch();"></i>
         <input class='searchbox' type="text" id='searchterm'/>
+    </div>
+ -->
+
+    <!-- sidebar -->
+    <div class="sidebar default-primary-color">
+            <input class='searchbox' type="text" id='searchterm'/>
+            <i class="fa fa-lg fa-bars iconbutton" aria-hidden="true" onclick="$('#actionpanel').slideDown('fast')"></i>
+
+            <div class="admin-links tagcloud secondary-text-color" id="admin-links">
+                BOOKMARTIAN</br>
+                . add a bookmark...</br>
+                . <a href="settings.html">settings</a></br>
+                . <a href="docs.html">help</a></br>
+                . <a href="about.html">about</a></br>
+            </div>
+
+            <hr class="divider-color"/>
+            
+            <!-- tag cloud -->
+            <div class="tagcloud tertiary-text-color" id="tagcloud">
+            </div>
+
+            <hr class="divider-color"/>
+            
+            <!-- footer -->
+            <div class='footer secondary-text-color'>
+                2017 
+                mlamb/jmutchek
+            </div>
     </div>
 
     <!-- action panel (hidden at start) -->
@@ -57,18 +86,15 @@
         </div>
     </div>
 
-    <!-- tag cloud -->
-    <div class="tagcloud secondary-text-color" id="tagcloud">
-    </div>
+
 
     <!-- promoted link tiles -->
     <div class="promotedsection">
+        <h1 id="promotedlinkheading"></h1>
         <div class="promotedlink" id="promotedlinktemplate">
             <a><img class="promotedimage" src="" /></a>
         </div>
     </div>
-
-    <hr id='promohr' class="divider-color"/>
 
     <div class="errormessage" id="errormessage">
         
@@ -101,15 +127,7 @@
         </div>
     </div>
 
-    <hr class="divider-color"/>
-    <div class='footer secondary-text-color'>
-        the bookmartian | 
-        2016 | 
-        mlamb/jmutchek | 
-        <a href="settings.html">settings</a> | 
-        source on <a href="https://github.com/martylamb/bookmartian">github</a> |
-        get this <a id ='bookmarklet' href="#">bookmarklet</a>
-    </div>
+
 
     <script>
         // --------------------------------------------------------------------------
