@@ -54,6 +54,13 @@ h3 {
 }
 
 /* ======================================================================= */
+/* mainbody */
+.mainbody {
+    margin-left: 140px;
+    padding: 20px;
+}
+
+/* ======================================================================= */
 /* header */
 .header {
     height: 36px;
@@ -144,8 +151,7 @@ h3 {
 /* ======================================================================= */
 /* promoted tiles */
 .promotedsection {
-    margin: 12 24 12 24;
-    text-align: right;
+    text-align: left;
 }
 
 .promotedlink {
@@ -165,14 +171,15 @@ h3 {
 /* search results */
 
 .searchresults {
-    margin: 6px 24px 6px 24px;
     display: none;
+    width: 100%;
+    margin-bottom: 24px;
 }
 
 .searchblock {
     margin: 8px;
     display: inline-block;
-    width: 95%;
+    width: 97%;
 }
 
 .searchtable {
@@ -212,8 +219,7 @@ h3 {
 /* ======================================================================= */
 /* links */
 .content {
-    margin: 6px 24px 6px 24px;
-    text-align: center;
+    text-align: left;
     clear: both;
 }
 
@@ -221,12 +227,12 @@ h3 {
     margin: 8px;
     display: none;
     text-align: left;
-    width: 220px;
+    width: 226px;
     vertical-align:top;
 }
 
 .linktable {
-    width: 220px;
+    width: 226px;
     font-size: medium;  
     border-collapse: collapse;
     border-style: hidden;
