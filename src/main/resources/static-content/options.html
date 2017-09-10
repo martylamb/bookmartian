@@ -12,16 +12,6 @@
 
 <body class="paper-color">
     <script src="jquery-3.1.0.min.js"></script>
-    <script src="utils.js"></script>
-    <script src="bookmarks.js"></script>
-
-    <!-- bar at top of page -->
-    <!--     <div class="header default-primary-color">
-        <i class="fa fa-2x fa-plus iconbutton addbutton" aria-hidden="true" onclick="$('#actionpanel').slideDown('fast')"></i>
-        <i class="fa fa-lg fa-search iconbutton searchbutton" aria-hidden="true" onclick="executeSearch();"></i>
-        <input class='searchbox' type="text" id='searchterm'/>
-    </div>
- -->
 
     <!-- sidebar -->
     <div class="sidebar default-primary-color">
@@ -38,58 +28,58 @@
 
         <hr class="divider-color" />
 
-        <!-- tag cloud -->
-        <div class="tagcloud tertiary-text-color" id="tagcloud">
+        <div class="return-home tagcloud">
+            <a href="/">&lt; return to home</a></br>
         </div>
 
         <hr class="divider-color" />
-
         <!-- footer -->
         <div class='footer secondary-text-color'>
             2017 mlamb/jmutchek
+        </div>
+
+        <div style="height:800px">
         </div>
     </div>
 
     <div class="mainbody">
 
-        <!-- promoted link tiles -->
-        <div class="promotedsection">
-            <div class="promotedlink" id="promotedlinktemplate">
-                <a><img class="promotedimage" src="" /></a>
-            </div>
-        </div>
+        <h1>Bookmartian Settings &amp; Configuration</h1>
+        <hr class="divider-color" />
 
-        <div class="errormessage" id="errormessage">
-
-        </div>
-
-        <!-- search results -->
-        <div class="searchresults" id="searchresults">
-            <div class="searchblock">
-                <h1 class="linkblocktitle" id="searchresultstitle">search results</h1>
-                <i class="fa fa-small fa-remove iconbutton secondary-text-color" aria-hidden="true" onclick="$('#searchresults').hide()"></i>                
-                <table id="searchtable" class="searchtable table-color">
-                </table>
-                <div class="sortcommands secondary-text-color">
-                    sort by <a class="sorttitle" onClick='sortThisTable(this,"title");'>title</a> | <a class="sortlastvisited"
-                        onClick='sortThisTable(this,"recently-visited");'>visited</a> | <a class="sortcreated" onClick='sortThisTable(this,"recently-created");'>created</a>                    | <a class="openalllinks" onClick='openAllLinksinTabs(this);'>open all in tabs</a>
-                </div>
-            </div>
+        <h2>Setup your bookmarklet</h2>
+        <div class="settings-section">
+            <p>
+                Using this <a id='bookmarklet' href="#">bookmarklet</a> is the easiest way to add bookmarks to the bookmartian.
+            </p>
         </div>
 
 
-        <!-- tag blocks -->
-        <div class="content" id="content">
-            <div class="linkblock" id="linkblocktemplate">
-                <h1 class="linkblocktitle">loading...</h1>
-                <table class="linktable table-color">
-                </table>
-                <div class="sortcommands secondary-text-color">
-                    sort by <a class="sorttitle" onClick='sortThisTable(this,"title");'>title</a> | <a class="sortlastvisited"
-                        onClick='sortThisTable(this,"recently-visited");'>visited</a> | <a class="sortcreated" onClick='sortThisTable(this,"recently-created");'>created</a>
-                </div>
-            </div>
+        <h2>Import bookmarks</h2>
+        <div class="settings-section">
+            <p>
+                You can import bookmarks into Bookmartian from an existing file. The file must be formatted in the
+                <a href='https://msdn.microsoft.com/en-us/library/aa753582(v=vs.85).aspx' target="_blank">Netscape Bookmark file format</a>.
+            </p>
+            <form id=import name=import action=post>
+                <p><strong>Step 1.</strong> Find the file on your local file system.</p>
+                <input class="importtagsfield" type="file" name="bookmarksFile" accept=".html,.htm">
+                <p><strong>Step 2.</strong> Provide one or more tags that should automatically applied to the bookmarks in this
+                    import. Separate the tags with spaces or commas. Tags prefixed with a period (.) will be created, but
+                    will not be visible in your tag cloud.</p>
+                <input class="importtagsfield" id="importtags" type="text" name="tags" value="">
+                <script>
+                    var now = new Date(Date.now());
+                    $('#importtags').val(".imported_" + now.toISOString().replace(/[T:]/g, '-').substring(0, 19) + " ");
+                </script>
+                <p><strong>Step 3.</strong> Upload and import the file!</p>
+                <input type="button" value="Import the bookmarks now" name="importsubmit" onclick="importBookmarks();">
+            </form>
+            <div class='message' id='importStatusMessage'></div>
+
         </div>
+
+
 
         <!-- action panel (hidden at start) -->
         <div class="action light-primary-color" id="actionpanel">
@@ -127,6 +117,15 @@
         </div>
 
     </div>
+
+    <script>
+                                // --------------------------------------------------------------------------
+                                // update the bookmarklet on the page to reflect the current protocol and host        
+                                var http = location.protocol;
+                                var slashes = http.concat("//");
+                                var host = slashes.concat(window.location.host);
+                                $('#bookmarklet').attr("href", "javascript:(function(){if(window.myBookmarklet!==undefined){myBookmarklet();}else{var bs=document.createElement('script');bs.id='bookmartian_scriptblock';bs.src='" + host + "/bookmarklet.js';document.body.appendChild(bs);}})();")
+    </script>
 
 </body>
 

@@ -21,19 +21,25 @@
         <div class="admin-links tagcloud secondary-text-color" id="admin-links">
             BOOKMARTIAN</br>
             . add a bookmark...</br>
-            . <a href="settings.html">settings</a></br>
+            . <a href="options.html">settings</a></br>
             . <a href="help.html">help</a></br>
             . <a href="about.html">about</a></br>
         </div>
 
         <hr class="divider-color" />
 
+        <div class="return-home tagcloud">
+                <a href="/">&lt; return to home</a></br>
+        </div>
+    
+        <hr class="divider-color" />
+    
         <!-- footer -->
         <div class='footer secondary-text-color'>
             2017 mlamb/jmutchek
         </div>
 
-        <div style="height:800px">
+        <div style="height:2800px">
         </div>
     </div>
 
@@ -56,12 +62,36 @@
         <p>
             More advanced queries can be constructed by adding one or more of the following query terms to the search.
         </p>        
+        <p>
+            <strong>example 1</strong>
+            </br><span class="monospace">visited-since:1w as:recent-visits by:most-recently-visited</span>
+            </br>returns a query named "recent-visits" with bookmarks visited within the last week, sorted with the most recently visited at the top. 
+        </p>        
+        <p>
+            <strong>example 2</strong>
+            </br><span class="monospace">code visited-since:1w by:most-visited</span>
+            </br>returns bookmarks tagged with "code" that were visited within the last week, sorted with the most frequently visited at the top.
+        </p>        
+        <p>
+            <strong>example 3</strong>
+            </br><span class="monospace">by:most-recently-created limit:10</span>
+            </br>returns the last ten bookmarks created.
+        </p>        
+        <p>
+            <strong>example 4</strong>
+            </br><span class="monospace">by:most-recently-created limit:10 programming</span>
+            </br>of the last ten bookmarks created, the ones tagged "programming".
+        </p>        
+
+
+
         <table class="help-table">
             <tr><th style="width: 220px;">queryterm:modifier</th>       <th>description</th></tr>
-            <tr><td class="monospace">[tagged:]TAG</td>                 <td>Basic search default queryterm.
-                                                                        <p>The query term "tagged:" is optional.</p><p>TAG is any word or space-separated list of words.</p></td></tr>
+            <tr><td class="monospace">[tagged:]TAG</td>                 <td>Default basic search term<p>Results will be limited to only those bookmarks tagged as TAG. The query term "tagged:" is optional.</p><p>TAG is any word or space-separated list of words.</p></td></tr>
+            <tr><td class="monospace">as:NAME</td>                      <td>Query name.
+                                                                        <p>Result set will be returned with the provided NAME.</p></td></tr>
             <tr><td class="monospace">by:SORT-EXPR</td>                 <td>Sort modifier.
-                                                                        <p>Use the "by" query term and a SORT-EXPR to specify the sort order in which you would like the results returned.</p>
+                                                                        <p>Results will be sorted as indicated by the SORT-EXPR.</p>
                                                                         <h3>SORT-EXPR</h3>
                                                                         <table class="help-table">
                                                                         <tr><td class="monospace" style="width: 200px;">least-recently-created</td><td>save date, descending</td></tr>
@@ -72,15 +102,20 @@
                                                                         <tr><td class="monospace" style="width: 200px;">most-recently-visited</td><td>visit date, ascending</td></tr>
                                                                         <tr><td class="monospace" style="width: 200px;">least-visited</td><td>visit count, ascending</td></tr>
                                                                         <tr><td class="monospace" style="width: 200px;">most-visited</td><td>visit count, descending</td></tr>
-                                                                        <tr><td class="monospace" style="width: 200px;">title</td><td>alphabetically by title, ascending</td></tr>
-                                                                        <tr><td class="monospace" style="width: 200px;">url</td><td>alphabetically by url, ascending</td></tr>
+                                                                        <tr><td class="monospace" style="width: 200px;">title</td><td>alphabetically by title, ascending (case-insensitive)</td></tr>
+                                                                        <tr><td class="monospace" style="width: 200px;">url</td><td>alphabetically by url, ascending (case-insensitive)</td></tr>
                                                                         </table>
                                                                         </td></tr>
-            <tr><td class="monospace">created-after:DATE-EXPR</td>      <td>Filter on date created.
-                                                                        <p>Use the "created-after" query term and a DATE-EXPR to only return those bookmarks added after a specified date.</p>
+            <tr><td class="monospace">created-before:DATE-EXPR</td>     <td>Filter on date created.<p>Results will be limited to only those bookmarks created before the specified expression.  The expression may be an explicit date or a relative date such as "1y3m" meaning "1 year 3 months ago".</p>
                                                                         <h3>DATE-EXPR</h3>
                                                                         <table class="help-table">
-                                                                        <tr><td class="monospace" style="width: 200px;">TBD</td><td>tbd</td></tr>
+                                                                        <tr><td class="monospace" style="width: 200px;">yyyy/MM/dd</td><td>an explicit date</td></tr>
+                                                                        <tr><td class="monospace" style="width: 200px;">today</td><td>limit to today</td></tr>
+                                                                        <tr><td class="monospace" style="width: 200px;">yesterday</td><td>limit to yesterday</td></tr>
+                                                                        <tr><td class="monospace" style="width: 200px;">#y</td><td># years ago</td></tr>
+                                                                        <tr><td class="monospace" style="width: 200px;">#m</td><td># months ago</td></tr>
+                                                                        <tr><td class="monospace" style="width: 200px;">#w</td><td># weeks ago</td></tr>
+                                                                        <tr><td class="monospace" style="width: 200px;">#d</td><td># days ago</td></tr>
                                                                         </table>
                                                                         </td></tr>
             <tr><td class="monospace">created-since:DATE-EXPR</td>      <td>Filter on date created.
@@ -101,8 +136,8 @@
             <tr><td class="monospace">limit:N</td>                      <td>Restrict the number of results returned.
                                                                         <p>Use the "limit" query term and a number, N, to restrict the total number of results returned by the query.</p>
                                                                         </td></tr>
-            <tr><td class="monospace">modified-after:DATE-EXPR</td>     <td>Filter on date edited.
-                                                                        <p>Use the "modified-after" query term and a DATE-EXPR to only return those bookmarks edited after a specified date.</p>
+            <tr><td class="monospace">modified-before:DATE-EXPR</td>    <td>Filter on date edited.
+                                                                        <p>Use the "modified-before" query term and a DATE-EXPR to only return those bookmarks edited before a specified date.</p>
                                                                         </td></tr>
             <tr><td class="monospace">modified-since:DATE-EXPR</td>     <td>Filter on date edited.
                                                                         <p>Use the "modified-since" query term and a DATE-EXPR to only return those bookmarks edited since a specified date.</p>
@@ -110,9 +145,11 @@
             <tr><td class="monospace">modified[-on]:DATE-EXPR</td>      <td>Filter on date edited.
                                                                         <p>Use the "modified" query term and a DATE-EXPR to only return those bookmarks edited on a specified date.</p>
                                                                         </td></tr>
-            <tr><td class="monospace">site:SITE</td>                    <td></td></tr>
-            <tr><td class="monospace">visited-after:DATE-EXPR</td>      <td>Filter on date visited.
-                                                                        <p>Use the "visited-after" query term and a DATE-EXPR to only return those bookmarks visited after a specified date.</p>
+            <tr><td class="monospace">site:SITE</td>                    <td>Search by hostname
+                                                                        <p>Results will be limited to only those bookmarks with urls hosted at foo.com or its subdomains (e.g. searching for "foo.com" will match bookmarks for "foo.com", "www.foo.com", and "www.bar.foo.com").</p>
+                                                                        </td></tr>
+            <tr><td class="monospace">visited-before:DATE-EXPR</td>     <td>Filter on date visited.
+                                                                        <p>Use the "visited-before" query term and a DATE-EXPR to only return those bookmarks visited before a specified date.</p>
                                                                         </td></tr>
             <tr><td class="monospace">visited-since:DATE-EXPR</td>      <td>Filter on date visited.
                                                                         <p>Use the "visited-since" query term and a DATE-EXPR to only return those bookmarks visited since a specified date.</p>
@@ -166,15 +203,6 @@
         </div>
 
     </div>
-
-    <script>
-        // --------------------------------------------------------------------------
-        // update the bookmarklet on the page to reflect the current protocol and host        
-        var http = location.protocol;
-        var slashes = http.concat("//");
-        var host = slashes.concat(window.location.host);
-        $('#bookmarklet').attr("href", "javascript:(function(){if(window.myBookmarklet!==undefined){myBookmarklet();}else{var bs=document.createElement('script');bs.id='bookmartian_scriptblock';bs.src='" + host + "/bookmarklet.js';document.body.appendChild(bs);}})();")
-    </script>
 
 </body>
 

@@ -21,13 +21,18 @@
         <div class="admin-links tagcloud secondary-text-color" id="admin-links">
             BOOKMARTIAN</br>
             . add a bookmark...</br>
-            . <a href="settings.html">settings</a></br>
+            . <a href="options.html">settings</a></br>
             . <a href="help.html">help</a></br>
             . <a href="about.html">about</a></br>
         </div>
 
         <hr class="divider-color" />
 
+        <div class="return-home tagcloud">
+                <a href="/">&lt; return to home</a></br>
+        </div>
+    
+        <hr class="divider-color" />
         <!-- footer -->
         <div class='footer secondary-text-color'>
             2017 mlamb/jmutchek
@@ -90,15 +95,6 @@
         </div>
 
     </div>
-
-    <script>
-        // --------------------------------------------------------------------------
-        // update the bookmarklet on the page to reflect the current protocol and host        
-        var http = location.protocol;
-        var slashes = http.concat("//");
-        var host = slashes.concat(window.location.host);
-        $('#bookmarklet').attr("href", "javascript:(function(){if(window.myBookmarklet!==undefined){myBookmarklet();}else{var bs=document.createElement('script');bs.id='bookmartian_scriptblock';bs.src='" + host + "/bookmarklet.js';document.body.appendChild(bs);}})();")
-    </script>
 
 </body>
 

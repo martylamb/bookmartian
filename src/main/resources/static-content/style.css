@@ -52,6 +52,11 @@ h3 {
     color: #767676;
 }
 
+.return-home a {
+    text-decoration: none;
+    color: #FFFFFF;
+}
+
 /* ======================================================================= */
 /* mainbody */
 .mainbody {
@@ -309,6 +314,10 @@ h3 {
 /* ======================================================================= */
 /* settings */
 
+.settings-section {
+    margin-left: 24px;
+}
+
 .settingslist {
     width: 20%;
     text-align: left;
@@ -349,10 +358,16 @@ h3 {
     width:100%;
 }
 
-.help-table tr:nth-child(odd)		{ background-color:#FFFFFF; }
-.help-table tr:nth-child(even)		{ background-color:#F4F4F4; }
+.help-table tr:nth-child(odd) {
+    background-color:#FFFFFF; 
+    vertical-align: top;
+}
+
+.help-table tr:nth-child(even) {
+    background-color:#F4F4F4; 
+    vertical-align: top;
+}
 
 .monospace {
     font-family:monospace;
-    vertical-align: top;
 }
