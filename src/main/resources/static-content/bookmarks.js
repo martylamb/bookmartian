@@ -612,8 +612,9 @@ $(document).ready(function () {
                     } else {
                         image.attr("src", "https://icons.better-idea.org/icon?size=90&url=" + element.url);
                     }
+                    image.attr("alt", element.title);
                     var link = tile.find("a");
-                    link.attr("href", API_VisitLink + "?url=" + escape(element.url))
+                    link.attr("href", API_VisitLink + "?url=" + escape(element.url));
                     tile.css("display", "inline-block");
                     $(".promotedsection").append(tile);
                 })
