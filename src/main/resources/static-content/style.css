@@ -102,7 +102,8 @@ h3 {
 /* action panel */
 .action {
     display: none;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    position: absolute;
+    width: 226px;
 }
 
 .addpanel {
@@ -111,35 +112,21 @@ h3 {
 }
 
 .fieldtitle {
-    width: 100px;
+    font-size: small;
+}
+
+.field {
+    font-size: small;
+    width:100%;
 }
 
 .actionbutton {
     width:64px;
+    float:right;
 }
 
 .titleinputpair {
-    float:left;
-}
-
-.addinputtitle {
-    margin-right: 12px;
-    width: 160px;
-}
-
-.addinputurl {
-    margin-right: 12px;
-    width: 250px;
-}
-
-.addinputtags {
-    margin-right: 12px;
-    width: 160px;
-}
-
-.addinputnotes {
-    margin-right: 12px;
-    width: 250px;
+    
 }
 
 /* ======================================================================= */

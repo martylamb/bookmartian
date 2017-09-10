@@ -397,6 +397,7 @@ function closeAction() {
 // ==========================================================================
 // toggle the display of the edit section of a bookmark table row
 function toggleEdits(e) {
+    closeAction();
     if (!$(e).data('on')) {
         $(e).removeClass('tertiary-text-color fa-angle-down');
         $(e).addClass('text-primary-color fa-angle-up');
@@ -455,9 +456,14 @@ function editMark(e) {
     $('#addinputtags').val(bookmark.attr('data-tags') ? bookmark.attr('data-tags').replace(/,/g, ' ') : '');
     $('#addinputnotes').val(bookmark.attr('data-notes') ? bookmark.attr('data-notes') : '');
     $('#addinputimageUrl').val(bookmark.attr('data-imageurl') ? bookmark.attr('data-imageurl') : '');
+
+    var position = $(e).parent().position();
+    $('#actionpanel').css({top:position.top+'px',left:position.left+'px'});
+
     $('#actionpanel').slideDown('fast');
+    //$('#actionpanel').show();
     $('#addinputtags').focus();
-    $('html, body').animate({ scrollTop: 0 }, 0);    
+    //$('html, body').animate({ scrollTop: 0 }, 0);    
 }
 
 // ==========================================================================
@@ -523,6 +529,7 @@ function executeSearch(term, reset) {
     $('#searchtable').children().remove();
     $('#searchresultstitle').text('search results for \'' + searchterm + '\'');
 
+    $('#searchterm').focus();
 }
 
 // ==========================================================================
