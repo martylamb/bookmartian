@@ -29,7 +29,7 @@ function buildBookmarkRow(element, withTags) {
     if (typeof element.tags != 'undefined') {
         tagsplain = element.tags.toString().replace(/,/g, ' ');
     }
-    
+
     var tags = "";
     if (withTags && typeof element.tags != 'undefined') {
         var taglist = element.tags.toString().split(',');
@@ -211,7 +211,7 @@ function openAllLinksinTabs(e) {
     var thisTable = $(e).parent().parent().find("table");
     var listDataJSON = bookmarkJSONArrays[thisTable.attr('id')];
 
-    for (i=0; i < listDataJSON.length; i++) {
+    for (i = 0; i < listDataJSON.length; i++) {
         window.open(listDataJSON[i]["url"]);
     }
     window.focus();
@@ -338,7 +338,7 @@ function populateTagCloud() {
         .done(function (json) {
             $(json).each(function (index, element) {
                 if (element.name.substr(0, 1) !== ".") {
-                    var link = "<a onclick=\"executeSearch('" + element.name + "', true);\" style=color:" + (element.color!="#000000"?element.color:"") + " id=" + element.name + ">" + element.name + "</a>";
+                    var link = "<a onclick=\"executeSearch('" + element.name + "', true);\" style=color:" + (element.color != "#000000" ? element.color : "") + " id=" + element.name + ">" + element.name + "</a>";
                     $("#tagcloud").append(link).append("</br>");
                     tagColors[element.name] = element.color;
                 }
@@ -434,7 +434,7 @@ function deleteMark(e) {
             console.log('delete POST successful');
             $(e).parent().remove();
             bookmark.parent().parent().remove();
-            populateTagCloud();            
+            populateTagCloud();
         })
         .fail(function () {
             console.log("delete POST failed");
@@ -447,22 +447,26 @@ function deleteMark(e) {
 // ==========================================================================
 // open up the action panel with the bookmark ready for editing
 function editMark(e) {
-    var bookmark = $(e).parent().parent().prev().find('.bookmark a');
-    console.log("editing bookmark: " + bookmark.attr('href'));
+    if (e) {
+        var bookmark = $(e).parent().parent().prev().find('.bookmark a');
+        console.log("editing bookmark: " + bookmark.attr('href'));
 
-    $('#addinputtitle').val(bookmark.attr('data-title') ? bookmark.attr('data-title') : '');
-    $('#addinputoldUrl').val(bookmark.attr('data-url') ? bookmark.attr('data-url') : '');
-    $('#addinputurl').val(bookmark.attr('data-url') ? bookmark.attr('data-url') : '');
-    $('#addinputtags').val(bookmark.attr('data-tags') ? bookmark.attr('data-tags').replace(/,/g, ' ') : '');
-    $('#addinputnotes').val(bookmark.attr('data-notes') ? bookmark.attr('data-notes') : '');
-    $('#addinputimageUrl').val(bookmark.attr('data-imageurl') ? bookmark.attr('data-imageurl') : '');
+        $('#addinputtitle').val(bookmark.attr('data-title') ? bookmark.attr('data-title') : '');
+        $('#addinputoldUrl').val(bookmark.attr('data-url') ? bookmark.attr('data-url') : '');
+        $('#addinputurl').val(bookmark.attr('data-url') ? bookmark.attr('data-url') : '');
+        $('#addinputtags').val(bookmark.attr('data-tags') ? bookmark.attr('data-tags').replace(/,/g, ' ') : '');
+        $('#addinputnotes').val(bookmark.attr('data-notes') ? bookmark.attr('data-notes') : '');
+        $('#addinputimageUrl').val(bookmark.attr('data-imageurl') ? bookmark.attr('data-imageurl') : '');
 
-    var position = $(e).parent().position();
-    $('#actionpanel').css({top:position.top+'px',left:position.left+'px'});
-
+        var position = $(e).parent().position();
+        $('#actionpanel').css({ top: position.top + 'px', left: position.left + 'px' });
+    } else {
+        $('#actionpanel').css({ top: '0px', left: '140px' });
+    }
     $('#actionpanel').slideDown('fast');
+    $('#addinputtitle').focus();
     //$('#actionpanel').show();
-    $('#addinputtags').focus();
+    
     //$('html, body').animate({ scrollTop: 0 }, 0);    
 }
 
@@ -512,7 +516,7 @@ function executeSearch(term, reset) {
             } else {
                 $('#errormessage').html(json.message).show();
             }
-        
+
         })
         // Code to run if the request fails; the raw request and
         // status codes are passed to the function
@@ -568,11 +572,11 @@ $(document).ready(function () {
 
     if (qs != null) {
         qs.split("&").forEach(function (item) { (item.split("=")[0] in qd) ? qd[item.split("=")[0]].push(item.split("=")[1]) : qd[item.split("=")[0]] = [item.split("=")[1]] })
-    } 
+    }
 
     // create a linkblock for each pinned tag
     var promotedTags = "";
-    
+
     if (qd.pin) {
         promotedTags = qd.pin.toString();
         promotedTagArray = promotedTags.split(",");

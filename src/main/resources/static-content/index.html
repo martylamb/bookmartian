@@ -15,14 +15,6 @@
     <script src="utils.js"></script>
     <script src="bookmarks.js"></script>
 
-    <!-- bar at top of page -->
-    <!--     <div class="header default-primary-color">
-        <i class="fa fa-2x fa-plus iconbutton addbutton" aria-hidden="true" onclick="$('#actionpanel').slideDown('fast')"></i>
-        <i class="fa fa-lg fa-search iconbutton searchbutton" aria-hidden="true" onclick="executeSearch();"></i>
-        <input class='searchbox' type="text" id='searchterm'/>
-    </div>
- -->
-
     <!-- sidebar -->
     <div class="sidebar default-primary-color">
         <input class='searchbox' type="text" id='searchterm' />
@@ -30,7 +22,7 @@
 
         <div class="admin-links tagcloud secondary-text-color" id="admin-links">
             BOOKMARTIAN</br>
-            . add a bookmark...</br>
+            . <a onClick="editMark()">add a bookmark...</a></br>
             . <a href="options.html">settings</a></br>
             . <a href="help.html">help</a></br>
             . <a href="about.html">about</a></br>

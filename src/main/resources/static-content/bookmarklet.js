@@ -4,7 +4,7 @@ parser.href = document.getElementById("bookmartian_scriptblock").getAttribute("s
 var host = parser.protocol + "//" + parser.host;
 
 // function called when the save button is clicked
-function saveBookmark() {
+function bookmartian_saveBookmark() {
 
     // do not serialize the oldurl field if no old url was specified or the url did not change
     var serializedFormData = null;
@@ -21,7 +21,7 @@ function saveBookmark() {
     })
         .done(function () {
             console.log("bookmark saved.");
-            closeAction();
+            bookmartian_closeAction();
         })
         .fail(function () {
             console.log("POST failed");
@@ -31,7 +31,7 @@ function saveBookmark() {
 }
 
 // function called when the close button is clicked AND on a successful save
-function closeAction() {
+function bookmartian_closeAction() {
     $('#bookmartian_actionpanel').remove();
 }
 
@@ -51,9 +51,11 @@ function closeAction() {
             }
         };
         document.getElementsByTagName("head")[0].appendChild(script);
+
     } else {
         initMyBookmarklet();
     }
+    
 
     function initMyBookmarklet() {
 
@@ -85,36 +87,40 @@ function closeAction() {
                 $('head').append('<link rel="stylesheet" type="text/css" href="' + host + '/colors.css">');
                 $('head').append('<link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">');
                 $("body").append(`
-                            <div class="bookmartian_action light-primary-color" id="bookmartian_actionpanel">
-                                <div id="bookmartian_addpanel" class="bookmartian_addpanel">
-                                    <h1>Add a bookmark</h1>
-                                    <form id="bookmartian_addform">
-                                        <input type="hidden" name="body" id="bookmartian_addinputbody"/>                
-                                            <input type="hidden" name="oldUrl" id="bookmartian_addinputoldUrl" />
-                                            <div class="bookmartian_titleinputpair">
-                                            <div class="bookmartian_fieldtitle">title:</div>
-                                            <input type="text" name="title" id="bookmartian_addinputtitle" class="bookmartian_addinputtitle" />
-                                        </div>
-                                        <div class="bookmartian_titleinputpair">
-                                            <div class="bookmartian_fieldtitle">url:</div>
-                                            <input type="text" name="url" id="bookmartian_addinputurl" class="bookmartian_addinputurl" />
-                                        </div>
-                                        <div class="bookmartian_titleinputpair">
-                                            <div class="bookmartian_fieldtitle">tags:</div>
-                                            <input type="text" name="tags" id="bookmartian_addinputtags" class="bookmartian_addinputtags" />
-                                        </div>
-                                        <div class="bookmartian_titleinputpair">
-                                            <div class="bookmartian_fieldtitle">notes:</div>
-                                            <input type="text" name="notes" id="bookmartian_addinputnotes" class="bookmartian_addinputnotes" />
-                                        </div>
-                                        <div class="bookmartian_titleinputpair">
-                                            <div class="bookmartian_fieldtitle">&nbsp;</div>
-                                            <input type="button" value="save" class="bookmartian_actionbutton" onclick="saveBookmark();" />
-                                            <input type="button" value="cancel" class="bookmartian_actionbutton" onclick="closeAction();" />
-                                        </div>
-                                    </form>
-                                </div>
-    					    </div> `);
+                <div class="bookmartian_action default-primary-color" id="bookmartian_actionpanel">
+                <div id="bookmartian_addpanel" class="bookmartian_addpanel bookmartian_primary-text-color">
+                    <div class="bookmartian_title">Save this page to bookmartian...</div>
+                    <form id="bookmartian_addform">
+                        <input type="hidden" name="oldUrl" id="bookmartian_addinputoldUrl" />
+                        <div class="bookmartian_inputpair">
+                            <div class="bookmartian_fieldtitle">title</div>
+                            <input type="text" name="title" id="bookmartian_addinputtitle" class="bookmartian_field" />
+                        </div>
+                        <div class="bookmartian_inputpair">
+                            <div class="bookmartian_fieldtitle">url</div>
+                            <input type="text" name="url" id="bookmartian_addinputurl" class="bookmartian_field" />
+                        </div>
+                        <div class="bookmartian_inputpair">
+                            <div class="bookmartian_fieldtitle">tags</div>
+                            <input type="text" name="tags" id="bookmartian_addinputtags" class="bookmartian_field" />
+                        </div>
+                        <div class="bookmartian_inputpair">
+                            <div class="bookmartian_fieldtitle">notes</div>
+                            <input type="text" name="notes" id="bookmartian_addinputnotes" class="bookmartian_field" />
+                        </div>
+                        <div class="bookmartian_inputpair">
+                            <div class="bookmartian_fieldtitle">image url</div>
+                            <input type="text" name="imageUrl" id="bookmartian_addinputimageUrl" class="bookmartian_field" />
+                        </div>
+                        <div class="bookmartian_inputpair">
+                            <div class="bookmartian_fieldtitle">&nbsp;</div>
+                            <input type="button" value="save" class="bookmartian_actionbutton" onclick="bookmartian_saveBookmark();" />
+                            <input type="button" value="cancel" class="bookmartian_actionbutton" onclick="bookmartian_closeAction();" />
+                        </div>
+                    </form>
+                </div>
+            </div> `);
+            $('#bookmartian_addinputtags').focus();
             }
 
             // check to see if this url is already bookmarked and, if it is, prepopulate the fields with the saved info
