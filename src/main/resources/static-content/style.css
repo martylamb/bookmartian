@@ -23,17 +23,15 @@ hr {
 
 h1 {
     font-size: x-large;
-    margin: 0px;
-    padding: 8px;
     float: left;
 }
 
 h2 {
-    font-size: x-large;
+    font-size: large;
 }
 
 h3 {
-    font-size: x-large;
+    font-size: small;
 }
 
 .padlock {
@@ -69,7 +67,6 @@ h3 {
 
 .iconbutton {
     cursor: pointer;
-    color: white;
     float: right;
 }
 
@@ -87,7 +84,6 @@ h3 {
     height: 16px;
     font-size: small;
 }
-
 
 .errormessage {
     width:100%;
@@ -232,6 +228,11 @@ h3 {
     vertical-align:top;
 }
 
+.linkblocktitle {
+    padding: 8px;    
+    margin: 0px;    
+}
+
 .linktable {
     width: 226px;
     font-size: medium;  
@@ -341,4 +342,17 @@ h3 {
 
 .settingSelected {
     font-weight: bold;
+}
+
+.help-table {
+    text-align: left;
+    width:100%;
+}
+
+.help-table tr:nth-child(odd)		{ background-color:#FFFFFF; }
+.help-table tr:nth-child(even)		{ background-color:#F4F4F4; }
+
+.monospace {
+    font-family:monospace;
+    vertical-align: top;
 }
