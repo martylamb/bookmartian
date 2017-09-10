@@ -25,6 +25,7 @@ h1 {
     font-size: x-large;
     margin: 0px;
     padding: 8px;
+    float: left;
 }
 
 h2 {
@@ -69,7 +70,7 @@ h3 {
 .iconbutton {
     cursor: pointer;
     color: white;
-    float:right;
+    float: right;
 }
 
 .addbutton {
