@@ -338,8 +338,8 @@ function populateTagCloud() {
         .done(function (json) {
             $(json).each(function (index, element) {
                 if (element.name.substr(0, 1) !== ".") {
-                    var link = "<a onclick=\"executeSearch('" + element.name + "', true);\" style=color:" + (element.color != "#000000" ? element.color : "") + " id=" + element.name + ">" + element.name + "</a>";
-                    $("#tagcloud").append(link).append("</br>");
+                    var link = "<a onclick=\"executeSearch('" + element.name + "', true);\" class=tag style=color:" + (element.color != "#000000" ? element.color : "") + " id=" + element.name + ">" + element.name + "</a>";
+                    $("#tagcloud").append(link);
                     tagColors[element.name] = element.color;
                 }
             })
@@ -466,7 +466,7 @@ function editMark(e) {
     $('#actionpanel').slideDown('fast');
     $('#addinputtitle').focus();
     //$('#actionpanel').show();
-    
+
     //$('html, body').animate({ scrollTop: 0 }, 0);    
 }
 
@@ -535,6 +535,34 @@ function executeSearch(term, reset) {
 
     $('#searchterm').focus();
 }
+
+// ==========================================================================
+// filter the tag cloud based on the current searc term (really only useful with basic tag search)
+function filterTagCloud() {
+
+    var sidebarheight = $("#sidebar").height();
+    $("#sidebar").height(sidebarheight);
+
+    var searchtext = $("#searchterm").val();
+    $('#tagcloud').children().each(function () {
+        if (this.text) {
+            if (this.text.substr(0, searchtext.length) != searchtext) {
+                $(this).hide();
+            } else {
+                $(this).show();                
+            }
+        }
+    })
+}
+
+// ==========================================================================
+// trigger the tag cloud filter when you hit the TAB key in the search box
+$('body').on('keydown', '#searchterm', function(e) {
+    if (e.which == 9) {
+        e.preventDefault();
+        filterTagCloud();
+    }
+});
 
 // ==========================================================================
 // When the document is fully loaded, load the dynamic elements into the page
