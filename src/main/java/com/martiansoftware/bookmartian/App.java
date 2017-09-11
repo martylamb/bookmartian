@@ -164,7 +164,6 @@ public class App {
                             .imageUrl(q("imageUrl"))
                             .notes(q("notes"))
                             .tags(q("tags"))
-                            .modifying() // forces current time when saved
                             .build();
 
             corsHeaders();

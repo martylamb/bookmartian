@@ -60,8 +60,9 @@ public class Bookmark {
         _notes = Optional.ofNullable(Strings.safeTrimToNull(notes));
         _imageUrl = Optional.ofNullable(Strings.safeTrimToNull(imageUrl));
         _tags = (tags == null) ? TagNameSet.EMPTY : tags;
-        _created = Optional.ofNullable(created);
-        _modified = Optional.ofNullable(modified);
+        Date now = new Date();
+        _created = Optional.ofNullable(created == null ? now : created);
+        _modified = Optional.ofNullable(modified == null ? now : modified);
         _lastVisited = Optional.ofNullable(lastVisited);
         _visitCount = Optional.ofNullable(visitCount);
     }
