@@ -72,7 +72,7 @@ function buildBookmarkRow(element, withTags) {
         modified = "modified on " + modifiedDate.toDateString();
     }
 
-    var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "'></td><td class='bookmark'><a rel='noreferrer' href='" + API_VisitLink + "?url=" + escape(element.url) + "' data-url='" + element.url + "' data-tags='" + tagsplain + "' data-notes='" + notes + "' data-imageurl='" + imageUrl + "' data-title='" + title + "'>" + title + "</a>" + padlock + tags + "<i class='fa fa-angle-down edit-ellipsis tertiary-text-color' aria-hidden='true' onclick='toggleEdits(this)'></i></td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a onclick='deleteMark(this);'>delete</a><p class='dateinfo text-default-primary-color'>" + element.url + "</p><p class='dateinfo secondary-text-color'>" + created + createdTime + "</br>" + modified + modifiedTime + "</br>" + lastVisited + lastVisitedTime + "</p></td></tr>";
+    var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "'></td><td class='bookmark'><a rel='noreferrer' href='" + API_VisitLink + "?url=" + escape(element.url) + "' data-url='" + element.url + "' data-tags='" + tagsplain + "' data-notes='" + notes + "' data-imageurl='" + imageUrl + "' data-title='" + title + "'>" + title + "</a>" + padlock + tags + "<i class='fa fa-angle-down edit-ellipsis tertiary-text-color' aria-hidden='true' onclick='toggleEdits(this)'></i></td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a onclick='deleteMark(this);'>delete</a><p class='markinfo notes'>" + notes + "</p><p class='markinfo url text-default-primary-color'>" + element.url + "</p><p class='markinfo dates secondary-text-color'>" + created + createdTime + "</br>" + modified + modifiedTime + "</br>" + lastVisited + lastVisitedTime + "</p></td></tr>";
 
     return row;
 }
@@ -363,6 +363,48 @@ function populateTagCloud() {
 }
 
 // ==========================================================================
+// update an existing bookmark row
+function updateBookmarkRow(oldurl, newurl) {
+
+    var bookmark = $("[data-url='"+oldurl+"']");
+
+    if (bookmark) {
+        $.ajax({
+            // The URL for the request
+            url: API_RetrieveBookmark + "?url=" + newurl,
+
+            // Whether this is a POST or GET request
+            type: "GET",
+
+            // The type of data we expect back
+            dataType: "json"
+        })
+            // Code to run if the request succeeds (is done);
+            // The response is passed to the function
+            .done(function (json) {
+                bookmark.text(json.data.title);
+                bookmark.attr('data-title', json.data.title);
+                bookmark.attr('data-url', json.data.url);
+                bookmark.attr('data-tags', json.data.tags.toString().replace(/,/g, ' '));
+                bookmark.attr('data-notes', json.data.notes);
+                bookmark.attr('data-imageurl', json.data.imageUrl);
+                bookmark.parent().parent().next().find(".notes").text(json.data.notes);
+                bookmark.parent().parent().next().find(".url").text(json.data.url);
+            })
+            // Code to run if the request fails; the raw request and
+            // status codes are passed to the function
+            .fail(function (xhr, status, errorThrown) {
+                console.log("Error: " + errorThrown);
+                console.log("Status: " + status);
+                console.dir(xhr);
+            })
+            // Code to run regardless of success or failure;
+            .always(function (xhr, status) {
+            });
+    }
+}
+
+// ==========================================================================
 // POST the bookmark back to the service to save it
 function saveBookmark() {
 
@@ -377,6 +419,7 @@ function saveBookmark() {
     $.post(API_UpdateBookmark, serializedFormData)
         .done(function () {
             populateTagCloud();
+            updateBookmarkRow($('#addinputoldUrl').val(), $('#addinputurl').val());
             closeAction();
         })
         .fail(function () {
@@ -549,7 +592,7 @@ function filterTagCloud() {
             if (this.text.substr(0, searchtext.length) != searchtext) {
                 $(this).hide();
             } else {
-                $(this).show();                
+                $(this).show();
             }
         }
     })
@@ -557,7 +600,7 @@ function filterTagCloud() {
 
 // ==========================================================================
 // trigger the tag cloud filter when you hit the TAB key in the search box
-$('body').on('keydown', '#searchterm', function(e) {
+$('body').on('keydown', '#searchterm', function (e) {
     if (e.which == 9) {
         e.preventDefault();
         filterTagCloud();

@@ -276,9 +276,13 @@ h3 {
     cursor: pointer;
 }
 
-.dateinfo {
+.markinfo {
     font-size: x-small;
     word-break: break-all;
+}
+
+.notes {
+    font-style: italic;
 }
 
 .sortcommands {
