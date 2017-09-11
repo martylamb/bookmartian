@@ -187,6 +187,7 @@ public class JournalBookmartian implements Bookmartian {
             tagNames.asSet().stream()
                 .filter(tn -> !_tags.containsKey(tn))
                 .map(tn -> Tag.of(tn))
+                .peek(t -> log.info("auto-creating tag {}", t.tagName()))
                 .forEach(t -> je.add(t));
         }                    
     }
@@ -199,6 +200,7 @@ public class JournalBookmartian implements Bookmartian {
                 .filter(tn -> !_tags.containsKey(tn))
                 .distinct()                    
                 .map(tn -> Tag.of(tn))
+                .peek(t -> log.info("auto-creating tag {}", t.tagName()))
                 .forEach(tag -> je.add(tag));
             
             if (je.tags().count() > 0) writeAndApply(je);
