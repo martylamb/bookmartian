@@ -296,10 +296,10 @@ function populateLinkTable(value) {
 
             var heading = linktable.parent().find('h1');
             if (json.status !== 'error') {
-                heading.text(json.data.name);
 
                 bookmarkJSONArrays['linktable_' + safeID] = $(json.data.bookmarks);
                 linktable.attr('data-sort', json.data.sort);
+                linktable.attr('data-name', json.data.name);
                 renderLinkTable(linktable, false);
             } else {
                 heading.text(json.message);
