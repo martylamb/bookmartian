@@ -18,15 +18,30 @@
     <!-- sidebar -->
     <div class="topbar default-primary-color" id="topbar">
         <div class="advancedsearch">
-            <i class="fa fa-angle-double-left iconbutton secondary-text-color" aria-hidden="true" id="collapseSearch" onclick="toggleTopBar();"></i>
-            &nbsp;
-            <p class="tertiary-text-color">Advanced Search</p>
+            <i class="fa fa-angle-double-left iconbutton secondary-text-color" aria-hidden="true" id="collapseSearch" onclick="closeTopBar();"></i>
+            <div class="advancedsearchhelp tertiary-text-color">
+                Advanced Search
+                </br>
+                </br>
+                <span class="monospace secondary-text-color">
+                    [tagged:]TAG
+                    [created-before|created-since|created[-on]:<a href="help.html#date-expr" target="helptab" title="yyyy/MM/dd&#013today&#013yesterday&#013#y#m#w#d">DATE-EXPR</a>]
+                    [modified-before|modified-since|modified[-on]:<a href="help.html#date-expr" target="helptab" title="yyyy/MM/dd&#013today&#013yesterday&#013#y#m#w#d">DATE-EXPR</a>]
+                    [visited-before|visited-since|visited[-on]:<a href="help.html#date-expr" target="helptab" title="yyyy/MM/dd&#013today&#013yesterday&#013#y#m#w#d">DATE-EXPR</a>]
+                    [visits-over|visits-under|visits:N]
+                    [is:secure|tagged|untagged]
+                    [site:<a href="help.html#site-expr" target="helptab">SITE-EXPR</a>]
+                    [by:<a href="help.html#sort-expr" target="helptab" title="title&#013url&#013least-recently-created&#013least-recently-modified&#013least-recently-visited&#013most-recently-created&#013most-recently-modified&#013most-recently-visited&#013least-visited&#013most-visited">SORT-EXPR</a>]
+                    [limit:N]
+                    [as:NAME]
+                </span>
+            </div>
         </div>
     </div>
     <div class="sidebar default-primary-color" id="sidebar">
             <input class='searchbox' type="text" id='searchterm'/>
             <!-- <i class="fa fa-lg fa-bars iconbutton text-primary-color" aria-hidden="true" onclick="$('#sidebar').animate({left:'-104px'})"></i> -->
-            <i class="fa fa-angle-double-right iconbutton secondary-text-color" aria-hidden="true" id="expandSearch" onclick="toggleTopBar();"></i>
+            <i class="fa fa-angle-double-right iconbutton secondary-text-color" aria-hidden="true" id="expandSearch" onclick="openTopBar();"></i>
 
         <div class="admin-links tagcloud secondary-text-color" id="admin-links">
             BOOKMARTIAN</br>
@@ -67,7 +82,7 @@
         <div class="searchresults" id="searchresults">
             <div class="searchblock">
                 <h1 class="linkblocktitle" id="searchresultstitle">search results</h1>
-                <i class="fa fa-small fa-remove iconbutton secondary-text-color" aria-hidden="true" onclick="$('#searchresults').hide();$('#searchterm').val('');"></i>                
+                <i class="fa fa-small fa-remove iconbutton secondary-text-color" aria-hidden="true" onclick="$('#searchresults').hide();$('#searchterm').val('');closeTopBar();"></i>                
                 <table id="searchtable" class="searchtable table-color">
                 </table>
                 <div class="sortcommands secondary-text-color">

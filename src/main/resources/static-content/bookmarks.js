@@ -223,6 +223,9 @@ function renderLinkTable(linktable, withTags) {
     // clear the table out
     linktable.empty();
 
+    var heading = linktable.parent().find('h1');
+    heading.text(linktable.attr('data-name'));
+
     // insert bookmark rows in the current sort order
     bookmarkJSONArrays[linktable.attr('id')].each(function (index, element) {
         linktable.append(buildBookmarkRow(element, withTags));
@@ -547,10 +550,10 @@ function executeSearch(term, reset) {
         .done(function (json) {
             if (json.status == "success") {
                 var searchtable = $('#searchtable');
-
                 bookmarkJSONArrays['searchtable'] = $(json.data.bookmarks);
                 searchtable.attr('data-searchterm', searchterm);
                 searchtable.attr('data-sort', json.data.sort);
+                searchtable.attr('data-name', json.data.name);
                 renderLinkTable(searchtable, true);
 
                 $('#errormessage').html("").hide();
@@ -574,8 +577,6 @@ function executeSearch(term, reset) {
         });
 
     $('#searchtable').children().remove();
-    $('#searchresultstitle').text('search results for \'' + searchterm + '\'');
-
     $('#searchterm').focus();
 }
 
@@ -599,24 +600,36 @@ function filterTagCloud() {
 }
 
 // ==========================================================================
-// toggle the expanded top bar
-function toggleTopBar() {
-    if ($('#expandSearch').css('display') == 'block') {
-        $('#expandSearch').hide();
-        $('#topbar').show();
-        $('#searchterm').width($('#topbar').width()-40+'px');
-    } else {
-        $('#searchterm').width('100px');
-        $('#topbar').hide();
-        $('#expandSearch').show();
-    }
+// open the expanded top bar
+function openTopBar() {
+    $('#expandSearch').hide();
+    $('#topbar').show();
+    $('#searchterm').width($('#topbar').width() - 40 + 'px');
+}
+
+// ==========================================================================
+// close the expanded top bar
+function closeTopBar() {
+    $('#searchterm').width('100px');
+    $('#topbar').hide();
+    $('#expandSearch').show();
 }
 
 // ==========================================================================
 // expand the search box when you hit the spacebar while writing your query
 $('body').on('keydown', '#searchterm', function (e) {
     if (e.which == 32) {
-        toggleTopBar();
+        openTopBar();
+    }
+});
+
+// ==========================================================================
+// close the search box when you hit the escape key while writing your query
+$('body').on('keydown', '#searchterm', function (e) {
+    if (e.which == 27) {
+        $('#searchresults').hide();
+        $('#searchterm').val('');
+        closeTopBar();
     }
 });
 

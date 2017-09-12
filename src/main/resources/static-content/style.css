@@ -63,6 +63,11 @@ h3 {
     font-size: small;
 }
 
+.advancedsearchhelp {
+    margin-top: 30px;
+    margin-right: 16px;
+}
+
 .admin-links a {
     text-decoration: none;
     color: #767676;
@@ -378,6 +383,9 @@ h3 {
     vertical-align: top;
 }
 
-.monospace {
+.monospace, .monospace a {
     font-family:monospace;
+    text-decoration: none;
+    color: #767676;
 }
+

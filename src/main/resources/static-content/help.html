@@ -90,7 +90,7 @@
             <tr><td class="monospace">[tagged:]TAG</td>                 <td>Default basic search term<p>Results will be limited to only those bookmarks tagged as TAG. The query term "tagged:" is optional.</p><p>TAG is any word or space-separated list of words.</p></td></tr>
             <tr><td class="monospace">as:NAME</td>                      <td>Query name.
                                                                         <p>Result set will be returned with the provided NAME.</p></td></tr>
-            <tr><td class="monospace">by:SORT-EXPR</td>                 <td>Sort modifier.
+            <tr><td class="monospace">by:SORT-EXPR</td>                 <td id="sort-expr">Sort modifier.
                                                                         <p>Results will be sorted as indicated by the SORT-EXPR.</p>
                                                                         <h3>SORT-EXPR</h3>
                                                                         <table class="help-table">
@@ -106,7 +106,7 @@
                                                                         <tr><td class="monospace" style="width: 200px;">url</td><td>alphabetically by url, ascending (case-insensitive)</td></tr>
                                                                         </table>
                                                                         </td></tr>
-            <tr><td class="monospace">created-before:DATE-EXPR</td>     <td>Filter on date created.<p>Results will be limited to only those bookmarks created before the specified expression.  The expression may be an explicit date or a relative date such as "1y3m" meaning "1 year 3 months ago".</p>
+            <tr><td class="monospace">created-before:DATE-EXPR</td>     <td id="date-expr">Filter on date created.<p>Results will be limited to only those bookmarks created before the specified expression.  The expression may be an explicit date or a relative date such as "1y3m" meaning "1 year 3 months ago".</p>
                                                                         <h3>DATE-EXPR</h3>
                                                                         <table class="help-table">
                                                                         <tr><td class="monospace" style="width: 200px;">yyyy/MM/dd</td><td>an explicit date</td></tr>
@@ -145,7 +145,7 @@
             <tr><td class="monospace">modified[-on]:DATE-EXPR</td>      <td>Filter on date edited.
                                                                         <p>Use the "modified" query term and a DATE-EXPR to only return those bookmarks edited on a specified date.</p>
                                                                         </td></tr>
-            <tr><td class="monospace">site:SITE</td>                    <td>Search by hostname
+            <tr><td class="monospace">site:SITE</td>                    <td id="site-expr">Search by hostname
                                                                         <p>Results will be limited to only those bookmarks with urls hosted at foo.com or its subdomains (e.g. searching for "foo.com" will match bookmarks for "foo.com", "www.foo.com", and "www.bar.foo.com").</p>
                                                                         </td></tr>
             <tr><td class="monospace">visited-before:DATE-EXPR</td>     <td>Filter on date visited.
