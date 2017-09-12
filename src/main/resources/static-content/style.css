@@ -5,6 +5,15 @@ html, body {
     font-family: 'Lato', sans-serif;
 }
 
+body a {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+body a:hover {
+    text-decoration: underline;
+}
+
 hr {
     margin: 12px;
     height: 1px; 
@@ -14,20 +23,45 @@ hr {
 
 h1 {
     font-size: x-large;
-    margin: 0px;
-    padding-bottom: 8px;
+    float: left;
 }
 
 h2 {
-    font-size: x-large;
+    font-size: large;
 }
 
 h3 {
-    font-size: x-large;
+    font-size: small;
 }
 
 .padlock {
     color: green;
+}
+
+/* ======================================================================= */
+/* sidebar */
+.sidebar {
+    position: absolute;
+    top: 0px;
+    width: 120px;
+    padding: 10px;
+}
+
+.admin-links a {
+    text-decoration: none;
+    color: #767676;
+}
+
+.return-home a {
+    text-decoration: none;
+    color: #FFFFFF;
+}
+
+/* ======================================================================= */
+/* mainbody */
+.mainbody {
+    margin-left: 140px;
+    padding: 20px;
 }
 
 /* ======================================================================= */
@@ -38,7 +72,7 @@ h3 {
 
 .iconbutton {
     cursor: pointer;
-    color: white;
+    float: right;
 }
 
 .addbutton {
@@ -51,10 +85,9 @@ h3 {
 }
 
 .searchbox {
-    margin: 5px;
-    float:right;
-    width:220px;
-    height: 20px;
+    width: 86px;
+    height: 16px;
+    font-size: small;
 }
 
 .errormessage {
@@ -69,7 +102,8 @@ h3 {
 /* action panel */
 .action {
     display: none;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    position: absolute;
+    width: 226px;
 }
 
 .addpanel {
@@ -78,65 +112,38 @@ h3 {
 }
 
 .fieldtitle {
-    width: 100px;
+    font-size: small;
+}
+
+.field {
+    font-size: small;
+    width:100%;
 }
 
 .actionbutton {
     width:64px;
+    float:right;
 }
 
 .titleinputpair {
-    float:left;
-}
-
-.addinputtitle {
-    margin-right: 12px;
-    width: 160px;
-}
-
-.addinputurl {
-    margin-right: 12px;
-    width: 250px;
-}
-
-.addinputtags {
-    margin-right: 12px;
-    width: 160px;
-}
-
-.addinputnotes {
-    margin-right: 12px;
-    width: 250px;
+    
 }
 
 /* ======================================================================= */
 /* tag cloud */
 .tagcloud {
-    padding: 4px 12px 12px 24px;
-    text-align: center;
     font-size: small;
-    clear: both;
+    margin-top: 8px;
 }
 
-.tagcloud a {
-    color: #757575;;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.tagcloud a {
-    color: #757575;;
-}
-
-.tagcloud a:hover {
-    text-decoration: underline;
+.tag {
+    display: block;    
 }
 
 /* ======================================================================= */
 /* promoted tiles */
 .promotedsection {
-    margin: 12 24 12 24;
-    text-align: center;
+    text-align: left;
 }
 
 .promotedlink {
@@ -156,14 +163,15 @@ h3 {
 /* search results */
 
 .searchresults {
-    margin: 6px 24px 6px 24px;
     display: none;
+    width: 100%;
+    margin-bottom: 24px;
 }
 
 .searchblock {
     margin: 8px;
     display: inline-block;
-    width: 95%;
+    width: 97%;
 }
 
 .searchtable {
@@ -203,8 +211,7 @@ h3 {
 /* ======================================================================= */
 /* links */
 .content {
-    margin: 6px 24px 6px 24px;
-    text-align: center;
+    text-align: left;
     clear: both;
 }
 
@@ -212,12 +219,17 @@ h3 {
     margin: 8px;
     display: none;
     text-align: left;
-    width: 220px;
+    width: 226px;
     vertical-align:top;
 }
 
+.linkblocktitle {
+    padding: 8px;    
+    margin: 0px;    
+}
+
 .linktable {
-    width: 220px;
+    width: 226px;
     font-size: medium;  
     border-collapse: collapse;
     border-style: hidden;
@@ -264,9 +276,13 @@ h3 {
     cursor: pointer;
 }
 
-.dateinfo {
+.markinfo {
     font-size: x-small;
     word-break: break-all;
+}
+
+.notes {
+    font-style: italic;
 }
 
 .sortcommands {
@@ -284,7 +300,6 @@ h3 {
 }
 
 .footer {
-    text-align: right;
     font-size: small;
     margin-right: 12px;
     margin-bottom: 24px;
@@ -292,6 +307,10 @@ h3 {
 
 /* ======================================================================= */
 /* settings */
+
+.settings-section {
+    margin-left: 24px;
+}
 
 .settingslist {
     width: 20%;
@@ -326,4 +345,23 @@ h3 {
 
 .settingSelected {
     font-weight: bold;
+}
+
+.help-table {
+    text-align: left;
+    width:100%;
+}
+
+.help-table tr:nth-child(odd) {
+    background-color:#FFFFFF; 
+    vertical-align: top;
+}
+
+.help-table tr:nth-child(even) {
+    background-color:#F4F4F4; 
+    vertical-align: top;
+}
+
+.monospace {
+    font-family:monospace;
 }

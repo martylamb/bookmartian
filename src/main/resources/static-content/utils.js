@@ -4,6 +4,7 @@ var API_VisitLink = "/api/visit";
 var API_QueryBookmarks = "/api/bookmarks";
 var API_UpdateBookmark = "/api/bookmark/update";
 var API_DeleteBookmark = "/api/bookmark/delete";
+var API_RetrieveBookmark = "/api/bookmark";
 var API_QueryTags = "/api/tags";
 var API_ImportBookmark = "/api/bookmarks/import";
 

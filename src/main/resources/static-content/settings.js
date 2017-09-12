@@ -28,20 +28,8 @@ function importBookmarks() {
         });
 }
 
-function loadSettingsForm (name) {
-    $('.settingSelected').removeClass("settingSelected");
-    $('#setting_' + name).addClass("settingSelected");
-
-    if ($('#settingform_' + name).length == 0) {
-        $('#settingsform').load('./settings_' + name + '.html');
-    }
-
-    currentSettingsForm = $('#settingform_' + name);
-}
-
 // ==========================================================================
 // When the document is fully loaded, load the dynamic elements into the page
 $(document).ready(function () {
-    loadSettingsForm ('about');
 
 });

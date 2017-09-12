@@ -5,3 +5,6 @@ nbactions.xml
 bookmarks.json
 debug.log
 /.vscode/
+art/~*.*
+anonymous.bookmartian
+index.1.html

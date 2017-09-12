@@ -6,7 +6,7 @@
     <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
     <link rel="stylesheet" href="/font-awesome-4.6.3/css/font-awesome.min.css">
     <link REL=StyleSheet HREF="style.css" TYPE="text/css" MEDIA=screen>
-    <link REL=StyleSheet HREF="style.mobile.css" TYPE="text/css" MEDIA='only screen and (max-width: 800px)'>
+    <!-- <link REL=StyleSheet HREF="style.mobile.css" TYPE="text/css" MEDIA='only screen and (max-width: 800px)'> -->
     <link REL=StyleSheet HREF="colors.css" TYPE="text/css" MEDIA=screen>
 </head>
 
@@ -15,110 +15,109 @@
     <script src="utils.js"></script>
     <script src="bookmarks.js"></script>
 
-    <!-- bar at top of page -->
-    <div class="header default-primary-color">
-        <i class="fa fa-2x fa-plus iconbutton addbutton" aria-hidden="true" onclick="$('#actionpanel').slideDown('fast')"></i>
-        <i class="fa fa-lg fa-search iconbutton searchbutton" aria-hidden="true" onclick="executeSearch();"></i>
+    <!-- sidebar -->
+    <div class="sidebar default-primary-color" id="sidebar">
         <input class='searchbox' type="text" id='searchterm'/>
-    </div>
+        <i class="fa fa-lg fa-bars iconbutton text-primary-color" aria-hidden="true" onclick="$('#sidebar').animate({left:'-104px'})"></i>
 
-    <!-- action panel (hidden at start) -->
-    <div class="action light-primary-color" id="actionpanel">
-        <div id="addpanel" class="addpanel primary-text-color">
-            <h1>Add a bookmark</h1>
-            <form id="addform">
-                <input type="hidden" name="oldUrl" id="addinputoldUrl" />
-                <div class="titleinputpair">
-                    <div class="fieldtitle">title:</div>
-                    <input type="text" name="title" id="addinputtitle" class="addinputtitle" />
-                </div>
-                <div class="titleinputpair">
-                    <div class="fieldtitle">url:</div>
-                    <input type="text" name="url" id="addinputurl" class="addinputurl" />
-                </div>
-                <div class="titleinputpair">
-                    <div class="fieldtitle">tags:</div>
-                    <input type="text" name="tags" id="addinputtags" class="addinputtags" />
-                </div>
-                <div class="titleinputpair">
-                    <div class="fieldtitle">notes:</div>
-                    <input type="text" name="notes" id="addinputnotes" class="addinputnotes" />
-                </div>
-                <div class="titleinputpair">
-                    <div class="fieldtitle">image url:</div>
-                    <input type="text" name="imageUrl" id="addinputimageUrl" class="addinputurl" />
-                </div>
-                <div class="titleinputpair">
-                    <div class="fieldtitle">&nbsp;</div>
-                    <input type="button" value="save" class="actionbutton" onclick="saveBookmark();" />
-                    <input type="button" value="cancel" class="actionbutton" onclick="closeAction();" />
-                </div>
-            </form>
+        <div class="admin-links tagcloud secondary-text-color" id="admin-links">
+            BOOKMARTIAN</br>
+            . <a onClick="editMark()">add a bookmark...</a></br>
+            . <a href="options.html">settings</a></br>
+            . <a href="help.html">help</a></br>
+            . <a href="about.html">about</a></br>
+        </div>
+
+        <hr class="divider-color" />
+
+        <!-- tag cloud -->
+        <div class="tagcloud tertiary-text-color" id="tagcloud">
+        </div>
+
+        <hr class="divider-color" />
+
+        <!-- footer -->
+        <div class='footer secondary-text-color'>
+            2017 mlamb/jmutchek
         </div>
     </div>
 
-    <!-- tag cloud -->
-    <div class="tagcloud secondary-text-color" id="tagcloud">
-    </div>
+    <div class="mainbody">
 
-    <!-- promoted link tiles -->
-    <div class="promotedsection">
-        <div class="promotedlink" id="promotedlinktemplate">
-            <a><img class="promotedimage" src="" /></a>
-        </div>
-    </div>
-
-    <hr id='promohr' class="divider-color"/>
-
-    <div class="errormessage" id="errormessage">
-        
-    </div>
-
-    <!-- search results -->
-    <div class="searchresults" id="searchresults">
-        <div class="searchblock">
-            <h1 class="linkblocktitle" id="searchresultstitle">search results</h1>
-            
-            <table id="searchtable" class="searchtable table-color">
-            </table>
-            <div class="sortcommands secondary-text-color">
-                sort by <a class="sorttitle" onClick='sortThisTable(this,"title");'>title</a> | <a class="sortlastvisited" onClick='sortThisTable(this,"recently-visited");'>visited</a> | <a class="sortcreated" onClick='sortThisTable(this,"recently-created");'>created</a> | <a class="openalllinks" onClick='openAllLinksinTabs(this);'>open all in tabs</a>
+        <!-- promoted link tiles -->
+        <div class="promotedsection">
+            <div class="promotedlink" id="promotedlinktemplate">
+                <a><img class="promotedimage" src="" /></a>
             </div>
         </div>
-    </div>
 
-    <hr id="searchhr" style="display:none;" class="divider-color"/>
+        <div class="errormessage" id="errormessage">
 
-    <!-- tag blocks -->
-    <div class="content" id="content">
-        <div class="linkblock" id="linkblocktemplate">
-            <h1 class="linkblocktitle">loading...</h1>
-            <table class="linktable table-color">
-            </table>
-            <div class="sortcommands secondary-text-color">
-                sort by <a class="sorttitle" onClick='sortThisTable(this,"title");'>title</a> | <a class="sortlastvisited" onClick='sortThisTable(this,"recently-visited");'>visited</a> | <a class="sortcreated" onClick='sortThisTable(this,"recently-created");'>created</a>
+        </div>
+
+        <!-- search results -->
+        <div class="searchresults" id="searchresults">
+            <div class="searchblock">
+                <h1 class="linkblocktitle" id="searchresultstitle">search results</h1>
+                <i class="fa fa-small fa-remove iconbutton secondary-text-color" aria-hidden="true" onclick="$('#searchresults').hide();$('#searchterm').val('');"></i>                
+                <table id="searchtable" class="searchtable table-color">
+                </table>
+                <div class="sortcommands secondary-text-color">
+                    sort by <a class="sorttitle" onClick='sortThisTable(this,"title");'>title</a> | <a class="sortlastvisited"
+                        onClick='sortThisTable(this,"recently-visited");'>visited</a> | <a class="sortcreated" onClick='sortThisTable(this,"recently-created");'>created</a>                    | <a class="openalllinks" onClick='openAllLinksinTabs(this);'>open all in tabs</a>
+                </div>
             </div>
         </div>
-    </div>
 
-    <hr class="divider-color"/>
-    <div class='footer secondary-text-color'>
-        the bookmartian | 
-        2016 | 
-        mlamb/jmutchek | 
-        <a href="settings.html">settings</a> | 
-        source on <a href="https://github.com/martylamb/bookmartian">github</a> |
-        get this <a id ='bookmarklet' href="#">bookmarklet</a>
-    </div>
 
-    <script>
-        // --------------------------------------------------------------------------
-        // update the bookmarklet on the page to reflect the current protocol and host        
-        var http = location.protocol;
-        var slashes = http.concat("//");
-        var host = slashes.concat(window.location.host);
-        $('#bookmarklet').attr("href", "javascript:(function(){if(window.myBookmarklet!==undefined){myBookmarklet();}else{var bs=document.createElement('script');bs.id='bookmartian_scriptblock';bs.src='" + host + "/bookmarklet.js';document.body.appendChild(bs);}})();")
-    </script>
+        <!-- tag blocks -->
+        <div class="content" id="content">
+            <div class="linkblock" id="linkblocktemplate">
+                <h1 class="linkblocktitle">loading...</h1>
+                <table class="linktable table-color">
+                </table>
+                <div class="sortcommands secondary-text-color">
+                    sort by <a class="sorttitle" onClick='sortThisTable(this,"title");'>title</a> | <a class="sortlastvisited"
+                        onClick='sortThisTable(this,"recently-visited");'>visited</a> | <a class="sortcreated" onClick='sortThisTable(this,"recently-created");'>created</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- action panel (hidden at start) -->
+        <div class="action light-primary-color" id="actionpanel">
+            <div id="addpanel" class="addpanel primary-text-color">
+                <form id="addform">
+                    <input type="hidden" name="oldUrl" id="addinputoldUrl" />
+                    <div class="titleinputpair">
+                        <div class="fieldtitle">title</div>
+                        <input type="text" name="title" id="addinputtitle" class="field" />
+                    </div>
+                    <div class="titleinputpair">
+                        <div class="fieldtitle">url</div>
+                        <input type="text" name="url" id="addinputurl" class="field" />
+                    </div>
+                    <div class="titleinputpair">
+                        <div class="fieldtitle">tags</div>
+                        <input type="text" name="tags" id="addinputtags" class="field" />
+                    </div>
+                    <div class="titleinputpair">
+                        <div class="fieldtitle">notes</div>
+                        <input type="text" name="notes" id="addinputnotes" class="field" />
+                    </div>
+                    <div class="titleinputpair">
+                        <div class="fieldtitle">image url</div>
+                        <input type="text" name="imageUrl" id="addinputimageUrl" class="field" />
+                    </div>
+                    <div class="titleinputpair">
+                        <div class="fieldtitle">&nbsp;</div>
+                        <input type="button" value="save" class="actionbutton" onclick="saveBookmark();" />
+                        <input type="button" value="cancel" class="actionbutton" onclick="closeAction();" />
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
 
 </body>
 

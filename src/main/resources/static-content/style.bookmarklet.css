@@ -5,9 +5,9 @@
     position: fixed;
     top: 0px;
     left: 0px;
-    width: 100%;
     z-index: 99999;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    width: 400px;
 }
 
 .bookmartian_action h1 {
@@ -24,45 +24,32 @@
 }
 
 .bookmartian_fieldtitle {
-    width: 64px;
     text-align: left;
-    font-size: 12pt;
-    margin-bottom: 4px;
+    font-size: small;
 }
 
 .bookmartian_actionbutton {
     width:64px;
-}
-
-.bookmartian_titleinputpair {
-    float:left;
-}
-
-.bookmartian_addinputtitle {
+    float:right;
+    color: black;
     margin-right: 12px;
-    width: 160px;
-    height: 20px;
-    border: solid 1px black;
 }
 
-.bookmartian_addinputurl {
-    margin-right: 12px;
-    height: 20px;
-    width: 250px;
-    border: solid 1px black;
+.bookmartian_title {
+    font-size: large;
+    margin-bottom: 12px;
 }
 
-.bookmartian_addinputtags {
-    margin-right: 12px;
-    height: 20px;
-    width: 160px;
-    border: solid 1px black;
+.bookmartian_inputpair {
 }
 
-.bookmartian_addinputnotes {
-    margin-right: 12px;
-    height: 20px;
-    width: 250px;
-    border: solid 1px black;
+.bookmartian_fieldtitle {
+    font-size: small;    
+}
+
+.bookmartian_field {
+    font-size: small;
+    width:94%;
+    color: black;
 }
 

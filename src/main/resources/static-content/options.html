@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Bookmartian</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="stylesheet" href="/font-awesome-4.6.3/css/font-awesome.min.css">
+    <link REL=StyleSheet HREF="style.css" TYPE="text/css" MEDIA=screen>
+    <!-- <link REL=StyleSheet HREF="style.mobile.css" TYPE="text/css" MEDIA='only screen and (max-width: 800px)'> -->
+    <link REL=StyleSheet HREF="colors.css" TYPE="text/css" MEDIA=screen>
+</head>
+
+<body class="paper-color">
+    <script src="jquery-3.1.0.min.js"></script>
+    <script src="settings.js"></script>
+    
+    <!-- sidebar -->
+    <div class="sidebar default-primary-color">
+        <input class='searchbox' type="text" id='searchterm' />
+        <i class="fa fa-lg fa-bars iconbutton text-primary-color" aria-hidden="true" onclick="$('#actionpanel').slideDown('fast')"></i>
+
+        <div class="admin-links tagcloud secondary-text-color" id="admin-links">
+            BOOKMARTIAN</br>
+            . add a bookmark...</br>
+            . <a href="options.html">settings</a></br>
+            . <a href="help.html">help</a></br>
+            . <a href="about.html">about</a></br>
+        </div>
+
+        <hr class="divider-color" />
+
+        <div class="return-home tagcloud">
+            <a href="/">&lt; return to home</a></br>
+        </div>
+
+        <hr class="divider-color" />
+        <!-- footer -->
+        <div class='footer secondary-text-color'>
+            2017 mlamb/jmutchek
+        </div>
+
+        <div style="height:800px">
+        </div>
+    </div>
+
+    <div class="mainbody">
+
+        <h1>Bookmartian Settings &amp; Configuration</h1>
+        <hr class="divider-color" />
+
+        <h2>Setup your bookmarklet</h2>
+        <div class="settings-section">
+            <p>
+                Using this <a id='bookmarklet' href="#">bookmarklet</a> is the easiest way to add bookmarks to the bookmartian.
+            </p>
+        </div>
+
+
+        <h2>Import bookmarks</h2>
+        <div class="settings-section">
+            <p>
+                You can import bookmarks into Bookmartian from an existing file. The file must be formatted in the
+                <a href='https://msdn.microsoft.com/en-us/library/aa753582(v=vs.85).aspx' target="_blank">Netscape Bookmark file format</a>.
+            </p>
+            <form id=import name=import action=post>
+                <p><strong>Step 1.</strong> Find the file on your local file system.</p>
+                <input class="importtagsfield" type="file" name="bookmarksFile" accept=".html,.htm">
+                <p><strong>Step 2.</strong> Provide one or more tags that should automatically applied to the bookmarks in this
+                    import. Separate the tags with spaces or commas. Tags prefixed with a period (.) will be created, but
+                    will not be visible in your tag cloud.</p>
+                <input class="importtagsfield" id="importtags" type="text" name="tags" value="">
+                <script>
+                    var now = new Date(Date.now());
+                    $('#importtags').val(".imported_" + now.toISOString().replace(/[T:]/g, '-').substring(0, 19) + " ");
+                </script>
+                <p><strong>Step 3.</strong> Upload and import the file!</p>
+                <input type="button" value="Import the bookmarks now" name="importsubmit" onclick="importBookmarks();">
+            </form>
+            <div class='message' id='importStatusMessage'></div>
+
+        </div>
+
+
+
+        <!-- action panel (hidden at start) -->
+        <div class="action light-primary-color" id="actionpanel">
+            <div id="addpanel" class="addpanel primary-text-color">
+                <h1>Add a bookmark</h1>
+                <form id="addform">
+                    <input type="hidden" name="oldUrl" id="addinputoldUrl" />
+                    <div class="titleinputpair">
+                        <div class="fieldtitle">title:</div>
+                        <input type="text" name="title" id="addinputtitle" class="addinputtitle" />
+                    </div>
+                    <div class="titleinputpair">
+                        <div class="fieldtitle">url:</div>
+                        <input type="text" name="url" id="addinputurl" class="addinputurl" />
+                    </div>
+                    <div class="titleinputpair">
+                        <div class="fieldtitle">tags:</div>
+                        <input type="text" name="tags" id="addinputtags" class="addinputtags" />
+                    </div>
+                    <div class="titleinputpair">
+                        <div class="fieldtitle">notes:</div>
+                        <input type="text" name="notes" id="addinputnotes" class="addinputnotes" />
+                    </div>
+                    <div class="titleinputpair">
+                        <div class="fieldtitle">image url:</div>
+                        <input type="text" name="imageUrl" id="addinputimageUrl" class="addinputurl" />
+                    </div>
+                    <div class="titleinputpair">
+                        <div class="fieldtitle">&nbsp;</div>
+                        <input type="button" value="save" class="actionbutton" onclick="saveBookmark();" />
+                        <input type="button" value="cancel" class="actionbutton" onclick="closeAction();" />
+                    </div>
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+                                // --------------------------------------------------------------------------
+                                // update the bookmarklet on the page to reflect the current protocol and host        
+                                var http = location.protocol;
+                                var slashes = http.concat("//");
+                                var host = slashes.concat(window.location.host);
+                                $('#bookmarklet').attr("href", "javascript:(function(){if(window.myBookmarklet!==undefined){myBookmarklet();}else{var bs=document.createElement('script');bs.id='bookmartian_scriptblock';bs.src='" + host + "/bookmarklet.js';document.body.appendChild(bs);}})();")
+    </script>
+
+</body>
+
+</html>

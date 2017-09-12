@@ -29,7 +29,7 @@ function buildBookmarkRow(element, withTags) {
     if (typeof element.tags != 'undefined') {
         tagsplain = element.tags.toString().replace(/,/g, ' ');
     }
-    
+
     var tags = "";
     if (withTags && typeof element.tags != 'undefined') {
         var taglist = element.tags.toString().split(',');
@@ -72,7 +72,7 @@ function buildBookmarkRow(element, withTags) {
         modified = "modified on " + modifiedDate.toDateString();
     }
 
-    var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "'></td><td class='bookmark'><a rel='noreferrer' href='" + API_VisitLink + "?url=" + escape(element.url) + "' data-url='" + element.url + "' data-tags='" + tagsplain + "' data-notes='" + notes + "' data-imageurl='" + imageUrl + "' data-title='" + title + "'>" + title + "</a>" + padlock + tags + "<i class='fa fa-angle-down edit-ellipsis tertiary-text-color' aria-hidden='true' onclick='toggleEdits(this)'></i></td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a onclick='deleteMark(this);'>delete</a><p class='dateinfo text-default-primary-color'>" + element.url + "</p><p class='dateinfo secondary-text-color'>" + created + createdTime + "</br>" + modified + modifiedTime + "</br>" + lastVisited + lastVisitedTime + "</p></td></tr>";
+    var row = "<tr><td class='favicon'><img src='http://www.google.com/s2/favicons?domain_url=" + element.url + "'></td><td class='bookmark'><a rel='noreferrer' href='" + API_VisitLink + "?url=" + escape(element.url) + "' data-url='" + element.url + "' data-tags='" + tagsplain + "' data-notes='" + notes + "' data-imageurl='" + imageUrl + "' data-title='" + title + "'>" + title + "</a>" + padlock + tags + "<i class='fa fa-angle-down edit-ellipsis tertiary-text-color' aria-hidden='true' onclick='toggleEdits(this)'></i></td></tr><tr class='bookmarkedits'><td colspan=2><a onclick='editMark(this);'>edit</a> | <a onclick='deleteMark(this);'>delete</a><p class='markinfo notes'>" + notes + "</p><p class='markinfo url text-default-primary-color'>" + element.url + "</p><p class='markinfo dates secondary-text-color'>" + created + createdTime + "</br>" + modified + modifiedTime + "</br>" + lastVisited + lastVisitedTime + "</p></td></tr>";
 
     return row;
 }
@@ -211,7 +211,7 @@ function openAllLinksinTabs(e) {
     var thisTable = $(e).parent().parent().find("table");
     var listDataJSON = bookmarkJSONArrays[thisTable.attr('id')];
 
-    for (i=0; i < listDataJSON.length; i++) {
+    for (i = 0; i < listDataJSON.length; i++) {
         window.open(listDataJSON[i]["url"]);
     }
     window.focus();
@@ -321,7 +321,7 @@ function populateLinkTable(value) {
 function populateTagCloud() {
     var tagColors = new Array();
 
-    $(".tagcloud").empty();
+    $("#tagcloud").empty();
 
     $.ajax({
         // The URL for the request
@@ -338,8 +338,8 @@ function populateTagCloud() {
         .done(function (json) {
             $(json).each(function (index, element) {
                 if (element.name.substr(0, 1) !== ".") {
-                    var link = "<a onclick=\"executeSearch('" + element.name + "', true);\" style=color:" + element.color + " id=" + element.name + ">" + element.name + "</a>";
-                    $(".tagcloud").append(link).append(" &nbsp;");
+                    var link = "<a onclick=\"executeSearch('" + element.name + "', true);\" class=tag style=color:" + (element.color != "#000000" ? element.color : "") + " id=" + element.name + ">" + element.name + "</a>";
+                    $("#tagcloud").append(link);
                     tagColors[element.name] = element.color;
                 }
             })
@@ -363,6 +363,48 @@ function populateTagCloud() {
 }
 
 // ==========================================================================
+// update an existing bookmark row
+function updateBookmarkRow(oldurl, newurl) {
+
+    var bookmark = $("[data-url='"+oldurl+"']");
+
+    if (bookmark) {
+        $.ajax({
+            // The URL for the request
+            url: API_RetrieveBookmark + "?url=" + newurl,
+
+            // Whether this is a POST or GET request
+            type: "GET",
+
+            // The type of data we expect back
+            dataType: "json"
+        })
+            // Code to run if the request succeeds (is done);
+            // The response is passed to the function
+            .done(function (json) {
+                bookmark.text(json.data.title);
+                bookmark.attr('data-title', json.data.title);
+                bookmark.attr('data-url', json.data.url);
+                bookmark.attr('data-tags', json.data.tags.toString().replace(/,/g, ' '));
+                bookmark.attr('data-notes', json.data.notes);
+                bookmark.attr('data-imageurl', json.data.imageUrl);
+                bookmark.parent().parent().next().find(".notes").text(json.data.notes);
+                bookmark.parent().parent().next().find(".url").text(json.data.url);
+            })
+            // Code to run if the request fails; the raw request and
+            // status codes are passed to the function
+            .fail(function (xhr, status, errorThrown) {
+                console.log("Error: " + errorThrown);
+                console.log("Status: " + status);
+                console.dir(xhr);
+            })
+            // Code to run regardless of success or failure;
+            .always(function (xhr, status) {
+            });
+    }
+}
+
+// ==========================================================================
 // POST the bookmark back to the service to save it
 function saveBookmark() {
 
@@ -377,6 +419,7 @@ function saveBookmark() {
     $.post(API_UpdateBookmark, serializedFormData)
         .done(function () {
             populateTagCloud();
+            updateBookmarkRow($('#addinputoldUrl').val(), $('#addinputurl').val());
             closeAction();
         })
         .fail(function () {
@@ -397,6 +440,7 @@ function closeAction() {
 // ==========================================================================
 // toggle the display of the edit section of a bookmark table row
 function toggleEdits(e) {
+    closeAction();
     if (!$(e).data('on')) {
         $(e).removeClass('tertiary-text-color fa-angle-down');
         $(e).addClass('text-primary-color fa-angle-up');
@@ -433,7 +477,7 @@ function deleteMark(e) {
             console.log('delete POST successful');
             $(e).parent().remove();
             bookmark.parent().parent().remove();
-            populateTagCloud();            
+            populateTagCloud();
         })
         .fail(function () {
             console.log("delete POST failed");
@@ -446,18 +490,27 @@ function deleteMark(e) {
 // ==========================================================================
 // open up the action panel with the bookmark ready for editing
 function editMark(e) {
-    var bookmark = $(e).parent().parent().prev().find('.bookmark a');
-    console.log("editing bookmark: " + bookmark.attr('href'));
+    if (e) {
+        var bookmark = $(e).parent().parent().prev().find('.bookmark a');
+        console.log("editing bookmark: " + bookmark.attr('href'));
 
-    $('#addinputtitle').val(bookmark.attr('data-title') ? bookmark.attr('data-title') : '');
-    $('#addinputoldUrl').val(bookmark.attr('data-url') ? bookmark.attr('data-url') : '');
-    $('#addinputurl').val(bookmark.attr('data-url') ? bookmark.attr('data-url') : '');
-    $('#addinputtags').val(bookmark.attr('data-tags') ? bookmark.attr('data-tags').replace(/,/g, ' ') : '');
-    $('#addinputnotes').val(bookmark.attr('data-notes') ? bookmark.attr('data-notes') : '');
-    $('#addinputimageUrl').val(bookmark.attr('data-imageurl') ? bookmark.attr('data-imageurl') : '');
+        $('#addinputtitle').val(bookmark.attr('data-title') ? bookmark.attr('data-title') : '');
+        $('#addinputoldUrl').val(bookmark.attr('data-url') ? bookmark.attr('data-url') : '');
+        $('#addinputurl').val(bookmark.attr('data-url') ? bookmark.attr('data-url') : '');
+        $('#addinputtags').val(bookmark.attr('data-tags') ? bookmark.attr('data-tags').replace(/,/g, ' ') : '');
+        $('#addinputnotes').val(bookmark.attr('data-notes') ? bookmark.attr('data-notes') : '');
+        $('#addinputimageUrl').val(bookmark.attr('data-imageurl') ? bookmark.attr('data-imageurl') : '');
+
+        var position = $(e).parent().position();
+        $('#actionpanel').css({ top: position.top + 'px', left: position.left + 'px' });
+    } else {
+        $('#actionpanel').css({ top: '0px', left: '140px' });
+    }
     $('#actionpanel').slideDown('fast');
-    $('#addinputtags').focus();
-    $('html, body').animate({ scrollTop: 0 }, 0);    
+    $('#addinputtitle').focus();
+    //$('#actionpanel').show();
+
+    //$('html, body').animate({ scrollTop: 0 }, 0);    
 }
 
 // ==========================================================================
@@ -506,7 +559,7 @@ function executeSearch(term, reset) {
             } else {
                 $('#errormessage').html(json.message).show();
             }
-        
+
         })
         // Code to run if the request fails; the raw request and
         // status codes are passed to the function
@@ -523,7 +576,36 @@ function executeSearch(term, reset) {
     $('#searchtable').children().remove();
     $('#searchresultstitle').text('search results for \'' + searchterm + '\'');
 
+    $('#searchterm').focus();
 }
+
+// ==========================================================================
+// filter the tag cloud based on the current searc term (really only useful with basic tag search)
+function filterTagCloud() {
+
+    var sidebarheight = $("#sidebar").height();
+    $("#sidebar").height(sidebarheight);
+
+    var searchtext = $("#searchterm").val();
+    $('#tagcloud').children().each(function () {
+        if (this.text) {
+            if (this.text.substr(0, searchtext.length) != searchtext) {
+                $(this).hide();
+            } else {
+                $(this).show();
+            }
+        }
+    })
+}
+
+// ==========================================================================
+// trigger the tag cloud filter when you hit the TAB key in the search box
+$('body').on('keydown', '#searchterm', function (e) {
+    if (e.which == 9) {
+        e.preventDefault();
+        filterTagCloud();
+    }
+});
 
 // ==========================================================================
 // When the document is fully loaded, load the dynamic elements into the page
@@ -561,11 +643,11 @@ $(document).ready(function () {
 
     if (qs != null) {
         qs.split("&").forEach(function (item) { (item.split("=")[0] in qd) ? qd[item.split("=")[0]].push(item.split("=")[1]) : qd[item.split("=")[0]] = [item.split("=")[1]] })
-    } 
+    }
 
     // create a linkblock for each pinned tag
     var promotedTags = "";
-    
+
     if (qd.pin) {
         promotedTags = qd.pin.toString();
         promotedTagArray = promotedTags.split(",");
@@ -601,6 +683,7 @@ $(document).ready(function () {
             // Code to run if the request succeeds (is done);
             // The response is passed to the function
             .done(function (json) {
+                // $("#promotedlinkheading").append(json.data.name);
                 $(json.data.bookmarks).each(function (index, element) {
                     var tile = $("#promotedlinktemplate").clone()
                     tile.attr("title", element.title);
@@ -611,8 +694,9 @@ $(document).ready(function () {
                     } else {
                         image.attr("src", "https://icons.better-idea.org/icon?size=90&url=" + element.url);
                     }
+                    image.attr("alt", element.title);
                     var link = tile.find("a");
-                    link.attr("href", API_VisitLink + "?url=" + escape(element.url))
+                    link.attr("href", API_VisitLink + "?url=" + escape(element.url));
                     tile.css("display", "inline-block");
                     $(".promotedsection").append(tile);
                 })
