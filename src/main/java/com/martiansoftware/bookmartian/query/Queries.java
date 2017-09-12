@@ -111,12 +111,19 @@ public class Queries {
         @Override public boolean handles(QueryTerm qt) { return "site".equals(qt.action()); }
         @Override public QueryFunction handle(QueryTerm qt) {
             String siteName = Strings.lower(qt.arg());
+            Pattern p = Pattern.compile("^(?:.*\\.)?" + Pattern.quote(siteName) + "\\.[^.]+$");
+            Predicate<String> matchesSubdomain = 
+                siteName.contains(".") ?
+                    s -> false:
+                    s -> p.matcher(s).matches();
+
             return (s, r) -> s.filter(
                 b -> {
                     try {
                         URL url = new URL(b.lurl().toString());
                         String host = Strings.lower(url.getHost());
-                        return host.equals(siteName) || host.endsWith("." + siteName);
+                        
+                        return host.equals(siteName) || host.endsWith("." + siteName) || matchesSubdomain.test(host);
                     } catch (MalformedURLException e) {
                         return false;
                     }
