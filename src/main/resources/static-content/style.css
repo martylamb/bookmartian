@@ -47,6 +47,22 @@ h3 {
     padding: 10px;
 }
 
+.topbar {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 132px;
+    display: none;
+    vertical-align: bottom;
+}
+
+.advancedsearch {
+    padding: 10px;
+    margin-left: 140px;
+    font-size: small;
+}
+
 .admin-links a {
     text-decoration: none;
     color: #767676;
@@ -85,7 +101,7 @@ h3 {
 }
 
 .searchbox {
-    width: 114px;
+    width: 100px;
     height: 16px;
     font-size: small;
 }

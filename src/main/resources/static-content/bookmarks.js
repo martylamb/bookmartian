@@ -366,7 +366,7 @@ function populateTagCloud() {
 // update an existing bookmark row
 function updateBookmarkRow(oldurl, newurl) {
 
-    var bookmark = $("[data-url='"+oldurl+"']");
+    var bookmark = $("[data-url='" + oldurl + "']");
 
     if (bookmark) {
         $.ajax({
@@ -597,6 +597,28 @@ function filterTagCloud() {
         }
     })
 }
+
+// ==========================================================================
+// toggle the expanded top bar
+function toggleTopBar() {
+    if ($('#expandSearch').css('display') == 'block') {
+        $('#expandSearch').hide();
+        $('#topbar').show();
+        $('#searchterm').width($('#topbar').width()-40+'px');
+    } else {
+        $('#searchterm').width('100px');
+        $('#topbar').hide();
+        $('#expandSearch').show();
+    }
+}
+
+// ==========================================================================
+// expand the search box when you hit the spacebar while writing your query
+$('body').on('keydown', '#searchterm', function (e) {
+    if (e.which == 32) {
+        toggleTopBar();
+    }
+});
 
 // ==========================================================================
 // trigger the tag cloud filter when you hit the TAB key in the search box
