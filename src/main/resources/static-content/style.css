@@ -87,6 +87,12 @@ h3 {
     padding: 20px;
 }
 
+.aboutbox {
+    margin: 12px;
+    padding: 6px;
+    border: solid #767676 1px;
+}
+
 /* ======================================================================= */
 /* header */
 .header {

@@ -12,11 +12,12 @@
 
 <body class="paper-color">
     <script src="jquery-3.1.0.min.js"></script>
-
+    <script src="utils.js"></script>
+    
     <!-- sidebar -->
+    
     <div class="sidebar default-primary-color">
-        <input class='searchbox' type="text" id='searchterm' />
-        <i class="fa fa-lg fa-bars iconbutton text-primary-color" aria-hidden="true" onclick="$('#actionpanel').slideDown('fast')"></i>
+        <input class='searchbox' style="visibility: hidden" type="text" id='searchterm' />
 
         <div class="admin-links tagcloud secondary-text-color" id="admin-links">
             BOOKMARTIAN</br>
@@ -29,9 +30,9 @@
         <hr class="divider-color" />
 
         <div class="return-home tagcloud">
-                <a href="/">&lt; return to home</a></br>
+            <a href="/">&lt; return to home</a></br>
         </div>
-    
+
         <hr class="divider-color" />
         <!-- footer -->
         <div class='footer secondary-text-color'>
@@ -46,7 +47,6 @@
 
         <h1>Bookmartian</h1>
         <hr class="divider-color" />
-        <p>version 2017.09 on <a href="https://github.com/martylamb/bookmartian">github</a></p>
         <p>
             The bookmartian is a self-hosted, personal bookmark database intended to make saving, finding, and using bookmarks simple
             but powerful. Designed to be easily hosted on your home machine or on a cloud server, bookmartian is self-contained
@@ -56,9 +56,18 @@
             Enjoy!
         </p>
         <p>
-           Marty Lamb<br> John Mutchek<br>
+            Marty Lamb<br> John Mutchek<br>
         </p>
 
+        <hr class="divider-color" />
+
+        <p class="monospace aboutbox table-color">
+            <strong>project.version:</strong> <span id="projectversion"></span></br/>
+            <strong>git.remote.origin.url:</strong> <a id="gitremoteoriginurl" href="">github</a></br/>
+            <strong>git.commit.id.describe-short:</strong> <a id="gitcommitiddescribeshort" href="https://github.com/martylamb/bookmartian/commit/"></a></br/>
+            <strong>git.build.time:</strong> <span id="gitbuildtime"></span></br/>
+        </p>
+        
         <!-- action panel (hidden at start) -->
         <div class="action light-primary-color" id="actionpanel">
             <div id="addpanel" class="addpanel primary-text-color">
@@ -95,6 +104,45 @@
         </div>
 
     </div>
+
+    <script>
+        // get the about / version info from the API
+        $.ajax({
+            // The URL for the request
+            url: API_About,
+
+            // Whether this is a POST or GET request
+            type: "GET",
+
+            // The type of data we expect back
+            dataType: "json"
+        })
+            // Code to run if the request succeeds (is done);
+            // The response is passed to the function
+            .done(function (json) {
+                if (json.status !== 'error') {
+                    $('#projectversion').text(json.data['project.version']);
+                    $('#gitremoteoriginurl').attr('href', json.data['git.remote.origin.url']);
+                    $('#gitremoteoriginurl').text(json.data['git.remote.origin.url']);
+                    $('#gitcommitiddescribeshort').attr('href', "https://github.com/martylamb/bookmartian/commit/"+json.data['git.commit.id.describe-short']);
+                    $('#gitcommitiddescribeshort').text(json.data['git.commit.id.describe-short']);
+                    $('#gitbuildtime').text(json.data['git.build.time']);
+                } else {
+                }
+
+            })
+            // Code to run if the request fails; the raw request and
+            // status codes are passed to the function
+            .fail(function (xhr, status, errorThrown) {
+                console.log("Error: " + errorThrown);
+                console.log("Status: " + status);
+                console.dir(xhr);
+            })
+            // Code to run regardless of success or failure;
+            .always(function (xhr, status) {
+
+            });
+    </script>
 
 </body>
 

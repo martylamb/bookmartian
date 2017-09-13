@@ -7,6 +7,7 @@ var API_DeleteBookmark = "/api/bookmark/delete";
 var API_RetrieveBookmark = "/api/bookmark";
 var API_QueryTags = "/api/tags";
 var API_ImportBookmark = "/api/bookmarks/import";
+var API_About = "/api/about";
 
 // ==========================================================================
 // Cookie manipulation
