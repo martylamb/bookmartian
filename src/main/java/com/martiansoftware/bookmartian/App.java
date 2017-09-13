@@ -300,6 +300,8 @@ public class App {
                 d = Strings.safeTrimToNull(link.attr("LAST_MODIFIED"));
                 if (d != null) b.modified(new Date(Long.valueOf(d) * 1000));
                 
+                d = Strings.safeTrimToNull(link.attr("TAGS"));                
+                if (d != null) b.tags(d.replaceAll(",", " ").replaceAll("[^a-zA-Z0-9_. -]", "_"));
                 bm.update(null, b.build());
             }
             return JSend.success(String.format("Imported %d bookmark%s.", links.size(), links.size() == 1 ? "" : "s"));
