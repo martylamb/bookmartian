@@ -22,6 +22,7 @@ import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.util.Strings;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.LineNumberReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -40,6 +41,7 @@ import spark.Request;
 import spark.Response;
 import spark.utils.IOUtils;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  *
@@ -49,7 +51,8 @@ public class App {
        
     private static Logger log = LoggerFactory.getLogger(App.class);
     private static final String JSAP_DIR = "bookmartian-dir";
-
+    private static Properties appProperties = new java.util.Properties();
+    
     private static JSAP jsap() throws JSAPException {
         JSAP jsap = new JSAP();
 
@@ -65,7 +68,24 @@ public class App {
         return jsap;
     }
 
+    private static void banner() {
+        new LineNumberReader(new InputStreamReader(App.class.getResourceAsStream("/bookmartian.header")))
+            .lines()
+            .filter(s -> !s.startsWith("#"))
+            .forEach(s -> System.out.println(s));
+
+        String s = String.format("%s v%s (%s)%n",
+            appProperties.getProperty("project.name"),
+            appProperties.getProperty("project.version"),
+            appProperties.getProperty("git.commit.id.describe-short"));
+        
+        System.out.format("%s%n%n", s);
+        log.info(s);        
+    }
+    
     public static void main(String[] args) throws Exception {
+
+        appProperties.load(App.class.getResourceAsStream("/bookmartian.properties"));
         
         JSAP jsap = jsap();
         JSAPResult cmd = jsap().parse(args);
@@ -73,6 +93,8 @@ public class App {
             System.err.format("Usage: bookmartian %s%n", jsap.getUsage());
             System.exit(1);
         }
+
+        banner();
         
         JsonConfig.init();
         // TODO: implement a cache by username and retrieve from there on demand
@@ -108,6 +130,8 @@ public class App {
         post("/api/bookmark/delete", () -> deleteBookmark(bm));
         
         post("/api/bookmarks/import", () -> importNetscapeBookmarksFile(bm));
+        
+        get("/api/about", () -> JSend.success(appProperties));
         
         get("/", (req, rsp) -> IOUtils.toString(App.class.getResourceAsStream("/static-content/index.html")));
         get("/index.html", (req, rsp) -> {             
