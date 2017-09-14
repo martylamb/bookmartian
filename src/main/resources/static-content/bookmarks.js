@@ -647,9 +647,10 @@ $('body').on('keydown', '#searchterm', function (e) {
 $(document).ready(function () {
 
     // --------------------------------------------------------------------------
-    // capture the querystring in a cookie for use when navigating back to the dashboard
-    if (location.search.substr(1).length > 0) {
+    // capture the querystring in a cookie for use when navigating back to the dashboard, but only if it has a pin or tiles param (must be a dashboard)
+    if (location.search.substr(1).length > 0 && location.search.substr(1).match(/([\?|&]pin=|[\?|&]tiles=)/)) {
         setCookie('querystring', location.search.substr(1));
+        console.log('saving querystring to cookie: ' + location.search.substr(1));
     }
 
     // --------------------------------------------------------------------------
@@ -668,8 +669,13 @@ $(document).ready(function () {
     // parse promoted queries from the querystring or from a cookie if the querystring for this session has been set
     var qd = {};
     var qs = '';
+    
     if (location.search.substr(1).length > 0) {
         qs = location.search.substr(1);
+        // check to see if the search param was the only one provided; if so, use existing cookie instead but also save the search
+        if (qs.match(/^search=[^&]*$/) && (getCookie('querystring') != null)) {
+            qs = qs + "&" + getCookie('querystring');
+        }
     } else if (getCookie('querystring') != null) {
         qs = getCookie('querystring');
     } else {
@@ -678,6 +684,11 @@ $(document).ready(function () {
 
     if (qs != null) {
         qs.split("&").forEach(function (item) { (item.split("=")[0] in qd) ? qd[item.split("=")[0]].push(item.split("=")[1]) : qd[item.split("=")[0]] = [item.split("=")[1]] })
+    }
+
+    if (qd.search) {
+        var searchqs = qd.search.toString();
+        executeSearch(searchqs);
     }
 
     // create a linkblock for each pinned tag

@@ -13,6 +13,7 @@ function importBookmarks() {
         .done(function (json) {
             if (json.status === 'success') {
                 $('#importStatusMessage').html(json.data);
+                $('#importStatusMessage').html("See your imported bookmarks <a href='/?search=" + $('#importtags').val().toString().replace(/ /g, '+')  + "'>in bookmartian</a>.");
             } else {
                 $('#importStatusMessage').addClass("error-text-color");
                 $('#importStatusMessage').html("The import failed: " + json.message);
