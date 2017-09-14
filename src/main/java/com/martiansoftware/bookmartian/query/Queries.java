@@ -79,7 +79,7 @@ public class Queries {
         @Override public QueryFunction handle(QueryTerm qt) {
             return (s, r) -> { r.name(qt.arg()); return s; };
         }
-    }
+    }   
     
     private static class Is implements QTHandler {
         @Override public boolean handles(QueryTerm qt) { return "is".equals(qt.action()); }
@@ -88,6 +88,7 @@ public class Queries {
                 case "untagged": return (s, r) -> s.filter(b -> b.tagNames().isEmpty());
                 case "tagged": return (s, r) -> s.filter(b -> !b.tagNames().isEmpty());
                 case "secure": return (s, r) -> s.filter(b -> b.lurl().toString().startsWith("https://"));
+                case "any": return (s, r) -> s;
                 default: return oops("invalid argument for 'is' query: '%s'", qt.arg());
             }        
         }
