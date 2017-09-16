@@ -482,6 +482,7 @@ function deleteMark(e) {
             console.log('delete POST successful');
             $(e).parent().remove();
             bookmark.parent().parent().remove();
+            updatePromotedTiles();
             populateTagCloud();
         })
         .fail(function () {
@@ -643,11 +644,19 @@ function updatePromotedTiles(query) {
         // Code to run if the request succeeds (is done);
         // The response is passed to the function
         .done(function (json) {
-            // $("#promotedlinkheading").append(json.data.name);
-            $(json.data.bookmarks).each(function (index, element) {
 
-                // only append a new tile if it doesn't already exist
-                if ($(".promotedsection").find("a[href='" + API_VisitLink + "?url=" + escape(element.url) + "']").length == 0) {
+            // only update the tiles if the query results are different than the last time it was run
+            if ($("#promotedtiles").data("json") != stringToIntegerHash(JSON.stringify(json.data.bookmarks))) {
+                
+                // save the hash of the query results for comparison on update
+                $("#promotedtiles").data("json", stringToIntegerHash(JSON.stringify(json.data.bookmarks)));
+                
+                // clear the tiles and start fresh because sort order or limit: might be different
+                var template = $("#promotedlinktemplate");
+                $(".promotedsection").empty();
+                $(".promotedsection").append(template);
+
+                $(json.data.bookmarks).each(function (index, element) {
 
                     var tile = $("#promotedlinktemplate").clone()
                     tile.attr("title", element.title);
@@ -663,8 +672,9 @@ function updatePromotedTiles(query) {
                     link.attr("href", API_VisitLink + "?url=" + escape(element.url));
                     tile.css("display", "inline-block");
                     $(".promotedsection").append(tile);
-                }
-            })
+
+                })
+            }
         })
         // Code to run if the request fails; the raw request and
         // status codes are passed to the function
