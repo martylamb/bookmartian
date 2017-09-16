@@ -324,8 +324,6 @@ function populateLinkTable(value) {
 function populateTagCloud() {
     var tagColors = new Array();
 
-    $("#tagcloud").empty();
-
     $.ajax({
         // The URL for the request
         url: API_QueryTags,
@@ -339,13 +337,22 @@ function populateTagCloud() {
         // Code to run if the request succeeds (is done);
         // The response is passed to the function
         .done(function (json) {
-            $(json).each(function (index, element) {
-                if (element.name.substr(0, 1) !== ".") {
-                    var link = "<a onclick=\"executeSearch('" + element.name + "', true);\" class=tag style=color:" + (element.color != "#000000" ? element.color : "") + " id=" + element.name + ">" + element.name + "</a>";
-                    $("#tagcloud").append(link);
-                    tagColors[element.name] = element.color;
-                }
-            })
+
+            if ($("#tagcloud").data("results_hash") != stringToIntegerHash(JSON.stringify(json))) {
+
+                // save the hash of the query results for comparison on update
+                $("#tagcloud").data("results_hash", stringToIntegerHash(JSON.stringify(json)));
+
+                $("#tagcloud").empty();
+    
+                $(json).each(function (index, element) {
+                    if (element.name.substr(0, 1) !== ".") {
+                        var link = "<a onclick=\"executeSearch('" + element.name + "', true);\" class=tag style=color:" + (element.color != "#000000" ? element.color : "") + " id=" + element.name + ">" + element.name + "</a>";
+                        $("#tagcloud").append(link);
+                        tagColors[element.name] = element.color;
+                    }
+                })
+            }
         })
         // Code to run if the request fails; the raw request and
         // status codes are passed to the function
@@ -646,11 +653,11 @@ function updatePromotedTiles(query) {
         .done(function (json) {
 
             // only update the tiles if the query results are different than the last time it was run
-            if ($("#promotedtiles").data("json") != stringToIntegerHash(JSON.stringify(json.data.bookmarks))) {
-                
+            if ($("#promotedtiles").data("results_hash") != stringToIntegerHash(JSON.stringify(json.data.bookmarks))) {
+
                 // save the hash of the query results for comparison on update
-                $("#promotedtiles").data("json", stringToIntegerHash(JSON.stringify(json.data.bookmarks)));
-                
+                $("#promotedtiles").data("results_hash", stringToIntegerHash(JSON.stringify(json.data.bookmarks)));
+
                 // clear the tiles and start fresh because sort order or limit: might be different
                 var template = $("#promotedlinktemplate");
                 $(".promotedsection").empty();
