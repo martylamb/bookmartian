@@ -375,7 +375,7 @@ function updateBookmarkRow(oldurl, newurl) {
         $.ajax({
             // The URL for the request
             url: API_RetrieveBookmark,
-            data: {'url': newurl},
+            data: { 'url': newurl },
 
             // Whether this is a POST or GET request
             type: "GET",
@@ -424,6 +424,7 @@ function saveBookmark() {
         .done(function () {
             populateTagCloud();
             updateBookmarkRow($('#addinputoldUrl').val(), $('#addinputurl').val());
+            updatePromotedTiles();
             closeAction();
         })
         .fail(function () {
@@ -618,6 +619,66 @@ function closeTopBar() {
 }
 
 // ==========================================================================
+// update the tiles array
+function updatePromotedTiles(query) {
+
+    if (query) {
+        $("#promotedtiles").data("query", query);
+    }
+    else {
+        query = $("#promotedtiles").data("query");
+    }
+
+    $.ajax({
+        // The URL for the request
+        url: API_QueryBookmarks + "?q=" + query,
+        //data: {'q': query},
+
+        // Whether this is a POST or GET request
+        type: "GET",
+
+        // The type of data we expect back
+        dataType: "json"
+    })
+        // Code to run if the request succeeds (is done);
+        // The response is passed to the function
+        .done(function (json) {
+            // $("#promotedlinkheading").append(json.data.name);
+            $(json.data.bookmarks).each(function (index, element) {
+
+                // only append a new tile if it doesn't already exist
+                if ($(".promotedsection").find("a[href='" + API_VisitLink + "?url=" + escape(element.url) + "']").length == 0) {
+
+                    var tile = $("#promotedlinktemplate").clone()
+                    tile.attr("title", element.title);
+                    tile.attr("id", element.title);
+                    var image = tile.find("img");
+                    if (element.imageUrl) {
+                        image.attr("src", element.imageUrl);
+                    } else {
+                        image.attr("src", "https://icons.better-idea.org/icon?size=90&url=" + element.url);
+                    }
+                    image.attr("alt", element.title);
+                    var link = tile.find("a");
+                    link.attr("href", API_VisitLink + "?url=" + escape(element.url));
+                    tile.css("display", "inline-block");
+                    $(".promotedsection").append(tile);
+                }
+            })
+        })
+        // Code to run if the request fails; the raw request and
+        // status codes are passed to the function
+        .fail(function (xhr, status, errorThrown) {
+            console.log("Error: " + errorThrown);
+            console.log("Status: " + status);
+            console.dir(xhr);
+        })
+        // Code to run regardless of success or failure;
+        .always(function (xhr, status) {
+        });
+}
+
+// ==========================================================================
 // expand the search box when you hit the spacebar while writing your query
 $('body').on('keydown', '#searchterm', function (e) {
     if (e.which == 32) {
@@ -671,7 +732,7 @@ $(document).ready(function () {
     // parse promoted queries from the querystring or from a cookie if the querystring for this session has been set
     var qd = {};
     var qs = '';
-    
+
     if (location.search.substr(1).length > 0) {
         qs = location.search.substr(1);
         // check to see if the search param was the only one provided; if so, use existing cookie instead but also save the search
@@ -718,46 +779,6 @@ $(document).ready(function () {
     // --------------------------------------------------------------------------
     // retrieve promoted tiles based on querystring query "tiles="
     if (qd.tiles) {
-        $.ajax({
-            // The URL for the request
-            url: API_QueryBookmarks + "?q=" + qd.tiles.toString().replace(/\|/g, '+'),
-
-            // Whether this is a POST or GET request
-            type: "GET",
-
-            // The type of data we expect back
-            dataType: "json"
-        })
-            // Code to run if the request succeeds (is done);
-            // The response is passed to the function
-            .done(function (json) {
-                // $("#promotedlinkheading").append(json.data.name);
-                $(json.data.bookmarks).each(function (index, element) {
-                    var tile = $("#promotedlinktemplate").clone()
-                    tile.attr("title", element.title);
-                    tile.attr("id", element.title);
-                    var image = tile.find("img");
-                    if (element.imageUrl) {
-                        image.attr("src", element.imageUrl);
-                    } else {
-                        image.attr("src", "https://icons.better-idea.org/icon?size=90&url=" + element.url);
-                    }
-                    image.attr("alt", element.title);
-                    var link = tile.find("a");
-                    link.attr("href", API_VisitLink + "?url=" + escape(element.url));
-                    tile.css("display", "inline-block");
-                    $(".promotedsection").append(tile);
-                })
-            })
-            // Code to run if the request fails; the raw request and
-            // status codes are passed to the function
-            .fail(function (xhr, status, errorThrown) {
-                console.log("Error: " + errorThrown);
-                console.log("Status: " + status);
-                console.dir(xhr);
-            })
-            // Code to run regardless of success or failure;
-            .always(function (xhr, status) {
-            });
+        updatePromotedTiles(qd.tiles.toString());
     }
 });
