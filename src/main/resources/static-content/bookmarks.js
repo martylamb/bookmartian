@@ -374,7 +374,8 @@ function updateBookmarkRow(oldurl, newurl) {
     if (bookmark) {
         $.ajax({
             // The URL for the request
-            url: API_RetrieveBookmark + "?url=" + newurl,
+            url: API_RetrieveBookmark,
+            data: {'url': newurl},
 
             // Whether this is a POST or GET request
             type: "GET",

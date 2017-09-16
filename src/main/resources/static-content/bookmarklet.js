@@ -126,8 +126,9 @@ function bookmartian_closeAction() {
             // check to see if this url is already bookmarked and, if it is, prepopulate the fields with the saved info
             $.ajax({
                 // The URL for the request
-                url: host + "/api/bookmark?url=" + escape(document.location),
-
+                url: host + "/api/bookmark",
+                data: {'url': escape(document.location)},
+                
                 headers: { 'X-BOOKMARTIAN': 'aw yeah' },
 
                 // Whether this is a POST or GET request
