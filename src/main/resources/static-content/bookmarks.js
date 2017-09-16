@@ -578,6 +578,7 @@ function executeSearch(term, reset) {
         });
 
     $('#searchtable').children().remove();
+    $('#searchterm').val(searchterm + " ");
     $('#searchterm').focus();
 }
 
