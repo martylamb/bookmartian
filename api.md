@@ -55,7 +55,7 @@ Example:
 
 ```shell
 # get bookmark for foo.com
-http -v GET http://127.0.0.1:4567/api/bookmarks?url=http://foo.com
+http -v GET http://127.0.0.1:4567/api/bookmarks "url==http://foo.com"
 ```
 
 
