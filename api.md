@@ -16,6 +16,11 @@ Bookmark JSON format
   * lastVisited (optional): timestamp of last visit to bookmark via api
   * visitCount (required): number of times bookmark was visited via api
 
+Tag JSON format
+---------------
+  * name (required): short name of tag.  May only include characters in [a-zA-Z0-9_.-]
+  * color (required): color that should be used when rendering the tag as 6-digit hex RGB beginning with "#".  For example, black is "#000000".
+
 Add or Update a Bookmark
 ------------------------
 
@@ -138,4 +143,58 @@ Example:
 ```shell
 # get all tags
 http -v GET http://127.0.0.1:4567/api/tags
+```
+
+Add or Update a Tag
+------------------------
+
+**POST /api/tag/update**
+
+Parameters:
+
+  * name (required): the name of the tag to add or update
+  * color (optional): the color that should be used when rendering the tag
+  
+
+Examples:
+
+```shell
+# add a new tag that will be colored red
+http -v -f POST http://127.0.0.1:4567/api/tag/update name=newtag "color=#ff0000"
+
+# change it to blue
+http -v -f POST http://127.0.0.1:4567/api/tag/update name=newtag "color=#0000ff"
+```
+
+Delete a Tag
+------------
+
+**POST /api/tag/delete**
+
+Parameters:
+  * name (required): the name of the tag to delete
+  
+This will delete the tag and remove it from all bookmarks that use it.
+
+Example:
+
+```shell
+# delete a tag
+http -v -f POST http://127.0.0.1:4567/api/tag/delete name=oldtag
+```
+
+Merge Tags
+----------
+
+**POST /api/tag/merge**
+
+Parameters:
+  * target (required): the name of the tag that other tags will be merged into.  Will be created automatically if it does not exist.
+  * tags (required): a space-and-comma-delimited set of tags that will be merged into the target tag. 
+
+After this operation, all bookmarks using any of the marged tags will be tagged with the target, and none of these tags will exist in the database or in any bookmark.   
+ 
+```shell
+# merge tags
+http -v -f POST http://127.0.0.1:4567/api/tag/merge target=colors "tags=red,green,blue"
 ```
