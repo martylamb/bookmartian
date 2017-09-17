@@ -297,10 +297,17 @@ function populateLinkTable(value) {
             var heading = linktable.parent().find('h1');
             if (json.status !== 'error') {
 
-                bookmarkJSONArrays['linktable_' + safeID] = $(json.data.bookmarks);
-                linktable.attr('data-sort', json.data.sort);
-                linktable.attr('data-name', json.data.name);
-                renderLinkTable(linktable, false);
+                if (linktable.data("results_hash") != stringToIntegerHash(JSON.stringify(json.data.bookmarks))) {
+                    
+                    // save the hash of the query results for comparison on update
+                    linktable.data("results_hash", stringToIntegerHash(JSON.stringify(json.data.bookmarks)));
+
+                    bookmarkJSONArrays['linktable_' + safeID] = $(json.data.bookmarks);
+                    linktable.attr('data-sort', json.data.sort);
+                    linktable.attr('data-name', json.data.name);
+                    renderLinkTable(linktable, false);
+                }
+
             } else {
                 heading.text(json.message);
             }
@@ -429,9 +436,7 @@ function saveBookmark() {
 
     $.post(API_UpdateBookmark, serializedFormData)
         .done(function () {
-            populateTagCloud();
-            updateBookmarkRow($('#addinputoldUrl').val(), $('#addinputurl').val());
-            updatePromotedTiles();
+            refreshPage();            
             closeAction();
         })
         .fail(function () {
@@ -486,11 +491,9 @@ function deleteMark(e) {
         data: { 'url': bookmark.attr('data-url') }
     })
         .done(function () {
-            console.log('delete POST successful');
             $(e).parent().remove();
             bookmark.parent().parent().remove();
-            updatePromotedTiles();
-            populateTagCloud();
+            refreshPage();
         })
         .fail(function () {
             console.log("delete POST failed");
@@ -498,6 +501,20 @@ function deleteMark(e) {
         .always(function (data) {
             console.log(data);
         });
+}
+
+
+// ==========================================================================
+// refresh any page elements whose query results have changed
+function refreshPage() {
+    updatePromotedTiles();
+    populateTagCloud();
+    $(".linkblock:visible").each(function() {
+        populateLinkTable($(this).attr("id"));
+    });
+    if ($("#searchresults:visible").length) {
+        executeSearch();
+    }
 }
 
 // ==========================================================================
@@ -521,9 +538,6 @@ function editMark(e) {
     }
     $('#actionpanel').slideDown('fast');
     $('#addinputtitle').focus();
-    //$('#actionpanel').show();
-
-    //$('html, body').animate({ scrollTop: 0 }, 0);    
 }
 
 // ==========================================================================
@@ -544,6 +558,8 @@ function executeSearch(term, reset) {
     }
 
     closeAction();
+    $('#searchterm').val(searchterm);
+    $('#searchterm').focus();
 
     $.ajax({
         // The URL for the request
@@ -560,15 +576,23 @@ function executeSearch(term, reset) {
         .done(function (json) {
             if (json.status == "success") {
                 var searchtable = $('#searchtable');
-                bookmarkJSONArrays['searchtable'] = $(json.data.bookmarks);
-                searchtable.attr('data-searchterm', searchterm);
-                searchtable.attr('data-sort', json.data.sort);
-                searchtable.attr('data-name', json.data.name);
-                renderLinkTable(searchtable, true);
 
-                $('#errormessage').html("").hide();
-                $('#searchresults').show();
-                $('#searchhr').show();
+                if (searchtable.data("results_hash") != stringToIntegerHash(JSON.stringify(json.data.bookmarks))) {
+                    
+                    // save the hash of the query results for comparison on update
+                    searchtable.data("results_hash", stringToIntegerHash(JSON.stringify(json.data.bookmarks)));
+                    searchtable.children().remove();
+                    
+                    bookmarkJSONArrays['searchtable'] = $(json.data.bookmarks);
+                    searchtable.attr('data-searchterm', searchterm);
+                    searchtable.attr('data-sort', json.data.sort);
+                    searchtable.attr('data-name', json.data.name);
+                    renderLinkTable(searchtable, true);
+
+                    $('#errormessage').html("").hide();
+                    $('#searchresults').show();
+                    $('#searchhr').show();
+                }
             } else {
                 $('#errormessage').html(json.message).show();
             }
@@ -586,9 +610,17 @@ function executeSearch(term, reset) {
         .always(function (xhr, status) {
         });
 
+
+}
+
+// ==========================================================================
+// close the search interface
+function closeSearch() {
+    $('#searchresults').hide();
     $('#searchtable').children().remove();
-    $('#searchterm').val(searchterm + " ");
-    $('#searchterm').focus();
+    $('#searchtable').data("results_hash", 0);
+    $('#searchterm').val('');
+    closeTopBar();
 }
 
 // ==========================================================================
@@ -782,6 +814,7 @@ $(document).ready(function () {
     $.each(promotedTagArray, function (index, value) {
         var block = $("#linkblocktemplate").clone()
         block.css('display', 'inline-block');
+        block.attr("id", value);
         var safeID = stringToIntegerHash(value);
         var linktable = block.find('.linktable');
         linktable.attr("id", "linktable_" + safeID);
