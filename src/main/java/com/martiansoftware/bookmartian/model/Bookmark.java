@@ -12,6 +12,7 @@ import java.text.Collator;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
@@ -180,12 +181,17 @@ public class Bookmark {
         }
         
         public Builder tags(String tags) {
-            _tags = TagNameSet.of(tags);
-            return this;
+            return tags(TagNameSet.of(tags));
         }
         
         public Builder tags(TagNameSet tags) {
-            _tags = tags;
+            if (_tags == null) {
+                _tags = tags;
+            } else {
+                Set<TagName> newTags = new java.util.HashSet<>(_tags.asSet());
+                newTags.addAll(tags.asSet());
+                _tags = TagNameSet.of(newTags);
+            }
             return this;
         }
         
