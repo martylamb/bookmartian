@@ -40,6 +40,9 @@ public class Lurl implements Comparable<Lurl> {
     // see isWeblike() for description
     private static final Set<String> WEBLIKE_SCHEMES = new java.util.HashSet<>(Arrays.asList("http", "https", "ftp", "ftps", "sftp", "ws", "wss"));
     
+    // used to support isSecure()
+    private static final Set<String> SECURE_SCHEMES = new java.util.HashSet<>(Arrays.asList("https", "ftps", "sftp", "wss", "ssh"));
+    
     // these schemas always get the WHOLE url lowercased
     private static final Set<String> ALWAYS_LOWERCASE_ENTIRE_URL = new java.util.HashSet<>(Arrays.asList("mailto"));
     
@@ -121,6 +124,15 @@ public class Lurl implements Comparable<Lurl> {
         return s.startsWith(GENERIC_UNC_PREFIX);
     }
     
+    private String scheme() {
+        Matcher m = SCHEME_FINDER.matcher(_lurl);
+        return (m.matches() ? m.group("scheme") : "http");
+    }
+    
+    public boolean isSecure() {
+        return SECURE_SCHEMES.contains(scheme());
+    }
+
     private String normalize(String url) {
         // TODO: windows path check
         String result = url.trim();

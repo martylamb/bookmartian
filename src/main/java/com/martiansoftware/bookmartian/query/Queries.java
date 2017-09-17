@@ -87,7 +87,8 @@ public class Queries {
             switch(Strings.lower(qt.arg())) {
                 case "untagged": return (s, r) -> s.filter(b -> b.tagNames().isEmpty());
                 case "tagged": return (s, r) -> s.filter(b -> !b.tagNames().isEmpty());
-                case "secure": return (s, r) -> s.filter(b -> b.lurl().toString().startsWith("https://"));
+                case "secure": return (s, r) -> s.filter(b -> b.lurl().isSecure());
+                case "unsecure": return (s, r) -> s.filter(b -> !b.lurl().isSecure());
                 case "any": return (s, r) -> s;
                 default: return oops("invalid argument for 'is' query: '%s'", qt.arg());
             }        

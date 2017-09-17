@@ -22,6 +22,8 @@ The following actions are supported:
 
   * `tagged:TAG` or `TAG` - results will be limited to only those
      bookmarks tagged as `TAG`.
+
+  * `is:any` - returns all bookmarks
   
   * `is:tagged` - results will be limited to only those bookmarks with
     tags.
@@ -29,7 +31,9 @@ The following actions are supported:
   * `is:untagged` - results will be limited to only those bookmarks with
      no tags.
      
-  * `is:secure` - only results with the protocol "https" will be returned
+  * `is:secure` - only results with secure protocol schemes (e.g. "https", "sftp") will be returned
+
+  * `is:unsecure` - only results WITHOUT secure protocol schemes will be returned
      
   * `site:foo.com` - results will be limited to only those bookmarks with
     urls hosted at foo.com or its subdomains (e.g. searching for "foo.com"
