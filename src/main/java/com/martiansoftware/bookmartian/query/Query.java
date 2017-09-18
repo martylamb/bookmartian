@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 public class Query {
 
     private static final Logger log = LoggerFactory.getLogger(Query.class);
-    private static final QueryFunction DEFAULT_SORT = Queries.of(QueryTerm.of("by", "title"));
+    private static final QueryFunction DEFAULT_SORT = Queries.of(QueryTerm.of("by", "title", false));
     
     // the raw query as specified by the user
     private final String _raw;

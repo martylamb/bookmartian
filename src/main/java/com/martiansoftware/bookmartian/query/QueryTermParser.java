@@ -18,6 +18,7 @@ class QueryTermParser {
     
     private final StringBuffer _action = new StringBuffer();
     private final StringBuffer _arg = new StringBuffer();
+    private boolean _negateAction = false;
 
     private STATE _state;
     private int _pos;
@@ -41,6 +42,7 @@ class QueryTermParser {
         _pos = -1;
         _action.setLength(0);
         _arg.setLength(0);
+        _negateAction = false;
         _queryTerms = new java.util.ArrayList<>();
     }
     
@@ -56,17 +58,21 @@ class QueryTermParser {
     
     private STATE stateMachine(int c) {
         switch(_state) {
-
+        
             case DELIM:     if (isEof(c) || isDelimiter(c)) return STATE.DELIM;
-                            if (isActionChar(c)) return handleAs(STATE.ACTION, c);
+                            if (isActionNegatorChar(c) || isActionChar(c)) return handleAs(STATE.ACTION, c);
                             return unexpected(c);
 
-            case ACTION:    if (isActionChar(c)) {
+            case ACTION:    if (isActionNegatorChar(c) && _action.length() == 0) {
+                                _negateAction = true;
+                                return STATE.ACTION;
+                            }
+                            if (isActionChar(c)) {
                                 _action.append((char) c);
                                 return STATE.ACTION;
                             }
                             if (isEof(c) || isDelimiter(c)) {
-                                emit(DEFAULT_ACTION, _action.toString());
+                                emit(DEFAULT_ACTION, _action.toString(), _negateAction);
                                 return STATE.DELIM;
                             }
                             if (isActionArgSeparator(c)) return STATE.PRE_ARG;
@@ -99,16 +105,18 @@ class QueryTermParser {
     static boolean isDelimiter(int c) { return Character.isWhitespace(c) || c == ','; }
     private boolean isActionChar(int c) { return TagName.isTagNameCharacter(c); }
     private boolean isActionArgSeparator(int c) { return c == ACTION_ARG_SEPARATOR; }
+    private boolean isActionNegatorChar(int c) { return c == '!'; }
     static boolean isQuote(int c) { return c == QUOTE; }
 
-    private void emit(String action, String arg) {
-        _queryTerms.add(QueryTerm.of(action, arg));
+    private void emit(String action, String arg, boolean negateAction) {
+        _queryTerms.add(QueryTerm.of(action, arg, negateAction));
         _action.setLength(0);
         _arg.setLength(0);
+        _negateAction = false;
     }
 
     private STATE emit() {
-        emit(_action.toString(), _arg.toString());
+        emit(_action.toString(), _arg.toString(), _negateAction);
         return STATE.DELIM;
     }
         

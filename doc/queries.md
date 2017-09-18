@@ -23,6 +23,9 @@ The following actions are supported:
   * `tagged:TAG` or `TAG` - results will be limited to only those
      bookmarks tagged as `TAG`.
 
+  * `!tagged:TAG` or `!TAG` - results will be limited to only those
+     bookmarks NOT tagged as `TAG`.
+
   * `is:any` - returns all bookmarks
   
   * `is:tagged` - results will be limited to only those bookmarks with

@@ -14,15 +14,20 @@ import java.util.regex.Pattern;
     // if no action is specified, a default of "tagged" is used.
     class QueryTerm {
         private final String _action, _arg;
-        private QueryTerm(String action, String argument) {
+        private final boolean _negateAction; // if true, result should be "negated" (logical NOT) however appropriate, or else this is an error.
+        
+        private QueryTerm(String action, String argument, boolean negateAction) {
             _action = Hope.that(action).named("action").isNotNullOrEmpty().map(s -> Strings.lower(s)).value();
             _arg = Hope.that(Strings.safeTrimToNull(argument)).named("argument").isNotNullOrEmpty().value();
+            _negateAction = negateAction;
         }
-        static QueryTerm of(String action, String arg) {
-            return new QueryTerm(action, arg);
+        
+        static QueryTerm of(String action, String arg, boolean negateAction) {
+            return new QueryTerm(action, arg, negateAction);
         }
         public String action() { return _action; }
         public String arg() { return _arg; }
+        public boolean isNegated() { return _negateAction; }
         
         private String maybeQuote(String s) {
             boolean needsQuotes = false;
@@ -42,6 +47,6 @@ import java.util.regex.Pattern;
         
         @Override
         public String toString() {
-            return String.format("%s%c%s", action(), QueryTermParser.ACTION_ARG_SEPARATOR, maybeQuote(arg()));
+            return String.format("%s%s%c%s", isNegated() ? "!" : "", action(), QueryTermParser.ACTION_ARG_SEPARATOR, maybeQuote(arg()));
         }
     }

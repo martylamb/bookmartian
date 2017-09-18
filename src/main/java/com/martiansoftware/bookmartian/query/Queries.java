@@ -66,12 +66,17 @@ public class Queries {
      * @return a Function that implements the logic specified by the QueryTerm
      */
     public static QueryFunction of(QueryTerm qt) {
+        if (qt.isNegated() && !"tagged".equals(qt.action())) {
+            oops("NOT operator may only be used on tags");
+        }
+
         return QT_HANDLERS
                 .stream()
                 .filter(qth -> qth.handles(qt))
                 .findFirst()
                 .map(qth -> qth.handle(qt))
                 .orElseGet(() -> oops("invalid query action '%s'", qt.action()));
+        
     }
 
     private static class As implements QTHandler {
@@ -105,7 +110,8 @@ public class Queries {
     private static class Tagged implements QTHandler {
         @Override public boolean handles(QueryTerm qt) { return "tagged".equals(qt.action()); }
         @Override public QueryFunction handle(QueryTerm qt) {
-            return (s, r) -> s.filter(loggingBmFilter(qt.arg(), b -> b.tagNames().contains(TagName.of(qt.arg()))));
+            Predicate<? super Bookmark> tagFilter = b -> b.tagNames().contains(TagName.of(qt.arg()));
+            return (s, r) -> s.filter(loggingBmFilter(qt.arg(), qt.isNegated() ? tagFilter.negate() : tagFilter));
         }
     }
     
@@ -169,7 +175,7 @@ public class Queries {
             }
             if (cmp == null) oops("no sort specified!");
             
-            QueryTerm normalizedSort = QueryTerm.of("by", sorts.stream().collect(Collectors.joining(" ")));
+            QueryTerm normalizedSort = QueryTerm.of("by", sorts.stream().collect(Collectors.joining(" ")), false);
             Comparator finalComparator = cmp;
             return(s, r) -> {
                 r.sort(normalizedSort.toString());
