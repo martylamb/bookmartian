@@ -803,6 +803,12 @@ $(document).ready(function () {
         executeSearch(searchqs);
     }
 
+    // --------------------------------------------------------------------------
+    // retrieve promoted tiles based on querystring query "tiles="
+    if (qd.tiles) {
+        updatePromotedTiles(qd.tiles.toString());
+    }
+
     // create a linkblock for each pinned tag
     var promotedTags = "";
 
@@ -826,9 +832,5 @@ $(document).ready(function () {
     // retrieve tag cloud
     populateTagCloud();
 
-    // --------------------------------------------------------------------------
-    // retrieve promoted tiles based on querystring query "tiles="
-    if (qd.tiles) {
-        updatePromotedTiles(qd.tiles.toString());
-    }
+
 });
