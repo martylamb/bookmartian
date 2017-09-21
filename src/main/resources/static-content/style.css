@@ -169,6 +169,27 @@ h3 {
     display: block;    
 }
 
+.tagcolumns {
+    column-count: 4;
+}
+
+.tagblock {
+    min-height:22px;
+    border: solid #cccccc 1px;
+    margin: 3px;
+    break-inside:avoid;
+}
+
+.tagname {
+    float:clear;
+}
+
+.tagcontrols {
+    margin: 5px;
+    float: left;
+}
+
+
 /* ======================================================================= */
 /* promoted tiles */
 .promotedsection {
