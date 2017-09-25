@@ -87,7 +87,7 @@
 
         <table class="help-table">
             <tr><th style="width: 220px;">queryterm:modifier</th>       <th>description</th></tr>
-            <tr><td class="monospace">[tagged:]TAG</td>                 <td>Default basic search term<p>Results will be limited to only those bookmarks tagged as TAG. The query term "tagged:" is optional.</p><p>TAG is any word or space-separated list of words.</p></td></tr>
+            <tr><td class="monospace">[!][tagged:]TAG</td>              <td>Default basic search term<p>Results will be limited to only those bookmarks tagged as TAG. The query term "tagged:" is optional.</p><p>TAG is any word or space-separated list of words.</p></td></tr>
             <tr><td class="monospace">as:NAME</td>                      <td>Query name.
                                                                         <p>Result set will be returned with the provided NAME.</p></td></tr>
             <tr><td class="monospace">by:SORT-EXPR</td>                 <td id="sort-expr">Sort modifier.
@@ -106,7 +106,7 @@
                                                                         <tr><td class="monospace" style="width: 200px;">url</td><td>alphabetically by url, ascending (case-insensitive)</td></tr>
                                                                         </table>
                                                                         </td></tr>
-            <tr><td class="monospace">created-before:DATE-EXPR</td>     <td id="date-expr">Filter on date created.<p>Results will be limited to only those bookmarks created before the specified expression.  The expression may be an explicit date or a relative date such as "1y3m" meaning "1 year 3 months ago".</p>
+            <tr><td class="monospace">[!]created-before:DATE-EXPR</td>  <td id="date-expr">Filter on date created.<p>Results will be limited to only those bookmarks created before the specified expression.  The expression may be an explicit date or a relative date such as "1y3m" meaning "1 year 3 months ago".</p>
                                                                         <h3>DATE-EXPR</h3>
                                                                         <table class="help-table">
                                                                         <tr><td class="monospace" style="width: 200px;">yyyy/MM/dd</td><td>an explicit date</td></tr>
@@ -118,54 +118,55 @@
                                                                         <tr><td class="monospace" style="width: 200px;">#d</td><td># days ago</td></tr>
                                                                         </table>
                                                                         </td></tr>
-            <tr><td class="monospace">created-since:DATE-EXPR</td>      <td>Filter on date created.
+            <tr><td class="monospace">[!]created-since:DATE-EXPR</td>      <td>Filter on date created.
                                                                         <p>Use the "created-after" query term and a DATE-EXPR to only return those bookmarks added since a specified date.</p>
                                                                         </td></tr>
-            <tr><td class="monospace">created[-on]:DATE-EXPR</td>       <td>Filter on date created.
+            <tr><td class="monospace">[!]created[-on]:DATE-EXPR</td>       <td>Filter on date created.
                                                                         <p>Use the "created" query term and a DATE-EXPR to only return those bookmarks added on a specified date.</p>
                                                                         </td></tr>
-            <tr><td class="monospace">is:META-EXPR</td>                 <td>Filter on specific metadata attributes of your bookmarks.
+            <tr><td class="monospace">[!]is:META-EXPR</td>                 <td>Filter on specific metadata attributes of your bookmarks.
                                                                         <p>Use the "is" query term and a META-EXPR to only return those bookmarks that meet certain other conditions.</p>
                                                                         <h3>META-EXPR</h3>
                                                                         <table class="help-table">
                                                                         <tr><td class="monospace" style="width: 200px;">any</td><td>return all sites.</td></tr>
-                                                                        <tr><td class="monospace" style="width: 200px;">secure</td><td>return only https/secure sites.</td></tr>
-                                                                        <tr><td class="monospace" style="width: 200px;">unsecure</td><td>return only http/unsecure sites.</td></tr>
+                                                                        <tr><td class="monospace" style="width: 200px;">insecure</td><td>return only non-secure (e.g. non-https) sites.</td></tr>
+                                                                        <tr><td class="monospace" style="width: 200px;">secure</td><td>return only secure (e.g. https) sites.</td></tr>
                                                                         <tr><td class="monospace" style="width: 200px;">tagged</td><td>return only bookmarks with assigned tags.</td></tr>
+                                                                        <tr><td class="monospace" style="width: 200px;">unsecure</td><td>return only non-secure (e.g. non-https) sites.</td></tr>
                                                                         <tr><td class="monospace" style="width: 200px;">untagged</td><td>return only bookmarks without assigned tags.</td></tr>
                                                                         </table>
                                                                         </td></tr>
             <tr><td class="monospace">limit:N</td>                      <td>Restrict the number of results returned.
                                                                         <p>Use the "limit" query term and a number, N, to restrict the total number of results returned by the query.</p>
                                                                         </td></tr>
-            <tr><td class="monospace">modified-before:DATE-EXPR</td>    <td>Filter on date edited.
+            <tr><td class="monospace">[!]modified-before:DATE-EXPR</td>    <td>Filter on date edited.
                                                                         <p>Use the "modified-before" query term and a DATE-EXPR to only return those bookmarks edited before a specified date.</p>
                                                                         </td></tr>
-            <tr><td class="monospace">modified-since:DATE-EXPR</td>     <td>Filter on date edited.
+            <tr><td class="monospace">[!]modified-since:DATE-EXPR</td>     <td>Filter on date edited.
                                                                         <p>Use the "modified-since" query term and a DATE-EXPR to only return those bookmarks edited since a specified date.</p>
                                                                         </td></tr>
-            <tr><td class="monospace">modified[-on]:DATE-EXPR</td>      <td>Filter on date edited.
+            <tr><td class="monospace">[!]modified[-on]:DATE-EXPR</td>      <td>Filter on date edited.
                                                                         <p>Use the "modified" query term and a DATE-EXPR to only return those bookmarks edited on a specified date.</p>
                                                                         </td></tr>
-            <tr><td class="monospace">site:SITE</td>                    <td id="site-expr">Search by hostname
+            <tr><td class="monospace">[!]site:SITE</td>                    <td id="site-expr">Search by hostname
                                                                         <p>Results will be limited to only those bookmarks with urls hosted at foo.com or its subdomains (e.g. searching for "foo.com" will match bookmarks for "foo.com", "www.foo.com", and "www.bar.foo.com").</p>
                                                                         </td></tr>
-            <tr><td class="monospace">visited-before:DATE-EXPR</td>     <td>Filter on date visited.
+            <tr><td class="monospace">[!]visited-before:DATE-EXPR</td>     <td>Filter on date visited.
                                                                         <p>Use the "visited-before" query term and a DATE-EXPR to only return those bookmarks visited before a specified date.</p>
                                                                         </td></tr>
-            <tr><td class="monospace">visited-since:DATE-EXPR</td>      <td>Filter on date visited.
+            <tr><td class="monospace">[!]visited-since:DATE-EXPR</td>      <td>Filter on date visited.
                                                                         <p>Use the "visited-since" query term and a DATE-EXPR to only return those bookmarks visited since a specified date.</p>
                                                                         </td></tr>
-            <tr><td class="monospace">visited[-on]:DATE-EXPR</td>       <td>Filter on date visited.
+            <tr><td class="monospace">[!]visited[-on]:DATE-EXPR</td>       <td>Filter on date visited.
                                                                         <p>Use the "visited" query term and a DATE-EXPR to only return those bookmarks visited on a specified date.</p>
                                                                         </td></tr>
-            <tr><td class="monospace">visits-over:N</td>                <td>Filter on number of time visited.
+            <tr><td class="monospace">[!]visits-over:N</td>                <td>Filter on number of time visited.
                                                                         <p>Use the "visits-over" query term and a number, N, to only return those bookmarks visited more than the specified number of times.</p>
                                                                         </td></tr>
-            <tr><td class="monospace">visits-under:N</td>               <td>Filter on number of time visited.
+            <tr><td class="monospace">[!]visits-under:N</td>               <td>Filter on number of time visited.
                                                                         <p>Use the "visits-under" query term and a number, N, to only return those bookmarks visited fewer than the specified number of times.</p>
                                                                         </td></tr>
-            <tr><td class="monospace">visits:N </td>                    <td>Filter on number of time visited.
+            <tr><td class="monospace">[!]visits:N </td>                    <td>Filter on number of time visited.
                                                                         <p>Use the "visits" query term and a number, N, to only return those bookmarks visited exactly the specified number of times.</p>
                                                                         </td></tr>
         </table>

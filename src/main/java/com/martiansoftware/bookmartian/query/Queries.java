@@ -14,10 +14,12 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
 import static com.martiansoftware.util.Oops.oops;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import org.slf4j.Logger;
@@ -31,10 +33,6 @@ public class Queries {
 
     private static final Logger log = LoggerFactory.getLogger(Queries.class);
     
-    // regex used to parse strings that might start with a comparison operator
-    // result is two match groups: "op" with the operator and "arg" with the rest
-    private static final Pattern COMPARISON_SPLITTER = Pattern.compile("^(?<op>(==|=|<=|<|>=|>))?(?<arg>.+)$");
-    
     // QTHandlers implement the handle() method to convert a QueryTerm into a
     // Bookmark stream filtering function.  If they don't handle the type of
     // QueryTerm passed, they return null.  If there's an error handling a
@@ -42,6 +40,7 @@ public class Queries {
     private interface QTHandler {
         public boolean handles(QueryTerm qt);
         public QueryFunction handle(QueryTerm qt);
+        public default boolean isNegatable() { return false; }
     }
     
     // register all of the different query handlers
@@ -56,7 +55,7 @@ public class Queries {
         qtHandlers.add(new By());
         qtHandlers.add(new Visits());
         qtHandlers.add(new Dates());
-        QT_HANDLERS = Collections.unmodifiableList(qtHandlers);
+        QT_HANDLERS = Collections.unmodifiableList(qtHandlers);        
     }
         
     /**
@@ -66,17 +65,15 @@ public class Queries {
      * @return a Function that implements the logic specified by the QueryTerm
      */
     public static QueryFunction of(QueryTerm qt) {
-        if (qt.isNegated() && !"tagged".equals(qt.action())) {
-            oops("NOT operator may only be used on tags");
-        }
-
         return QT_HANDLERS
                 .stream()
                 .filter(qth -> qth.handles(qt))
                 .findFirst()
-                .map(qth -> qth.handle(qt))
-                .orElseGet(() -> oops("invalid query action '%s'", qt.action()));
-        
+                .map(qth -> {
+                    if (qt.isNegated() && !qth.isNegatable()) oops(String.format("\"%s\" action does not support negation", qt.action()));
+                    return qth.handle(qt);
+                    })
+                .orElseGet(() -> oops("invalid query action '%s'", qt.action()));        
     }
 
     private static class As implements QTHandler {
@@ -88,13 +85,16 @@ public class Queries {
     
     private static class Is implements QTHandler {
         @Override public boolean handles(QueryTerm qt) { return "is".equals(qt.action()); }
+        @Override public boolean isNegatable() { return true; }
         @Override public QueryFunction handle(QueryTerm qt) {
             switch(Strings.lower(qt.arg())) {
-                case "untagged": return (s, r) -> s.filter(b -> b.tagNames().isEmpty());
-                case "tagged": return (s, r) -> s.filter(b -> !b.tagNames().isEmpty());
-                case "secure": return (s, r) -> s.filter(b -> b.lurl().isSecure());
-                case "unsecure": return (s, r) -> s.filter(b -> !b.lurl().isSecure());
-                case "any": return (s, r) -> s;
+                case "tagged": return (s, r) -> s.filter(maybeNegate(qt, b -> !b.tagNames().isEmpty()));
+                case "untagged": return (s, r) -> s.filter(maybeNegate(qt, b -> b.tagNames().isEmpty()));
+                case "secure": return (s, r) -> s.filter(maybeNegate(qt, b -> b.lurl().isSecure()));
+                case "unsecure": 
+                case "insecure":
+                    return (s, r) -> s.filter(maybeNegate(qt, b -> !b.lurl().isSecure()));
+                case "any": return (s, r) -> s.filter(maybeNegate(qt, b -> true));
                 default: return oops("invalid argument for 'is' query: '%s'", qt.arg());
             }        
         }
@@ -107,16 +107,23 @@ public class Queries {
             return result;
         };
     }
+    
+    private static Predicate<? super Bookmark> maybeNegate(QueryTerm qt, Predicate<? super Bookmark> filter) {
+        return qt.isNegated() ? filter.negate() : filter;
+    }
+    
+    
     private static class Tagged implements QTHandler {
         @Override public boolean handles(QueryTerm qt) { return "tagged".equals(qt.action()); }
+        @Override public boolean isNegatable() { return true; }
         @Override public QueryFunction handle(QueryTerm qt) {
-            Predicate<? super Bookmark> tagFilter = b -> b.tagNames().contains(TagName.of(qt.arg()));
-            return (s, r) -> s.filter(loggingBmFilter(qt.arg(), qt.isNegated() ? tagFilter.negate() : tagFilter));
+            return (s, r) -> s.filter(maybeNegate(qt, b -> b.tagNames().contains(TagName.of(qt.arg()))));
         }
     }
     
     private static class Site implements QTHandler {
         @Override public boolean handles(QueryTerm qt) { return "site".equals(qt.action()); }
+        @Override public boolean isNegatable() { return true; }
         @Override public QueryFunction handle(QueryTerm qt) {
             String siteName = Strings.lower(qt.arg());
             Pattern p = Pattern.compile("^(?:.*\\.)?" + Pattern.quote(siteName) + "\\.[^.]+$");
@@ -126,16 +133,17 @@ public class Queries {
                     s -> p.matcher(s).matches();
 
             return (s, r) -> s.filter(
-                b -> {
-                    try {
-                        URL url = new URL(b.lurl().toString());
-                        String host = Strings.lower(url.getHost());
-                        
-                        return host.equals(siteName) || host.endsWith("." + siteName) || matchesSubdomain.test(host);
-                    } catch (MalformedURLException e) {
-                        return false;
+                maybeNegate(qt,
+                    b -> {
+                        try {
+                            URL url = new URL(b.lurl().toString());
+                            String host = Strings.lower(url.getHost());
+                            return host.equals(siteName) || host.endsWith("." + siteName) || matchesSubdomain.test(host);
+                        } catch (MalformedURLException e) {
+                            return false;
+                        }
                     }
-                }
+                )
             );
         }
     }
@@ -188,11 +196,12 @@ public class Queries {
         private static final String VISITS = "visits";
         private final Pattern p = Pattern.compile("^" + VISITS + "(?<op>" + COMPARISONS.numRegex() + ")?$");
         @Override public boolean handles(QueryTerm qt) { return p.matcher(qt.action()).matches(); }
+        @Override public boolean isNegatable() { return true; }        
         @Override public QueryFunction handle(QueryTerm qt) {
             Matcher m = p.matcher(qt.action());
             if (!m.matches()) oops("bad visit query: %s", qt.toString());
             BiPredicate<Long, Long> cmp = COMPARISONS.forNumSuffix(m.group("op")).asFunction();
-            return (s, r) -> s.filter(b -> cmp.test(b.visitCount().orElse(null), Strings.asLong(qt.arg())));
+            return (s, r) -> s.filter(maybeNegate(qt, b -> cmp.test(b.visitCount().orElse(null), Strings.asLong(qt.arg()))));
         }
     }
     
@@ -219,14 +228,17 @@ public class Queries {
                                                     + ")?$");
         
         @Override public boolean handles(QueryTerm qt) { return p.matcher(qt.action()).matches(); }        
+        @Override public boolean isNegatable() { return true; }
         
         @Override public QueryFunction handle(QueryTerm qt) {
             Matcher m = p.matcher(qt.action());            
             if (!m.matches()) oops("bad date query: %s", qt.toString());
             BiPredicate<Date, Date> cmp = COMPARISONS.forDateSuffix(m.group("op")).asFunction();
-            return (s, r) -> s.filter(b -> cmp.test(
+            return (s, r) -> s.filter(maybeNegate(qt, 
+                                        b -> cmp.test(
                                             com.martiansoftware.util.Dates.stripTime(FIELDS.forName(m.group("field")).readFrom(b).orElse(null)),
                                             com.martiansoftware.util.Dates.stripTime(dateOf(qt.arg()))
+                                        )
                                       )
                                  );
         }
