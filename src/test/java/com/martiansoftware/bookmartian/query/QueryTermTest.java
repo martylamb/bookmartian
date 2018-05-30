@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 public class QueryTermTest {
     
     private void test(String action, String arg, String expected) {
-        assertEquals(expected, QueryTerm.of(action, arg).toString());
+        assertEquals(expected, QueryTerm.of(action, arg, false).toString());
     }
     
     @Test
@@ -18,8 +18,6 @@ public class QueryTermTest {
         test("ABC", "def", "abc:def");
         test("multiple", "things with spaces", "multiple:\"things with spaces\"");
         test("has", "commas,too", "has:\"commas,too\"");
-        
-        
     }
     
 }
