@@ -8,3 +8,9 @@ debug.log
 art/~*.*
 anonymous.bookmartian
 index.1.html
+.classpath
+.project
+.settings/org.eclipse.core.resources.prefs
+.settings/org.eclipse.jdt.apt.core.prefs
+.settings/org.eclipse.jdt.core.prefs
+.settings/org.eclipse.m2e.core.prefs

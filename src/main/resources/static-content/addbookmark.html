@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Bookmartian - Add a Bookmark</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato" rel="stylesheet">
+    <link rel="stylesheet" href="/font-awesome-4.6.3/css/font-awesome.min.css">
+    <link REL=StyleSheet HREF="style.css" TYPE="text/css" MEDIA=screen>
+    <!-- <link REL=StyleSheet HREF="style.mobile.css" TYPE="text/css" MEDIA='only screen and (max-width: 800px)'> -->
+    <link REL=StyleSheet HREF="colors.css" TYPE="text/css" MEDIA=screen>
+</head>
+
+<body class="paper-color">
+    <script src="jquery-3.1.0.min.js"></script>
+    <script src="settings.js"></script>
+    <script src="utils.js"></script>
+    
+    <script>
+        // function called when the save button is clicked
+        function bookmartian_saveBookmark() {
+
+            // do not serialize the oldurl field if no old url was specified or the url did not change
+            var serializedFormData = null;
+            if ($('#bookmartian_addinputoldUrl').val().length == 0 || $('#bookmartian_addinputoldUrl').val() === $('#bookmartian_addinputurl').val()) {
+                serializedFormData = $("#bookmartian_addform :not(#bookmartian_addinputoldUrl)").serialize();
+            } else {
+                serializedFormData = $("#bookmartian_addform").serialize();
+            }
+
+            $.post({
+                url: "/api/bookmark/update",
+                data: serializedFormData,
+                headers: { 'X-BOOKMARTIAN': 'aw yeah' }
+            })
+                .done(function () {
+                    console.log("bookmark saved.");
+                    window.location.href = "/";
+                })
+                .fail(function () {
+                    console.log("POST failed");
+                })
+                .always(function (data) {
+                });
+        }
+    </script>
+
+    <!-- sidebar -->
+    <div class="sidebar default-primary-color">
+        <input class='searchbox' style="visibility: hidden" type="text" id='searchterm' />
+        
+        <div class="admin-links tagcloud secondary-text-color" id="admin-links">
+            BOOKMARTIAN</br>
+            . <a href="addbookmark.html">add a bookmark...</a></br>
+            . <a href="tags.html">manage tags</a></br>
+            . <a href="options.html">settings</a></br>
+            . <a href="help.html">help</a></br>
+            . <a href="about.html">about</a></br>
+        </div>
+
+        <hr class="divider-color" />
+
+        <div class="return-home tagcloud">
+            <a href="/">&lt; return to home</a></br>
+        </div>
+
+        <hr class="divider-color" />
+        <!-- footer -->
+        <div class='footer secondary-text-color'>
+            2018 mlamb/jmutchek
+        </div>
+
+        <div style="height:800px">
+        </div>
+    </div>
+
+    <div class="mainbody">
+
+        <h1>Add a Bookmark</h1>
+        <hr class="divider-color" />
+
+        <h2>Properties</h2>
+        <div class="settings-section">
+            <form id="bookmartian_addform">
+                <input type="hidden" name="oldUrl" id="bookmartian_addinputoldUrl" />
+                <div class="inputpair">
+                    <div class="fieldtitle">url</div>
+                    <input type="text" name="url" id="bookmartian_addinputurl" class="field" />
+                </div>
+                <div class="inputpair">
+                    <div class="fieldtitle">title</div>
+                    <input type="text" name="title" id="bookmartian_addinputtitle" class="field" />
+                </div>
+                <div class="inputpair">
+                    <div class="fieldtitle">tags</div>
+                    <input type="text" name="tags" id="bookmartian_addinputtags" class="field" />
+                    <!-- tag cloud -->
+                    <div class="tagcloud tertiary-text-color" id="tagcloud">
+                    </div>
+                </div>
+                <div class="inputpair">
+                    <div class="fieldtitle">notes</div>
+                    <input type="text" name="notes" id="bookmartian_addinputnotes" class="field" />
+                </div>
+                <div class="inputpair">
+                    <div class="fieldtitle">image url</div>
+                    <input type="text" name="imageUrl" id="bookmartian_addinputimageUrl" class="field" />
+                </div>
+                <div class="inputpair">
+                    <div class="fieldtitle">&nbsp;</div>
+                    <input type="button" value="save" class="bookmartian_actionbutton" onclick="bookmartian_saveBookmark();" />
+                </div>
+            </form>
+        </div>
+
+
+    </body>
+
+</html>
