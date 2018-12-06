@@ -1,0 +1,29 @@
+#!/bin/bash
+
+# script to launch a new docker container from a release pipeline via ssh
+
+# A POSIX variable
+OPTIND=1         # Reset in case getopts has been used previously in the shell.
+
+# Initialize our own variables:
+ssl_url=""
+email=""
+registry=""
+volumes=""
+
+while getopts "s:e:r:v:" opt; do
+    case "$opt" in
+    s)  ssl_url=$OPTARG
+        ;;
+    e)  email=$OPTARG
+        ;;
+    r)  registry=$OPTARG
+        ;;
+    v)  volumes=$OPTARG
+        ;;
+    esac
+done
+
+sudo docker stop bookmartian
+sudo docker rm bookmartian
+sudo docker run -d --restart unless-stopped --name bookmartian -p 80:80 -p 443:443 -e SSL=$ssl_url -e EMAIL=$email -v $volumes $registry/bookmartian:latest
