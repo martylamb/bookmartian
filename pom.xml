@@ -180,6 +180,8 @@
                 <groupId>com.spotify</groupId>
                 <artifactId>dockerfile-maven-plugin</artifactId>
                 <version>1.3.4</version>
+<!-- commenting out this block prevents execution during mvn package phase
+     it can be manually invoked via mvn dockerfile:build
                 <executions>
                     <execution>
                         <id>default</id>
@@ -189,6 +191,7 @@
                         </goals>
                     </execution>
                 </executions>
+-->             
                 <configuration>
                     <repository>bookmartian</repository>
                 </configuration>
