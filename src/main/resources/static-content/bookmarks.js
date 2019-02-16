@@ -659,6 +659,12 @@ function closeTopBar() {
 }
 
 // ==========================================================================
+// update the page title
+function updateTitle(title) {
+    $(document).attr("title", decodeURIComponent(title));
+}
+
+// ==========================================================================
 // update the tiles array
 function updatePromotedTiles(query) {
 
@@ -801,6 +807,12 @@ $(document).ready(function () {
     if (qd.search) {
         var searchqs = qd.search.toString();
         executeSearch(searchqs);
+    }
+
+    // --------------------------------------------------------------------------
+    // retrieve title page based on querystring query "title="
+    if (qd.title) {
+        updateTitle(qd.title.toString());
     }
 
     // --------------------------------------------------------------------------
