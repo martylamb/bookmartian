@@ -2,6 +2,7 @@
 /target/
 nbactions.xml
 /users/
+/bin/
 bookmarks.json
 debug.log
 /.vscode/
