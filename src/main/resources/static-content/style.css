@@ -213,6 +213,10 @@ h3 {
     width: 90px;
 }
 
+.promotedtitle {
+    font-size: smaller;
+}
+
 /* ======================================================================= */
 /* search results */
 
