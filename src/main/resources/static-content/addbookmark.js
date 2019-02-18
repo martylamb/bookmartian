@@ -1,4 +1,5 @@
 var currentlyTypingTag = "";
+var qd = {};
 
 // ==========================================================================
 // When the document is fully loaded, load the dynamic elements into the page
@@ -7,6 +8,19 @@ var currentlyTypingTag = "";
 $(document).ready(function () {
     var tagColors = new Array();
 
+    // --------------------------------------------------------------------------
+    // parse querystring
+    var qs = '';
+
+    if (location.search.substr(1).length > 0) {
+        qs = location.search.substr(1);
+    }
+
+    if (qs != null) {
+        qs.split("&").forEach(function (item) { (item.split("=")[0] in qd) ? qd[item.split("=")[0]].push(item.split("=")[1]) : qd[item.split("=")[0]] = [item.split("=")[1]] })
+    }
+
+    // Fetch tags list
     $.ajax({
         // The URL for the request
         url: API_QueryTags,

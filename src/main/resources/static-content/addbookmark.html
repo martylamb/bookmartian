@@ -8,6 +8,9 @@
     <link REL=StyleSheet HREF="style.css" TYPE="text/css" MEDIA=screen>
     <!-- <link REL=StyleSheet HREF="style.mobile.css" TYPE="text/css" MEDIA='only screen and (max-width: 800px)'> -->
     <link REL=StyleSheet HREF="colors.css" TYPE="text/css" MEDIA=screen>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta content="text/html;charset=utf-8" http-equiv="Content-Type">
+    <meta content="utf-8" http-equiv="encoding">
 </head>
 
 <body class="paper-color">
@@ -34,7 +37,11 @@
             })
                 .done(function () {
                     console.log("bookmark saved.");
-                    window.location.href = "/";
+                    if (qd.redirect) {
+                        window.location.href = $('#bookmartian_addinputurl').val();
+                    } else {
+                        window.location.href = "/";
+                    }
                 })
                 .fail(function () {
                     console.log("POST failed");
