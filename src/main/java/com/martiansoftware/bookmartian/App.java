@@ -19,6 +19,7 @@ import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
+import com.martiansoftware.jsap.stringparsers.IntegerStringParser;
 import com.martiansoftware.util.Strings;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -39,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import spark.Request;
 import spark.Response;
+import static spark.Spark.port;
 import spark.utils.IOUtils;
 import java.util.Optional;
 import java.util.Properties;
@@ -51,6 +53,7 @@ public class App {
        
     private static Logger log = LoggerFactory.getLogger(App.class);
     private static final String JSAP_DIR = "bookmartian-dir";
+    private static final String JSAP_PORT = "bookmartian-port";
     private static Properties appProperties = new java.util.Properties();
     
     private static JSAP jsap() throws JSAPException {
@@ -65,6 +68,15 @@ public class App {
                                 .setHelp("specifies the bookmartian data directory (defaults to current directory: " + defaultDir + ")")
         );
         
+        jsap.registerParameter(new FlaggedOption(JSAP_PORT)
+                                .setShortFlag('p')
+                                .setLongFlag("port")
+                                .setStringParser(new IntegerStringParser())
+                                .setDefault("4567")
+                                .setRequired(false)
+                                .setHelp("specifies the port on which the webserver should listen")
+        );
+                
         return jsap;
     }
 
@@ -96,9 +108,12 @@ public class App {
 
         banner();
         
+        if (cmd.contains(JSAP_PORT)) {
+            port(cmd.getInt(JSAP_PORT));
+        }
         JsonConfig.init();
         // TODO: implement a cache by username and retrieve from there on demand
-        Bookmartian bm = new JournalBookmartian(Paths.get(cmd.getString(JSAP_DIR)).resolve("anonymous.bookmartian"));
+        Bookmartian bm = new JournalBookmartian(Paths.get(cmd.getString(JSAP_DIR)).resolve("userdata.bookmartian"));
 
 // TODO        Runtime.getRuntime().addShutdownHook(new Thread(() -> bm.shutdown()));
         

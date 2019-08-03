@@ -1,0 +1,67 @@
+#!/bin/bash -ex
+
+DATA_DIR="/data"
+CADDYFILE="/tmp/caddyfile"
+CADDYFILE="/data/caddy.conf"
+HTPASSWD_FILE="/data/.htpasswd"
+LOG_FILE="/data/access.log"
+BASE_PORT=4567
+declare -A USER_PORT_MAPPINGS
+
+function writeCaddyFile() {
+	# DELETEME
+	CADDY_EMAIL="tls self_signed"
+
+
+cat > ${CADDYFILE} <<EOF
+${SSL} {
+	${CADDY_EMAIL}
+	log ${LOG_FILE}
+EOF
+#    redir 301 {
+#        if {>X-Forwarded-Proto} is http
+#        /  https://{host}{uri}
+#    }
+
+	for USER in "${!USER_PORT_MAPPINGS[@]}"; do
+		echo "    proxy /${USER} localhost:${USER_PORT_MAPPINGS[${USER}]}" >> ${CADDYFILE}
+	done
+
+
+cat >> ${CADDYFILE} <<EOF
+}
+EOF
+}
+
+function startCaddy() {
+	if [ -n "${SSL}" ]; then
+		echo "starting caddy server for ${SSL}..."
+		mkdir -p "${DATA_DIR}/.caddy"
+		ln -sf "${DATA_DIR}/.caddy" /root/.caddy
+
+		[ -n "${EMAIL}" ] && CADDY_EMAIL="tls ${EMAIL}"
+
+		writeCaddyFile
+
+		caddy -agree -conf ${CADDYFILE} &
+	else
+		echo "NOT starting caddy server"
+	fi
+}
+
+
+if [ -f "${HTPASSWD_FILE}" ]; then
+	NEXT_PORT=${BASE_PORT}
+	for USER in $( cat "${HTPASSWD_FILE}" | sed -e 's/:.*//g' ); do
+		java -cp /opt/bookmartian/bookmartian.jar com.martiansoftware.bookmartian.App -d "${DATA_DIR}/${USER}" -p "${NEXT_PORT}" &
+		USER_PORT_MAPPINGS[${USER}]="${NEXT_PORT}"
+		NEXT_PORT=$(( $NEXT_PORT + 1 ))
+	done
+else
+	java -cp /opt/bookmartian/bookmartian.jar com.martiansoftware.bookmartian.App -d "${DATA_DIR}/anonymous" &
+fi
+
+startCaddy
+
+touch ${LOG_FILE}
+tail -f ${LOG_FILE}
