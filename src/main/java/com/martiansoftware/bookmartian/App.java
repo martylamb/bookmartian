@@ -72,7 +72,7 @@ public class App {
                                 .setShortFlag('p')
                                 .setLongFlag("port")
                                 .setStringParser(new IntegerStringParser())
-                                .setDefault("4567")
+                                .setDefault("80")
                                 .setRequired(false)
                                 .setHelp("specifies the port on which the webserver should listen")
         );
