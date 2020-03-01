@@ -7,6 +7,7 @@ bookmarks.json
 debug.log
 /.vscode/
 art/~*.*
+/src/vue/node_modules/
 anonymous.bookmartian
 index.1.html
 .classpath
