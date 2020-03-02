@@ -1,8 +1,7 @@
 <template>
   <div class="search">
-    <p>
-      <input type="text" :value="query" v-focus/>
-    </p>
+        <input type="text" :value="query" v-focus class="searchinput"/>
+        <font-awesome-icon :icon="['fas', 'search']" size="lg" flip="horizontal" class="searchicon"/>
   </div>
 </template>
 
@@ -30,25 +29,39 @@ export default {
 <style scoped>
 
 a {
-  color: #42b983;
+  color:white;
 }
 
-input {
+/* component search box (includes input and search icon) */
+.search {
+  background-color: white;
   border: none;
-  border-color:#e5e5e5;
   border-radius: 4px;
   box-shadow: 0 0.3px 0.9px rgba(0, 0, 0, .12), 0 1.6px 3.6px rgba(0, 0, 0, .12);
-  width:50%;
+  width:40%;
+  margin: auto;
+  margin-top: 36px;
+}
+
+.searchinput {
+  border: none;
   height: 34px;
+  width: 90%;
   font-size: large;
   padding-left: 10px;
   padding-right: 10px;
-  display: block;
-  margin: auto;
 }
 
-input:focus{
+.searchinput:focus{
   outline: none;
+}
+
+.searchicon {
+  color: lightgrey;
+}
+
+.searchicon:hover {
+  cursor:pointer;
 }
 
 </style>
