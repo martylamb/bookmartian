@@ -9,12 +9,15 @@
 </template>
 
 <style>
+
+body {
+  background-image: url("https://wallpapertag.com/wallpaper/full/1/1/7/884301-gorgerous-xbox-360-wallpaper-hd-1920x1200-smartphone.jpg");
+}
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-family: Segoe UI, Segoe UI Midlevel, Segoe WP, Arial, Sans-Serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
 }
 
 #nav {
@@ -29,4 +32,5 @@
 #nav a.router-link-exact-active {
   color: #42b983;
 }
+
 </style>
