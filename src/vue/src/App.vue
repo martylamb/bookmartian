@@ -11,7 +11,7 @@
 <style>
 
 body {
-  background-image: url("https://wallpapertag.com/wallpaper/full/1/1/7/884301-gorgerous-xbox-360-wallpaper-hd-1920x1200-smartphone.jpg");
+  background-image: url("http://4.bp.blogspot.com/-2j8EVE2rPfs/UYDPbNbDr3I/AAAAAAAABHQ/0Irk6WfORXw/s1600/BingWallpaper-2013-05-01.jpg");
 }
 
 #app {
