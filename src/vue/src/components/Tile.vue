@@ -1,5 +1,5 @@
 <template>
-  <span class="tile">
+  <span class='tile'>
     {{this.val}}
   </span>
 </template>
@@ -17,12 +17,12 @@ export default {
 
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+<!-- Add 'scoped' attribute to limit CSS to this component only -->
 <style scoped>
 
 .tile {
-  width: 100px;
-  height: 100px;
+  width: 108px;
+  height: 90px;
   margin-top: 24px;
   margin-bottom: 24px;
   margin-left: 8px;

@@ -1,7 +1,7 @@
 <template>
-  <div class="search">
-        <input type="text" :value="query" v-focus class="searchinput"/>
-        <font-awesome-icon :icon="['fas', 'search']" size="lg" flip="horizontal" class="searchicon"/>
+  <div class='search'>
+        <input type='text' :value='query' v-focus class='searchinput'/>
+        <font-awesome-icon :icon="['fas', 'search']" size='lg' flip='horizontal' class='searchicon'/>
   </div>
 </template>
 
@@ -25,7 +25,7 @@ export default {
 
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+<!-- Add 'scoped' attribute to limit CSS to this component only -->
 <style scoped>
 
 a {

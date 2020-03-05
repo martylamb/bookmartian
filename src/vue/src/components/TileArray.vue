@@ -1,5 +1,5 @@
 <template>
-  <div class="tile-array-container">
+  <div class='tile-array-container'>
     <Tile />
     <Tile />
     <Tile />
@@ -25,7 +25,7 @@ export default {
 
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
+<!-- Add 'scoped' attribute to limit CSS to this component only -->
 <style scoped>
 
 .tile-array-container {
