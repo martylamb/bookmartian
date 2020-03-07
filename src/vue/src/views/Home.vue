@@ -6,6 +6,7 @@
       <TabArray :pages='this.config.pages' />
     </div>
     <div class='page-container'>
+      <div class='page'>
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur tortor enim,
         adipiscing in semper a, pellentesque quis sem. Vivamus eu odio at tellus sollicitudin
@@ -61,6 +62,7 @@
         velit in nisi malesuada iaculis vitae bibendum lorem. Donec eu dolor non urna dapibus
         facilisis at in risus.
       </p>
+      </div>
     </div>
   </div>
 </template>
@@ -112,5 +114,10 @@ export default {
   height: 100vh;
   margin: 0px;
   color: black;
+}
+
+.page {
+  margin-left: 60px;
+  margin-right: 60px;
 }
 </style>
