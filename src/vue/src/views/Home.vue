@@ -2,7 +2,7 @@
   <div class='home'>
     <div class='fixed-header' v-bind:style='bannerImageStyle'>
       <SearchBar />
-      <TileArray :query='this.config.pages[this.currentPage].tileQuery' />
+      <TileArray :query='this.config.pages[$route.params.page_index].tileQuery' />
       <TabArray :pages='this.config.pages' />
     </div>
     <div class='page-container'>
@@ -32,14 +32,12 @@ export default {
       // can be config: {} once I remove that hard reference
       config: { pages: [{ tileQuery: '' }], bannerImageUrl: '' },
       // store the currently selected/viewed page
-      currentPage: 0,
       bannerImageStyle: { }
     }
   },
   mounted () {
     // retrieve config file
     this.config = require('../assets/sample-config.json')
-    this.currentPage = this.config.defaultPage
     this.bannerImageStyle = {
       backgroundRepeat: 'no-repeat',
       backgroundImage: 'url(' + this.config.bannerImageUrl + ')',
