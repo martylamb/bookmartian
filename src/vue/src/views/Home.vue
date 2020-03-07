@@ -2,7 +2,7 @@
   <div class='home'>
     <div class='fixed-header'>
       <SearchBar />
-      <TileArray />
+      <TileArray :query='this.config.pages[this.currentPage].tileQuery' />
       <div class='page-tabs'>
         <div class='page-tab'>Home</div>
         <div class='page-tab'>Work</div>
@@ -81,6 +81,20 @@ export default {
   components: {
     SearchBar,
     TileArray
+  },
+  data: function () {
+    return {
+      // init the json config object with an empty [0] because I reference it in the template
+      // can be config: {} once I remove that hard reference
+      config: { pages: [{ tileQuery: '' }] },
+      // store the currently selected/viewed page
+      currentPage: 0
+    }
+  },
+  mounted () {
+    // retrieve config file
+    this.config = require('../assets/sample-config.json')
+    this.currentPage = this.config.defaultPage
   }
 }
 </script>

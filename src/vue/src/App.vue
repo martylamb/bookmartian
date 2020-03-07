@@ -1,15 +1,20 @@
 <template>
   <div id='app'>
-    <router-view/>
+    <router-view />
     <!-- <div id='nav'>
       <router-link to='/'>Home</router-link> |
       <router-link to='/about'>About</router-link>
-    </div> -->
+    </div>-->
   </div>
 </template>
 
-<style>
+<script>
+export default {
+  name: 'App'
+}
+</script>
 
+<style>
 body {
   margin: 0px;
 }
@@ -19,5 +24,4 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-
 </style>

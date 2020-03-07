@@ -18,6 +18,7 @@ export default {
     Tile
   },
   props: {
+    query: String
   },
   directives: {
   }

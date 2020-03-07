@@ -1,0 +1,47 @@
+{
+    "defaultPage": 0,
+    "pages": [
+        {
+            "name": "Home",
+            "tileQuery": "tiles",
+            "queries": [
+                {
+                    "name": "new",
+                    "query": "created-since:1w"
+                },
+                {
+                    "name": "recent",
+                    "query": "visited-since:1w"
+                }
+            ]
+        },
+        {
+            "name": "Work",
+            "tileQuery": "tiles-work",
+            "queries": [
+                {
+                    "name": "active",
+                    "query": "active"
+                },
+                {
+                    "name": "reports",
+                    "query": "work reports internal"
+                }
+            ]
+        },
+        {
+            "name": "D&amp;D",
+            "tileQuery": "tiles-dnd",
+            "queries": [
+                {
+                    "name": "reference",
+                    "query": "reference dnd"
+                },
+                {
+                    "name": "randomtables",
+                    "query": "randomtables dnd"
+                }
+            ]
+        }
+    ]
+}
