@@ -3,7 +3,7 @@
     "pages": [
         {
             "name": "Home",
-            "tileQuery": "tiles",
+            "tileQuery": "promote",
             "queries": [
                 {
                     "name": "new",

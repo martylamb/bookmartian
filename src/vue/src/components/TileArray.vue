@@ -1,10 +1,6 @@
 <template>
   <div class='tile-array-container'>
-    <Tile />
-    <Tile />
-    <Tile />
-    <Tile />
-    <Tile />
+    <Tile v-for='(tile) in this.tiles.bookmarks' v-bind:key='tile.name' />
   </div>
 </template>
 
@@ -17,10 +13,42 @@ export default {
   components: {
     Tile
   },
+  data: function () {
+    return {
+      tiles: {}
+    }
+  },
   props: {
     query: String
   },
+  watch: {
+    query: function (newVal, oldVal) {
+      this.getTiles(newVal)
+    }
+  },
   directives: {
+  },
+  methods: {
+    getTiles: function (query) {
+      const axios = require('axios')
+      axios
+        .get('http://localhost:4567/api/bookmarks?q=' + query, {
+          headers: {
+          }
+        })
+        .then(response => {
+          // handle success
+          this.tiles = response.data.data
+          console.log('Retreived ' + this.tiles.bookmarks.length + ' bookmark tiles')
+        })
+        .catch(error => {
+          // handle error
+          console.log(error)
+        })
+        .finally(function () {
+          // always executed
+        })
+    }
   }
 }
 
@@ -34,6 +62,7 @@ export default {
   margin: 0 auto;
   display: flex;
   justify-content: center;
+  min-height: 12px;
 }
 
 </style>

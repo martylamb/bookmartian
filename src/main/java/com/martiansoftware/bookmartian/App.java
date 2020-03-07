@@ -158,6 +158,7 @@ public class App {
     
     private static BoomResponse query(Bookmartian bm) {
         try {
+            corsHeaders();
             return JSend.success(Query.of(q("q")).execute(bm));
         } catch (Exception e) {
             return JSend.error(e);
@@ -179,7 +180,7 @@ public class App {
         String acrh = request().headers("Access-Control-Request-Headers");
         if (acrh != null) response().header("Access-Control-Allow-Headers", acrh);
         String acrm = request().headers("Access-Control-Request-Method");
-        if (acrm != null) response().header("Access-Control-Allow-Methods", "POST");
+        if (acrm != null) response().header("Access-Control-Allow-Methods", "GET, POST");
         String origin = request().headers("Origin");
         response().header("Access-Control-Allow-Origin", origin == null ? "*" : origin);
     }

@@ -2,12 +2,12 @@
   <div class='home'>
     <div class='fixed-header' v-bind:style='bannerImageStyle'>
       <SearchBar />
-      <TileArray query="$route.params.page_index?this.config.pages[$route.params.page_index].tileQuery:''" />
+      <TileArray :query="this.config.pages[$route.params.page_index]?this.config.pages[$route.params.page_index].tileQuery:''"/>
       <TabArray :pages='this.config.pages' />
     </div>
     <div class='page-container'>
       <div class='page'>
-        <router-view :pageConfig='this.config.pages[$route.params.page_index]'/>
+        <router-view :pageConfig='this.config.pages[$route.params.page_index]?this.config.pages[$route.params.page_index]:{}'/>
       </div>
     </div>
   </div>
