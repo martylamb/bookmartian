@@ -1,7 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
-// import Settings from '../views/Settings.vue'
 import Page from '../views/Page.vue'
 
 Vue.use(VueRouter)
@@ -18,13 +17,15 @@ const routes = [
       },
       {
         path: '/Page/:page_index',
-        component: Page
+        component: Page,
+        props: true
       }
     ]
   }
 ]
 
 const router = new VueRouter({
+  mode: 'history',
   routes
 })
 

@@ -7,7 +7,7 @@
     </div>
     <div class='page-container'>
       <div class='page'>
-        <router-view />
+        <router-view :pageConfig='this.config.pages[$route.params.page_index]'/>
       </div>
     </div>
   </div>

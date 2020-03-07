@@ -1,7 +1,7 @@
 <template>
   <div class='page-tabs'>
     <div v-for='(page, index) in this.pages' v-bind:key='page.name' class='page-tab'>
-      <router-link v-bind:to="'/Page/' + index">{{page.name}}</router-link>
+      <router-link v-bind:to="'/Page/' + index">{{ page.name }}</router-link>
     </div>
     <!-- <div class='page-tab settings'>tags</div> -->
     <div class='page-tab settings'>
