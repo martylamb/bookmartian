@@ -1,6 +1,6 @@
 <template>
   <div class='home'>
-    <div class='fixed-header'>
+    <div class='fixed-header' v-bind:style='bannerImageStyle'>
       <SearchBar />
       <TileArray :query='this.config.pages[this.currentPage].tileQuery' />
       <TabArray :pages='this.config.pages' />
@@ -84,15 +84,22 @@ export default {
     return {
       // init the json config object with an empty [0] because I reference it in the template
       // can be config: {} once I remove that hard reference
-      config: { pages: [{ tileQuery: '' }] },
+      config: { pages: [{ tileQuery: '' }], bannerImageUrl: '' },
       // store the currently selected/viewed page
-      currentPage: 0
+      currentPage: 0,
+      bannerImageStyle: { }
     }
   },
   mounted () {
     // retrieve config file
     this.config = require('../assets/sample-config.json')
     this.currentPage = this.config.defaultPage
+    this.bannerImageStyle = {
+      backgroundRepeat: 'no-repeat',
+      backgroundImage: 'url(' + this.config.bannerImageUrl + ')',
+      backgroundAttachment: 'fixed',
+      backgroundColor: 'black'
+    }
   }
 }
 </script>
@@ -100,9 +107,6 @@ export default {
 <!-- Add 'scoped' attribute to limit CSS to this component only -->
 <style scoped>
 .fixed-header {
-  background: no-repeat
-    url('http://4.bp.blogspot.com/-2j8EVE2rPfs/UYDPbNbDr3I/AAAAAAAABHQ/0Irk6WfORXw/s1600/BingWallpaper-2013-05-01.jpg')
-    fixed;
   position: fixed;
   width: 100%;
 }
