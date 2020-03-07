@@ -3,13 +3,7 @@
     <div class='fixed-header'>
       <SearchBar />
       <TileArray :query='this.config.pages[this.currentPage].tileQuery' />
-      <div class='page-tabs'>
-        <div class='page-tab'>Home</div>
-        <div class='page-tab'>Work</div>
-        <div class='page-tab'>D&amp;D</div>
-        <!-- <div class='page-tab settings'>tags</div> -->
-        <div class='page-tab settings'>bookmartian</div>
-      </div>
+      <TabArray :pages='this.config.pages' />
     </div>
     <div class='page-container'>
       <p>
@@ -75,12 +69,14 @@
 // @ is an alias to /src
 import SearchBar from '@/components/SearchBar.vue'
 import TileArray from '@/components/TileArray.vue'
+import TabArray from '@/components/TabArray.vue'
 
 export default {
   name: 'Home',
   components: {
     SearchBar,
-    TileArray
+    TileArray,
+    TabArray
   },
   data: function () {
     return {
@@ -107,31 +103,6 @@ export default {
     fixed;
   position: fixed;
   width: 100%;
-}
-
-.page-tabs {
-  padding: 1px;
-  background-color: #f7f7f7;
-  width: 100%;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 600;
-  display: flex;
-  justify-content: center;
-}
-
-.page-tab {
-  cursor: pointer;
-  padding: 12px 24px 12px 24px;
-  height: 100%;
-}
-
-.page-tab:hover {
-  background-color: #eeeeee;
-}
-
-.settings {
-  color: grey;
 }
 
 .page-container {

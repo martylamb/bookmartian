@@ -30,7 +30,7 @@
             ]
         },
         {
-            "name": "D&amp;D",
+            "name": "D&D",
             "tileQuery": "tiles-dnd",
             "queries": [
                 {
