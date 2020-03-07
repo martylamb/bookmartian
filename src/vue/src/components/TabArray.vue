@@ -2,7 +2,9 @@
   <div class='page-tabs'>
     <div v-for='page in this.pages' v-bind:key='page.name' class='page-tab'>{{page.name}}</div>
     <!-- <div class='page-tab settings'>tags</div> -->
-    <div class='page-tab settings'>bookmartian</div>
+    <div class='page-tab settings'>
+      <router-link to="/Bookmartian">bookmartian</router-link>
+    </div>
   </div>
 </template>
 
@@ -46,6 +48,16 @@ export default {
 
 .page-tab:hover {
   background-color: #eeeeee;
+}
+
+a:link {
+  text-decoration: none;
+  color: inherit;
+}
+
+a:visited {
+  text-decoration: none;
+  color: inherit;
 }
 
 .settings {
