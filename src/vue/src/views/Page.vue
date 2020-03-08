@@ -1,11 +1,11 @@
 <template>
   <div class='page'>
     <!-- <h1>This is a dashboard page for {{ pageConfig.name }}</h1> -->
-    <div class='queries'>
+    <masonry :cols="{default: 3, 1000: 2, 700: 1}" :gutter="{default: '30px', 700: '15px'}">
       <Query v-for='(query) in this.pageConfig.queries' v-bind:key='query.name'
         :name='query.name'
         :query='query.query'/>
-    </div>
+    </masonry>
   </div>
 </template>
 
@@ -29,15 +29,5 @@ export default {
 
 <!-- Add 'scoped' attribute to limit CSS to this component only -->
 <style scoped>
-
-.queries {
-  display: grid;
-  grid-auto-flow: dense;
-  grid-gap: 1em;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, fit-content);
-  margin: 0 auto;
-  max-width: 1200px;
-}
 
 </style>
