@@ -1,5 +1,5 @@
 <template>
-  <div class="about">
+  <div class="page">
     <h1>This is a dashboard page for {{ pageConfig.name }}</h1>
   </div>
 </template>
