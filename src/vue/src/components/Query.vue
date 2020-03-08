@@ -2,7 +2,11 @@
   <div class='query'>
     <div class='name'>{{ this.name }}</div>
     <div class='querytext'>{{ this.query }}</div>
-    <div class='bookmark' v-for='(bookmark) in this.bookmarks' v-bind:key='bookmark.url'>{{bookmark.title}}</div>
+    <div class='bookmark' v-for='(bookmark) in this.bookmarks' v-bind:key='bookmark.url'>
+      <div class='title'>
+        <a :href="'http://localhost:4567/api/visit?url=' + bookmark.url">{{bookmark.title}}</a>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -70,6 +74,10 @@ export default {
   text-align: left;
 }
 
+.title {
+  width: 85%;
+}
+
 .querytext {
   font-weight: lighter;
   font-size: smaller;
@@ -80,6 +88,15 @@ export default {
 .bookmark {
   border-top: 1px solid lightgrey;
   margin-bottom: 4px;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 </style>
