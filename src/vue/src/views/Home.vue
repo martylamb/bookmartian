@@ -35,15 +35,30 @@ export default {
       bannerImageStyle: { }
     }
   },
+  methods: {
+    updateBackground: function (url) {
+      this.bannerImageStyle = {
+        backgroundRepeat: 'no-repeat',
+        backgroundImage: 'url(' + url + ')',
+        backgroundAttachment: 'fixed',
+        backgroundColor: 'black',
+        backgroundSize: 'cover'
+      }
+    }
+  },
+  watch: {
+    '$route.params.page_index': function (newVal, oldVal) {
+      if (newVal && this.config.pages[newVal].bannerImageUrl) {
+        this.updateBackground(this.config.pages[newVal].bannerImageUrl)
+      } else {
+        this.updateBackground(this.config.bannerImageUrl)
+      }
+    }
+  },
   mounted () {
     // retrieve config file
     this.config = require('../assets/sample-config.json')
-    this.bannerImageStyle = {
-      backgroundRepeat: 'no-repeat',
-      backgroundImage: 'url(' + this.config.bannerImageUrl + ')',
-      backgroundAttachment: 'fixed',
-      backgroundColor: 'black'
-    }
+    this.updateBackground(this.config.bannerImageUrl)
   }
 }
 </script>

@@ -1,6 +1,6 @@
 <template>
   <div class='tile-array-container'>
-    <Tile v-for='(tile) in this.tiles.bookmarks' v-bind:key='tile.title'
+    <Tile v-for='(tile) in this.tiles.bookmarks' v-bind:key='tile.url'
           :title='tile.title'
           :url='tile.url'
           :image-url='tile.imageUrl'/>
@@ -33,24 +33,26 @@ export default {
   },
   methods: {
     getTiles: function (query) {
-      const axios = require('axios')
-      axios
-        .get('http://localhost:4567/api/bookmarks?q=' + query, {
-          headers: {
-          }
-        })
-        .then(response => {
-          // handle success
-          this.tiles = response.data.data
-          console.log('Retreived ' + this.tiles.bookmarks.length + ' bookmark tiles')
-        })
-        .catch(error => {
-          // handle error
-          console.log(error)
-        })
-        .finally(function () {
-          // always executed
-        })
+      if (query) {
+        const axios = require('axios')
+        axios
+          .get('http://localhost:4567/api/bookmarks?q=' + query, {
+            headers: {
+            }
+          })
+          .then(response => {
+            // handle success
+            this.tiles = response.data.data
+            console.log('Retreived ' + this.tiles.bookmarks.length + ' bookmark tiles')
+          })
+          .catch(error => {
+            // handle error
+            console.log(error)
+          })
+          .finally(function () {
+            // always executed
+          })
+      }
     }
   }
 }

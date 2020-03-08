@@ -17,6 +17,7 @@
         },
         {
             "name": "Work",
+            "bannerImageUrl": "https://images8.alphacoders.com/437/thumb-1920-437931.jpg",
             "tileQuery": "tiles-work",
             "queries": [
                 {
@@ -31,6 +32,7 @@
         },
         {
             "name": "D&D",
+            "bannerImageUrl": "http://getwallpapers.com/wallpaper/full/5/1/4/157682.jpg",
             "tileQuery": "promote-dnd",
             "queries": [
                 {
