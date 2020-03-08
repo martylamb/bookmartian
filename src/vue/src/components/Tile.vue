@@ -1,6 +1,8 @@
 <template>
   <span class='tile'>
-    {{this.val}}
+    <a :href="'http://localhost:4567/api/visit?url=' + this.url">
+      <img :src='this.imageUrl' class='tileImage'/>
+    </a>
   </span>
 </template>
 
@@ -9,7 +11,9 @@
 export default {
   name: 'Tile',
   props: {
-    val: String
+    title: String,
+    url: String,
+    imageUrl: String
   },
   directives: {
   }
@@ -31,6 +35,12 @@ export default {
   background-color: grey;
   border-radius: 12px;
   box-shadow: 0 0.3px 0.9px rgba(0, 0, 0, .12), 0 1.6px 3.6px rgba(0, 0, 0, .12);
+}
+
+.tileImage {
+  width: 100%;
+  height: 100%;
+  border-radius: 12px;
 }
 
 </style>

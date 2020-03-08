@@ -1,6 +1,9 @@
 <template>
   <div class='tile-array-container'>
-    <Tile v-for='(tile) in this.tiles.bookmarks' v-bind:key='tile.name' />
+    <Tile v-for='(tile) in this.tiles.bookmarks' v-bind:key='tile.title'
+          :title='tile.title'
+          :url='tile.url'
+          :image-url='tile.imageUrl'/>
   </div>
 </template>
 
