@@ -12,6 +12,14 @@
                 {
                     "name": "recent",
                     "query": "visited-since:1w"
+                },
+                {
+                    "name": "coding",
+                    "query": "code tools"
+                },
+                {
+                    "name": "supplies",
+                    "query": "3d-printing filament"
                 }
             ]
         },
