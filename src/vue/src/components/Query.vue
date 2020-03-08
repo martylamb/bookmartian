@@ -3,9 +3,8 @@
     <div class='name'>{{ this.name }}</div>
     <div class='querytext'>{{ this.query }}</div>
     <div class='bookmark' v-for='(bookmark) in this.bookmarks' v-bind:key='bookmark.url'>
-      <div class='title'>
-        <a :href="'http://localhost:4567/api/visit?url=' + bookmark.url">{{bookmark.title}}</a>
-      </div>
+      <a :href="'http://localhost:4567/api/visit?url=' + bookmark.url">{{bookmark.title}}</a>
+      <font-awesome-icon :icon="['fas', 'angle-right']" size='sm' transform='down-6' class='editicon'/>
     </div>
   </div>
 </template>
@@ -64,9 +63,7 @@ export default {
   background: #fff;
   border: 1px solid lightgrey;
   padding: 6px;
-  padding-left: 10px;
-  width: 100%;
-  margin-bottom: 12px;
+  margin-bottom: 18px;
 }
 
 .name {
@@ -74,8 +71,10 @@ export default {
   text-align: left;
 }
 
-.title {
-  width: 85%;
+.editicon {
+  float: right;
+  color: lightgrey;
+  cursor: pointer;
 }
 
 .querytext {

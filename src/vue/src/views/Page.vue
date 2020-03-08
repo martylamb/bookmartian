@@ -1,7 +1,7 @@
 <template>
   <div class='page'>
     <!-- <h1>This is a dashboard page for {{ pageConfig.name }}</h1> -->
-    <masonry :cols="{default: 3, 1000: 2, 700: 1}" :gutter="{default: '30px', 700: '15px'}">
+    <masonry :cols="{default: 3, 1000: 2, 700: 1}" :gutter="{default: '16px', 700: '8px'}" id='masonry'>
       <Query v-for='(query) in this.pageConfig.queries' v-bind:key='query.name'
         :name='query.name'
         :query='query.query'/>
