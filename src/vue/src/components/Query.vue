@@ -1,8 +1,14 @@
 <template>
   <div class='query'>
-    <div class='name'>{{ this.name }}</div>
-    <span class='querytext'>{{ this.query }}</span><font-awesome-icon :icon="['fas', 'ellipsis-h']" size='sm' transform='down-6' class='editicon'/>
-    <div class='querytext'></div>
+    <span class='name'>{{ this.name }}</span>
+    <b-dropdown aria-role='list' position='is-bottom-left' class='querymenu'>
+      <font-awesome-icon :icon="['fas', 'ellipsis-h']" size='sm' class='editicon' slot='trigger' role='button'/>
+      <b-dropdown-item aria-role='listitem'>Sort by title</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem'>Sort by date created</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem'>Sort by date visited</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem'>Open query as new search</b-dropdown-item>
+    </b-dropdown>
+    <div class='querytext'>{{ this.query }}</div>
     <div class='bookmark' v-for='(bookmark) in this.bookmarks' v-bind:key='bookmark.url'>
       <a :href="'http://localhost:4567/api/visit?url=' + bookmark.url">{{bookmark.title}}</a>
       <font-awesome-icon :icon="['fas', 'angle-right']" size='sm' transform='down-6 left-4' class='editicon'/>
@@ -72,6 +78,10 @@ export default {
   text-align: left;
 }
 
+.querymenu {
+  float: right;
+}
+
 .editicon {
   float: right;
   color: lightgrey;
@@ -95,7 +105,7 @@ a {
   color: inherit;
 }
 
-a:hover {
+.bookmark a:hover {
   text-decoration: underline;
 }
 

@@ -5,8 +5,11 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { faSearch, faAngleRight, faEllipsisH } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import VueMasonry from 'vue-masonry-css'
+import { Dropdown } from 'buefy'
+import 'buefy/dist/buefy.css'
 
 Vue.use(VueMasonry)
+Vue.use(Dropdown)
 
 library.add(faSearch, faAngleRight, faEllipsisH)
 
