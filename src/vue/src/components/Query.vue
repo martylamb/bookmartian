@@ -3,9 +3,9 @@
     <span class='name'>{{ this.name }}</span>
     <b-dropdown aria-role='list' position='is-bottom-left' class='querymenu'>
       <font-awesome-icon :icon="['fas', 'ellipsis-h']" size='sm' class='editicon' slot='trigger' role='button'/>
-      <b-dropdown-item aria-role='listitem' v-on:click='sortByTitle()' v-bind:class='{activeSort: isTitleSorted}'>Sort by title</b-dropdown-item>
-      <b-dropdown-item aria-role='listitem' v-on:click='sortByCreated()' v-bind:class='{activeSort: isCreatedSorted}'>Sort by date created</b-dropdown-item>
-      <b-dropdown-item aria-role='listitem' v-on:click='sortByVisited()' v-bind:class='{activeSort: isVisitedSorted}'>Sort by last visit</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem' v-on:click='sortByTitle()' v-bind:class='{activeSort: isTitleSorted}'>{{this.TitleSortedLabel}}</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem' v-on:click='sortByCreated()' v-bind:class='{activeSort: isCreatedSorted}'>{{this.CreateSortedLabel}}</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem' v-on:click='sortByVisited()' v-bind:class='{activeSort: isVisitedSorted}'>{{this.VisitSortedLabel}}</b-dropdown-item>
       <b-dropdown-item aria-role='listitem'></b-dropdown-item>
       <b-dropdown-item aria-role='listitem'>Open query as new search</b-dropdown-item>
     </b-dropdown>
@@ -35,6 +35,29 @@ export default {
     query: String
   },
   directives: {
+  },
+  computed: {
+    TitleSortedLabel: function () {
+      var menuLabel = 'Sort by title'
+      if (this.isTitleSorted) {
+        menuLabel += ' (' + this.isTitleSorted + ')'
+      }
+      return menuLabel
+    },
+    CreateSortedLabel: function () {
+      var menuLabel = 'Sort by date created'
+      if (this.isCreatedSorted) {
+        menuLabel += ' (' + this.isCreatedSorted + ')'
+      }
+      return menuLabel
+    },
+    VisitSortedLabel: function () {
+      var menuLabel = 'Sort by date visited'
+      if (this.isVisitedSorted) {
+        menuLabel += ' (' + this.isVisitedSorted + ')'
+      }
+      return menuLabel
+    }
   },
   methods: {
     getBookmarks: function (query) {
