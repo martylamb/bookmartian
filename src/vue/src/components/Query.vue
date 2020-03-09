@@ -1,10 +1,11 @@
 <template>
   <div class='query'>
     <div class='name'>{{ this.name }}</div>
-    <div class='querytext'>{{ this.query }}</div>
+    <span class='querytext'>{{ this.query }}</span><font-awesome-icon :icon="['fas', 'ellipsis-h']" size='sm' transform='down-6' class='editicon'/>
+    <div class='querytext'></div>
     <div class='bookmark' v-for='(bookmark) in this.bookmarks' v-bind:key='bookmark.url'>
       <a :href="'http://localhost:4567/api/visit?url=' + bookmark.url">{{bookmark.title}}</a>
-      <font-awesome-icon :icon="['fas', 'angle-right']" size='sm' transform='down-6' class='editicon'/>
+      <font-awesome-icon :icon="['fas', 'angle-right']" size='sm' transform='down-6 left-4' class='editicon'/>
     </div>
   </div>
 </template>
