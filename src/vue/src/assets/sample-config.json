@@ -15,11 +15,11 @@
                 },
                 {
                     "name": "coding",
-                    "query": "code tools"
+                    "query": "code tools by:most-recently-created"
                 },
                 {
                     "name": "supplies",
-                    "query": "3d-printing filament"
+                    "query": "3d-printing filament as:prints by:most-recently-visited"
                 }
             ]
         },

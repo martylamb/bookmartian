@@ -3,9 +3,10 @@
     <span class='name'>{{ this.name }}</span>
     <b-dropdown aria-role='list' position='is-bottom-left' class='querymenu'>
       <font-awesome-icon :icon="['fas', 'ellipsis-h']" size='sm' class='editicon' slot='trigger' role='button'/>
-      <b-dropdown-item aria-role='listitem' v-on:click='sortByTitle()'>Sort by title</b-dropdown-item>
-      <b-dropdown-item aria-role='listitem' v-on:click='sortByCreated()'>Sort by date created</b-dropdown-item>
-      <b-dropdown-item aria-role='listitem' v-on:click='sortByVisited()'>Sort by last visit</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem' v-on:click='sortByTitle()' v-bind:class='{activeSort: isTitleSorted}'>Sort by title</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem' v-on:click='sortByCreated()' v-bind:class='{activeSort: isCreatedSorted}'>Sort by date created</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem' v-on:click='sortByVisited()' v-bind:class='{activeSort: isVisitedSorted}'>Sort by last visit</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem'></b-dropdown-item>
       <b-dropdown-item aria-role='listitem'>Open query as new search</b-dropdown-item>
     </b-dropdown>
     <div class='querytext'>{{ this.query }}</div>
@@ -23,9 +24,10 @@ export default {
   data: function () {
     return {
       bookmarks: {},
-      isTitleSorted: true,
-      isCreatedSorted: false,
-      isVisitedSorted: false
+      sort: String,
+      isTitleSorted: '',
+      isCreatedSorted: '',
+      isVisitedSorted: ''
     }
   },
   props: {
@@ -46,6 +48,27 @@ export default {
           .then(response => {
             // handle success
             this.bookmarks = response.data.data.bookmarks
+            this.sort = response.data.data.sort
+            switch (this.sort) {
+              case 'by:title':
+                this.isTitleSorted = 'asc'
+                break
+              case 'by:most-recently-created':
+                this.isCreatedSorted = 'desc'
+                break
+              case 'by:most-recently-visited':
+                this.isVisitedSorted = 'desc'
+                break
+              case 'by:least-recently-created':
+                this.isCreatedSorted = 'asc'
+                break
+              case 'by:least-recently-visited':
+                this.isVisitedSorted = 'asc'
+                break
+
+              default:
+                break
+            }
             console.log('Retreived ' + this.bookmarks.length + ' bookmarks')
           })
           .catch(error => {
@@ -58,8 +81,9 @@ export default {
       }
     },
     sortByTitle: function () {
-      if (this.isTitleSorted) {
+      if (this.isTitleSorted === 'asc') {
         this.bookmarks.reverse()
+        this.isTitleSorted = 'desc'
       } else {
         this.bookmarks.sort(function (a, b) {
           a = a.title.toLowerCase()
@@ -67,40 +91,52 @@ export default {
           return a > b ? 1 : b > a ? -1 : 0
         }
         )
+        this.isTitleSorted = 'asc'
       }
-      this.isTitleSorted = !this.isTitleSorted
-      this.isCreatedSorted = false
-      this.isVisitedSorted = false
+      this.isCreatedSorted = ''
+      this.isVisitedSorted = ''
     },
     sortByCreated: function () {
-      if (this.isCreatedSorted) {
+      if (this.isCreatedSorted === 'desc') {
         this.bookmarks.reverse()
+        this.isCreatedSorted = 'asc'
       } else {
-        this.bookmarks.sort(function (a, b) {
+        this.bookmarks.sort(function (b, a) {
           a = a.created.toLowerCase()
           b = b.created.toLowerCase()
           return a > b ? 1 : b > a ? -1 : 0
         }
         )
+        this.isCreatedSorted = 'desc'
       }
-      this.isCreatedSorted = !this.isCreatedSorted
-      this.isTitleSorted = false
-      this.isVisitedSorted = false
+      this.isTitleSorted = ''
+      this.isVisitedSorted = ''
     },
     sortByVisited: function () {
-      if (this.isVisitedSorted) {
+      if (this.isVisitedSorted === 'desc') {
         this.bookmarks.reverse()
+        this.isVisitedSorted = 'asc'
       } else {
-        this.bookmarks.sort(function (a, b) {
-          a = a.lastVisited.toLowerCase()
-          b = b.lastVisited.toLowerCase()
+        this.bookmarks.sort(function (b, a) {
+          if (a.lastVisited) {
+            a = a.lastVisited.toLowerCase()
+          } else {
+            a = ''
+          }
+
+          if (b.lastVisited) {
+            b = b.lastVisited.toLowerCase()
+          } else {
+            b = ''
+          }
+
           return a > b ? 1 : b > a ? -1 : 0
         }
         )
       }
-      this.isVisitedSorted = !this.isVisitedSorted
-      this.isTitleSorted = false
-      this.isCreatedSorted = false
+      this.isVisitedSorted = 'desc'
+      this.isTitleSorted = ''
+      this.isCreatedSorted = ''
     }
   },
   mounted () {
@@ -128,6 +164,10 @@ export default {
 
 .querymenu {
   float: right;
+}
+
+.activeSort {
+  font-weight: bold;
 }
 
 .editicon {
