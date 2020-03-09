@@ -12,9 +12,10 @@
     <div class='querytext'>{{ this.query }}</div>
     <div class='bookmark' v-for='(bookmark) in this.bookmarks' v-bind:key='bookmark.url'>
       <a :href="'http://localhost:4567/api/visit?url=' + bookmark.url">{{bookmark.title}}</a>
-      <font-awesome-icon :icon="['fas', 'angle-right']" size='sm' transform='down-6 left-4' class='editicon'/>
+      <font-awesome-icon :icon="['fas', 'angle-right']" size='sm' transform='down-6 left-4' class='editicon' v-on:click="$emit('edit-bookmark', bookmark)"/>
     </div>
   </div>
+
 </template>
 
 <script>

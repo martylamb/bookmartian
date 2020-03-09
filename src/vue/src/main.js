@@ -7,9 +7,11 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import VueMasonry from 'vue-masonry-css'
 import { Dropdown } from 'buefy'
 import 'buefy/dist/buefy.css'
+import VModal from 'vue-js-modal'
 
 Vue.use(VueMasonry)
 Vue.use(Dropdown)
+Vue.use(VModal)
 
 library.add(faSearch, faAngleRight, faEllipsisH)
 
