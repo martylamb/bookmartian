@@ -3,9 +3,9 @@
     <span class='name'>{{ this.name }}</span>
     <b-dropdown aria-role='list' position='is-bottom-left' class='querymenu'>
       <font-awesome-icon :icon="['fas', 'ellipsis-h']" size='sm' class='editicon' slot='trigger' role='button'/>
-      <b-dropdown-item aria-role='listitem'>Sort by title</b-dropdown-item>
-      <b-dropdown-item aria-role='listitem'>Sort by date created</b-dropdown-item>
-      <b-dropdown-item aria-role='listitem'>Sort by date visited</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem' v-on:click='sortByTitle()'>Sort by title</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem' v-on:click='sortByCreated()'>Sort by date created</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem' v-on:click='sortByVisited()'>Sort by last visit</b-dropdown-item>
       <b-dropdown-item aria-role='listitem'>Open query as new search</b-dropdown-item>
     </b-dropdown>
     <div class='querytext'>{{ this.query }}</div>
@@ -22,7 +22,10 @@ export default {
   name: 'Query',
   data: function () {
     return {
-      bookmarks: {}
+      bookmarks: {},
+      isTitleSorted: true,
+      isCreatedSorted: false,
+      isVisitedSorted: false
     }
   },
   props: {
@@ -53,6 +56,51 @@ export default {
             // always executed
           })
       }
+    },
+    sortByTitle: function () {
+      if (this.isTitleSorted) {
+        this.bookmarks.reverse()
+      } else {
+        this.bookmarks.sort(function (a, b) {
+          a = a.title.toLowerCase()
+          b = b.title.toLowerCase()
+          return a > b ? 1 : b > a ? -1 : 0
+        }
+        )
+      }
+      this.isTitleSorted = !this.isTitleSorted
+      this.isCreatedSorted = false
+      this.isVisitedSorted = false
+    },
+    sortByCreated: function () {
+      if (this.isCreatedSorted) {
+        this.bookmarks.reverse()
+      } else {
+        this.bookmarks.sort(function (a, b) {
+          a = a.created.toLowerCase()
+          b = b.created.toLowerCase()
+          return a > b ? 1 : b > a ? -1 : 0
+        }
+        )
+      }
+      this.isCreatedSorted = !this.isCreatedSorted
+      this.isTitleSorted = false
+      this.isVisitedSorted = false
+    },
+    sortByVisited: function () {
+      if (this.isVisitedSorted) {
+        this.bookmarks.reverse()
+      } else {
+        this.bookmarks.sort(function (a, b) {
+          a = a.lastVisited.toLowerCase()
+          b = b.lastVisited.toLowerCase()
+          return a > b ? 1 : b > a ? -1 : 0
+        }
+        )
+      }
+      this.isVisitedSorted = !this.isVisitedSorted
+      this.isTitleSorted = false
+      this.isCreatedSorted = false
     }
   },
   mounted () {
