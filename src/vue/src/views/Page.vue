@@ -7,13 +7,18 @@
         :query='query.query'
         v-on:edit-bookmark='ShowBookmarkModal($event)'/>
     </masonry>
-    <modal name="BookmarkModal" class='bookmark-modal'>
+    <modal name="BookmarkModal" class='bookmark-modal' :height='320'>
       <div class='bookmark-modal-box'>
         <input type='text' :value='this.selectedBookmark.title' placeholder='bookmark title' class='bookmark-model-title'/>
         <input type='text' :value='this.selectedBookmark.url' placeholder='bookmark url'/>
         <input type='text' :value='this.selectedBookmark.imageUrl' placeholder='url used for tile image (optional)'/>
         <input type='text' :value='this.selectedBookmark.notes' placeholder='other notes'/>
         <input type='text' :value='this.selectedBookmark.tags' placeholder='tag list'/>
+        <div class='bookmark-modal-statistics'>
+          <span >created on {{SimplifyDate(this.selectedBookmark.created)}} | </span>
+          <span >modified on {{SimplifyDate(this.selectedBookmark.modified)}} | </span>
+          <span >visit #{{this.selectedBookmark.visitCount}} on {{SimplifyDate(this.selectedBookmark.lastVisited)}}</span>
+        </div>
         <div class='bookmark-modal-button-box'>
           <button v-on:click='DeleteBookmark'>Delete Bookmark</button>
           <button v-on:click="HideBookmarkModal">Cancel</button>
@@ -59,6 +64,11 @@ export default {
     HideBookmarkModal: function (event) {
       this.selectedBookmark = {}
       this.$modal.hide('BookmarkModal')
+    },
+    SimplifyDate: function (datestring) {
+      if (datestring) {
+        return datestring.substring(0, 10)
+      }
     }
   }
 }
@@ -69,12 +79,13 @@ export default {
 <style scoped>
 
   .bookmark-modal {
+
   }
 
   .bookmark-modal-button-box {
     width: 100%;
     text-align: center;
-    margin-top: 32px;
+    margin-top: 26px;
   }
 
   .bookmark-modal-box {
@@ -100,6 +111,14 @@ export default {
     font-size: 16px;
   }
 
+  .bookmark-modal-statistics {
+    font-size: 10px;
+    color: lightgrey;
+    width: 100%;
+    margin-top: 8px;
+    text-align: right;
+  }
+
   .bookmark-modal button {
       background: white;
       border-radius: 4px;
@@ -123,7 +142,7 @@ export default {
 
   .bookmark-modal button:hover {
     border-color: darkgrey;
-    background-color: grey;
+    background-color: lightblue;
     color: white;
   }
 
