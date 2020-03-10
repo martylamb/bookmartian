@@ -15,7 +15,9 @@
         <input type='text' :value='this.selectedBookmark.notes' placeholder='other notes'/>
         <input type='text' :value='this.selectedBookmark.tags' placeholder='tag list'/>
         <div class='bookmark-modal-button-box'>
-          <button>Delete Bookmark</button><button>Cancel</button><button>Save Changes</button>
+          <button v-on:click='DeleteBookmark'>Delete Bookmark</button>
+          <button v-on:click="HideBookmarkModal">Cancel</button>
+          <button v-on:click='SaveBookmark'>Save Changes</button>
         </div>
       </div>
     </modal>
@@ -45,6 +47,18 @@ export default {
     ShowBookmarkModal: function (bookmark) {
       this.selectedBookmark = bookmark
       this.$modal.show('BookmarkModal')
+    },
+    DeleteBookmark: function (event) {
+      this.selectedBookmark = {}
+      this.$modal.hide('BookmarkModal')
+    },
+    SaveBookmark: function (event) {
+      this.selectedBookmark = {}
+      this.$modal.hide('BookmarkModal')
+    },
+    HideBookmarkModal: function (event) {
+      this.selectedBookmark = {}
+      this.$modal.hide('BookmarkModal')
     }
   }
 }
