@@ -3,7 +3,9 @@
     <div v-for='(page, index) in this.pages' v-bind:key='page.name' class='page-tab'>
       <router-link v-bind:to="'/Page/' + index">{{ page.name }}</router-link>
     </div>
-    <!-- <div class='page-tab settings'>tags</div> -->
+    <div class='page-tab settings'>
+      <router-link to="/Search">tag search</router-link>
+    </div>
     <div class='page-tab settings'>
       <router-link to="/Settings">bookmartian</router-link>
     </div>
@@ -63,7 +65,7 @@ a:visited {
 }
 
 .settings {
-  color: grey;
+  color: #b3b3b3;
 }
 
 </style>
