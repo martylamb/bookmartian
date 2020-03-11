@@ -93,7 +93,7 @@ export default {
               default:
                 break
             }
-            console.log('Retreived ' + this.bookmarks.length + ' bookmarks')
+            console.log('Query: retreived ' + this.bookmarks.length + ' bookmarks')
           })
           .catch(error => {
             // handle error
@@ -170,6 +170,9 @@ export default {
           console.log('deleted ' + url)
         }
       }
+    },
+    refresh: function () {
+      this.getBookmarks(this.query)
     }
   },
   mounted () {

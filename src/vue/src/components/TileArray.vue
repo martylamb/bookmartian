@@ -37,13 +37,13 @@ export default {
         const axios = require('axios')
         axios
           .get('http://localhost:4567/api/bookmarks?q=' + query, {
-            headers: {
-            }
+            headers: {}
           })
           .then(response => {
             // handle success
+
             this.tiles = response.data.data
-            console.log('Retreived ' + this.tiles.bookmarks.length + ' bookmark tiles')
+            console.log('TileArray: retreived ' + this.tiles.bookmarks.length + ' bookmark tiles')
           })
           .catch(error => {
             // handle error
@@ -61,6 +61,9 @@ export default {
           console.log('deleted tile ' + url)
         }
       }
+    },
+    refresh: function () {
+      this.getTiles(this.query)
     }
   }
 }

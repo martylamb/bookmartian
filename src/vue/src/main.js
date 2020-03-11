@@ -2,7 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faSearch, faAngleRight, faEllipsisH } from '@fortawesome/free-solid-svg-icons'
+import { faSearch, faAngleRight, faEllipsisH, faPlus } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import VueMasonry from 'vue-masonry-css'
 import { Dropdown } from 'buefy'
@@ -13,7 +13,7 @@ Vue.use(VueMasonry)
 Vue.use(Dropdown)
 Vue.use(VModal)
 
-library.add(faSearch, faAngleRight, faEllipsisH)
+library.add(faSearch, faAngleRight, faEllipsisH, faPlus)
 
 Vue.component('font-awesome-icon', FontAwesomeIcon)
 

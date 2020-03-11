@@ -37,6 +37,11 @@ export default {
       this.$refs.queries.forEach(query => {
         query.deleteBookmark(url)
       })
+    },
+    refresh () {
+      this.$refs.queries.forEach(query => {
+        query.refresh()
+      })
     }
   }
 }

@@ -9,6 +9,9 @@
     <div class='page-tab settings'>
       <router-link to="/Settings">bookmartian</router-link>
     </div>
+    <div class='page-tab settings'>
+      <font-awesome-icon :icon="['fas', 'plus']" size='lg' v-on:click="$emit('new-bookmark')" />
+    </div>
   </div>
 </template>
 

@@ -5,7 +5,7 @@
       <TileArray
         :query="this.config.pages[$route.params.page_index]?this.config.pages[$route.params.page_index].tileQuery:''"
         ref='tileArray'/>
-      <TabArray :pages='this.config.pages' />
+      <TabArray :pages='this.config.pages' v-on:new-bookmark="showBookmarkModal({ title: '', url: '' })" />
     </div>
     <div class='page-container'>
       <div class='page'>
@@ -23,12 +23,12 @@
         <input type='text' :value='this.selectedBookmark.notes' placeholder='other notes'/>
         <input type='text' :value='this.selectedBookmark.tags' placeholder='tag list'/>
         <div class='bookmark-modal-statistics'>
-          <span >created on {{simplifyDate(this.selectedBookmark.created)}} | </span>
-          <span >modified on {{simplifyDate(this.selectedBookmark.modified)}} | </span>
-          <span >visit #{{this.selectedBookmark.visitCount}} on {{simplifyDate(this.selectedBookmark.lastVisited)}}</span>
+          <span v-show='this.isExistingBookmark' >created on {{simplifyDate(this.selectedBookmark.created)}} | </span>
+          <span v-show='this.isExistingBookmark' >modified on {{simplifyDate(this.selectedBookmark.modified)}} | </span>
+          <span v-show='this.isExistingBookmark' >visit #{{this.selectedBookmark.visitCount}} on {{simplifyDate(this.selectedBookmark.lastVisited)}}</span>
         </div>
         <div class='bookmark-modal-button-box'>
-          <button v-on:click='deleteBookmark' class='bookmark-modal-button-delete'>Delete Bookmark</button>
+          <button v-on:click='deleteBookmark' v-show='this.isExistingBookmark' class='bookmark-modal-button-delete'>Delete Bookmark</button>
           <button v-on:click='hideBookmarkModal' class='bookmark-modal-button-standard'>Cancel</button>
           <button v-on:click='saveBookmark' class='bookmark-modal-button-standard'>Save Changes</button>
         </div>
@@ -57,7 +57,8 @@ export default {
       config: { pages: [{ tileQuery: '' }], bannerImageUrl: '' },
       // store the currently selected/viewed page
       bannerImageStyle: { },
-      selectedBookmark: { title: '', url: '' }
+      selectedBookmark: { title: '', url: '' },
+      isExistingBookmark: false
     }
   },
   methods: {
@@ -76,7 +77,11 @@ export default {
       }
     },
     showBookmarkModal: function (bookmark) {
-      this.selectedBookmark = bookmark
+      this.isExistingBookmark = false
+      if (bookmark.url) {
+        this.selectedBookmark = bookmark
+        this.isExistingBookmark = true
+      }
       this.$modal.show('BookmarkModal')
     },
     deleteBookmark: function () {
@@ -105,6 +110,11 @@ export default {
       this.$modal.hide('BookmarkModal')
     },
     saveBookmark: function (event) {
+      // do the API stuff to save the bookmark to the service
+
+      this.$refs.page.refresh()
+      this.$refs.tileArray.refresh()
+
       this.selectedBookmark = {}
       this.$modal.hide('BookmarkModal')
     },
@@ -190,6 +200,7 @@ export default {
   width: 100%;
   margin-top: 8px;
   text-align: right;
+  min-height: 23px;
 }
 
 .bookmark-modal button {
