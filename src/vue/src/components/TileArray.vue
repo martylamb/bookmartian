@@ -72,10 +72,11 @@ export default {
 
 .tile-array-container {
   padding: 12px;
-  margin: 0 auto;
   display: flex;
+  flex-direction: row;
   justify-content: center;
-  min-height: 12px;
+  align-items: center;
+  align-content: center;
 }
 
 </style>
