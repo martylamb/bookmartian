@@ -1,5 +1,8 @@
 module.exports = {
   outputDir: '../main/resources/static-content',
+  configureWebpack: {
+    devtool: 'source-map'
+  },
   pluginOptions: {
     fontawesome: {
     
