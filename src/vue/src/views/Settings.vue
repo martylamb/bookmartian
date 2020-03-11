@@ -9,10 +9,10 @@
     <h1>About this project</h1>
     <p>Bookmartian is a self-hosted, personal bookmark database intended to make saving, finding, and using bookmarks simple but powerful. Designed to be easily hosted on your home machine or on a cloud server, bookmartian is self-contained with no external software dependencies. Enjoy! Marty Lamb &amp; John Mutchek</p>
     <p class="monospace aboutbox">
-      <strong>project.version:</strong> <span></span><br/>
-      <strong>git.remote.origin.url:</strong> <a href="">github</a><br/>
-      <strong>git.commit.id.describe-short:</strong> <a href="https://github.com/martylamb/bookmartian/commit/"></a><br/>
-      <strong>git.build.time:</strong> <span></span><br/>
+      <strong>project.version:</strong> <span>{{this.about['project.version']}}</span><br/>
+      <strong>git.remote.origin.url:</strong> <a :href="this.about['git.remote.origin.url']">{{this.about['git.remote.origin.url']}}</a><br/>
+      <strong>git.commit.id.describe-short:</strong> <a :href="'https://github.com/martylamb/bookmartian/commit/' + this.about['git.commit.id.describe-short']">{{this.about['git.commit.id.describe-short']}}</a><br/>
+      <strong>git.build.time:</strong> <span>{{this.about['git.build.time']}}</span><br/>
     </p>
   </div>
 </template>
@@ -67,6 +67,7 @@ h1 {
   font-size: 16px;
   line-height: 24px;
   font-weight: 600;
+  margin-top: 24px;
 }
 
 .monospace, .monospace a {
@@ -76,6 +77,7 @@ h1 {
 }
 
 .aboutbox {
+    margin-top: 48px;
     padding: 6px;
     border: solid #767676 1px;
     background-color: white;

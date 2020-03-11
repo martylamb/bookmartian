@@ -3,9 +3,9 @@
     <span class='name'>{{ this.name }}</span>
     <b-dropdown aria-role='list' position='is-bottom-left' class='querymenu'>
       <font-awesome-icon :icon="['fas', 'ellipsis-h']" size='sm' class='editicon' slot='trigger' role='button'/>
-      <b-dropdown-item aria-role='listitem' v-on:click='sortByTitle()' v-bind:class='{activeSort: isTitleSorted}'>{{this.TitleSortedLabel}}</b-dropdown-item>
-      <b-dropdown-item aria-role='listitem' v-on:click='sortByCreated()' v-bind:class='{activeSort: isCreatedSorted}'>{{this.CreateSortedLabel}}</b-dropdown-item>
-      <b-dropdown-item aria-role='listitem' v-on:click='sortByVisited()' v-bind:class='{activeSort: isVisitedSorted}'>{{this.VisitSortedLabel}}</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem' v-on:click='sortByTitle()' v-bind:class='{activeSort: isTitleSorted}'>{{this.titleSortedLabel}}</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem' v-on:click='sortByCreated()' v-bind:class='{activeSort: isCreatedSorted}'>{{this.createSortedLabel}}</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem' v-on:click='sortByVisited()' v-bind:class='{activeSort: isVisitedSorted}'>{{this.visitSortedLabel}}</b-dropdown-item>
       <b-dropdown-item aria-role='listitem'></b-dropdown-item>
       <b-dropdown-item aria-role='listitem'>Open query as new search</b-dropdown-item>
     </b-dropdown>
@@ -38,21 +38,21 @@ export default {
   directives: {
   },
   computed: {
-    TitleSortedLabel: function () {
+    titleSortedLabel: function () {
       var menuLabel = 'Sort by title'
       if (this.isTitleSorted) {
         menuLabel += ' (' + this.isTitleSorted + ')'
       }
       return menuLabel
     },
-    CreateSortedLabel: function () {
+    createSortedLabel: function () {
       var menuLabel = 'Sort by date created'
       if (this.isCreatedSorted) {
         menuLabel += ' (' + this.isCreatedSorted + ')'
       }
       return menuLabel
     },
-    VisitSortedLabel: function () {
+    visitSortedLabel: function () {
       var menuLabel = 'Sort by date visited'
       if (this.isVisitedSorted) {
         menuLabel += ' (' + this.isVisitedSorted + ')'
@@ -161,6 +161,15 @@ export default {
       this.isVisitedSorted = 'desc'
       this.isTitleSorted = ''
       this.isCreatedSorted = ''
+    },
+    // delete a specific url from the current query results
+    deleteBookmark: function (url) {
+      for (var index = 0; index < this.bookmarks.length; index++) {
+        if (this.bookmarks[index].url === url) {
+          this.$delete(this.bookmarks, index)
+          console.log('deleted ' + url)
+        }
+      }
     }
   },
   mounted () {

@@ -2,10 +2,10 @@
   <div class='page'>
     <!-- <h1>This is a dashboard page for {{ pageConfig.name }}</h1> -->
     <masonry :cols="{default: 3, 1000: 2, 700: 1}" :gutter="{default: '16px', 700: '8px'}" id='masonry'>
-      <Query v-for='(query) in this.pageConfig.queries' v-bind:key='query.name'
+      <Query v-for='(query) in this.pageConfig.queries' v-bind:key='query.name' ref='queries'
         :name='query.name'
         :query='query.query'
-        v-on:edit-bookmark='ShowBookmarkModal($event)'/>
+        v-on:edit-bookmark='showBookmarkModal($event)'/>
     </masonry>
     <modal name="BookmarkModal" class='bookmark-modal' :height='320'>
       <div class='bookmark-modal-box'>
@@ -15,14 +15,14 @@
         <input type='text' :value='this.selectedBookmark.notes' placeholder='other notes'/>
         <input type='text' :value='this.selectedBookmark.tags' placeholder='tag list'/>
         <div class='bookmark-modal-statistics'>
-          <span >created on {{SimplifyDate(this.selectedBookmark.created)}} | </span>
-          <span >modified on {{SimplifyDate(this.selectedBookmark.modified)}} | </span>
-          <span >visit #{{this.selectedBookmark.visitCount}} on {{SimplifyDate(this.selectedBookmark.lastVisited)}}</span>
+          <span >created on {{simplifyDate(this.selectedBookmark.created)}} | </span>
+          <span >modified on {{simplifyDate(this.selectedBookmark.modified)}} | </span>
+          <span >visit #{{this.selectedBookmark.visitCount}} on {{simplifyDate(this.selectedBookmark.lastVisited)}}</span>
         </div>
         <div class='bookmark-modal-button-box'>
-          <button v-on:click='DeleteBookmark'>Delete Bookmark</button>
-          <button v-on:click="HideBookmarkModal">Cancel</button>
-          <button v-on:click='SaveBookmark'>Save Changes</button>
+          <button v-on:click='deleteBookmark' class='bookmark-modal-button-delete'>Delete Bookmark</button>
+          <button v-on:click='hideBookmarkModal' class='bookmark-modal-button-standard'>Cancel</button>
+          <button v-on:click='saveBookmark' class='bookmark-modal-button-standard'>Save Changes</button>
         </div>
       </div>
     </modal>
@@ -49,23 +49,49 @@ export default {
     }
   },
   methods: {
-    ShowBookmarkModal: function (bookmark) {
+    showBookmarkModal: function (bookmark) {
       this.selectedBookmark = bookmark
       this.$modal.show('BookmarkModal')
     },
-    DeleteBookmark: function (event) {
+    deleteBookmark: function (event) {
+      // const axios = require('axios')
+      // axios
+      //   .post('http://localhost:4567/api/bookmark/delete?url=' + this.selectedBookmark.url, {
+      //     headers: {
+      //     }
+      //   })
+      //   .then(response => {
+      //     // handle success
+      //     console.log('Deleted ' + this.selectedBookmark.title)
+      //   })
+      //   .catch(error => {
+      //     // handle error
+      //     console.log(error)
+      //   })
+      //   .finally(function () {
+      //     // always executed
+      //   })
+
+      // remove references to that bookmark from the active page (all queries)
+      this.$refs.queries.forEach(query => {
+        query.deleteBookmark(this.selectedBookmark.url)
+      })
+
+      // propagate an event up to the Home component to delete the url from the TileArray
+      this.$emit('delete-bookmark', this.selectedBookmark.url)
+
       this.selectedBookmark = {}
       this.$modal.hide('BookmarkModal')
     },
-    SaveBookmark: function (event) {
+    saveBookmark: function (event) {
       this.selectedBookmark = {}
       this.$modal.hide('BookmarkModal')
     },
-    HideBookmarkModal: function (event) {
+    hideBookmarkModal: function (event) {
       this.selectedBookmark = {}
       this.$modal.hide('BookmarkModal')
     },
-    SimplifyDate: function (datestring) {
+    simplifyDate: function (datestring) {
       if (datestring) {
         return datestring.substring(0, 10)
       }
@@ -142,8 +168,15 @@ export default {
 
   .bookmark-modal button:hover {
     border-color: darkgrey;
-    background-color: lightblue;
     color: white;
+  }
+
+  .bookmark-modal-button-standard:hover {
+    background-color: lightblue;
+  }
+
+  .bookmark-modal-button-delete:hover {
+    background-color: red;
   }
 
 </style>

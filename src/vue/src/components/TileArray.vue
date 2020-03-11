@@ -53,6 +53,14 @@ export default {
             // always executed
           })
       }
+    },
+    deleteBookmark: function (url) {
+      for (var index = 0; index < this.tiles.bookmarks.length; index++) {
+        if (this.tiles.bookmarks[index].url === url) {
+          this.$delete(this.tiles.bookmarks, index)
+          console.log('deleted tile ' + url)
+        }
+      }
     }
   }
 }

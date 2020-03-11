@@ -146,7 +146,7 @@ public class App {
         
         post("/api/bookmarks/import", () -> importNetscapeBookmarksFile(bm));
         
-        get("/api/about", () -> JSend.success(appProperties));
+        get("/api/about", () -> about(bm));
         
         get("/", (req, rsp) -> IOUtils.toString(App.class.getResourceAsStream("/static-content/index.html")));
         get("/index.html", (req, rsp) -> {             
@@ -156,6 +156,15 @@ public class App {
         });
     }
     
+    private static BoomResponse about(Bookmartian bm) {
+        try {
+            corsHeaders();
+            return JSend.success(appProperties);
+        } catch (Exception e) {
+            return JSend.error(e);
+        }
+    }
+
     private static BoomResponse query(Bookmartian bm) {
         try {
             corsHeaders();
@@ -259,6 +268,7 @@ public class App {
             assert(url != null);
             Lurl lurl = Lurl.of(url);
             Optional<Bookmark> ob = bm.visit(lurl);
+            corsHeaders();
             if (!ob.isPresent()) return StatusPage.of(404, "Not Found");
             response().redirect(ob.get().lurl().toString());
             return null;
@@ -274,6 +284,7 @@ public class App {
         log.info("deleting bookmark: [{}]", url);
         try {
             Optional<Bookmark> ob = bm.remove(Lurl.of(url));
+            corsHeaders();
             return ob.map(b -> JSend.success(b)).orElse(JSend.fail("no such bookmark: " + url));
         } catch (Exception e) {
             return JSend.error(e);
