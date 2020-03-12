@@ -32,17 +32,23 @@ export default {
     bubbleEditBookmark (event) {
       this.$emit('edit-bookmark', event)
     },
+    // delete a bookmark
     deleteBookmark (url) {
       // remove references to that bookmark from the active page (all queries)
       this.$refs.queries.forEach(query => {
         query.deleteBookmark(url)
       })
     },
+    // update all of the queries from the API
     refresh () {
       this.$refs.queries.forEach(query => {
         query.refresh()
       })
     }
+  },
+  mounted () {
+    // blank out the searchbar whenever a dashboard page is loaded
+    this.$emit('search-changed', '')
   }
 }
 

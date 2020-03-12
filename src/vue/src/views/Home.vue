@@ -1,7 +1,7 @@
 <template>
   <div class='home'>
     <div class='fixed-header' v-bind:style='bannerImageStyle'>
-      <SearchBar />
+      <SearchBar ref='searchbar'/>
       <TileArray
         :query="this.config.pages[$route.params.page_index]?this.config.pages[$route.params.page_index].tileQuery:''"
         ref='tileArray'/>
@@ -12,6 +12,7 @@
         <router-view
           :pageConfig='this.config.pages[$route.params.page_index]?this.config.pages[$route.params.page_index]:{}'
           v-on:edit-bookmark='showBookmarkModal($event)'
+          v-on:search-changed='changeSearchTerm($event)'
           ref='page'/>
       </div>
     </div>
@@ -121,6 +122,9 @@ export default {
     hideBookmarkModal: function (event) {
       this.selectedBookmark = {}
       this.$modal.hide('BookmarkModal')
+    },
+    changeSearchTerm: function (event) {
+      this.$refs.searchbar.updateQuery(event)
     }
   },
   watch: {

@@ -1,7 +1,9 @@
 <template>
   <div class='search'>
-        <input type='text' :value='query' v-focus class='searchinput'/>
+    <form @submit.prevent="submitSearch">
+        <input type='text' v-model='query' v-focus class='searchinput'/>
         <font-awesome-icon :icon="['fas', 'search']" size='lg' flip='horizontal' class='searchicon'/>
+    </form>
   </div>
 </template>
 
@@ -11,15 +13,35 @@ export default {
   name: 'SearchBar',
   props: {
     // pre-filled query can be sent to the component and defaults into the search bar
-    query: String
+    q: String
+  },
+  data: function () {
+    return {
+      // query is the vue model variable for the search string
+      query: ''
+    }
   },
   directives: {
-    // directive definition to set focus on a componenet (used on page load for the search bar)
+    // directive definition to set focus on a component (used on page load for the search bar)
     focus: {
       inserted: function (el) {
         el.focus()
       }
     }
+  },
+  methods: {
+    // submit the search
+    submitSearch: function () {
+      this.$router.push({ path: '/Search', query: { q: this.query } })
+    },
+    // used by Home to keep the searchbar in sync with searching happening in the Search view
+    updateQuery: function (query) {
+      this.query = query
+    }
+  },
+  mounted () {
+    // when the site first loads, if a q= was provided, pre-fill it into the searchbar
+    this.updateQuery(this.$route.query.q)
   }
 }
 

@@ -125,7 +125,7 @@ public class App {
 //            initAuth(bmHome);
 //        }
         
-        get("/api/tags", () -> json(bm.tags()));
+        get("/api/tags", () -> tags(bm));
         
         options("/api/bookmark", () -> corsOptions());
         get("/api/bookmark", () -> getBookmark(bm));
@@ -163,6 +163,11 @@ public class App {
         } catch (Exception e) {
             return JSend.error(e);
         }
+    }
+
+    private static BoomResponse tags(Bookmartian bm) {
+        corsHeaders();
+        return json(bm.tags());
     }
 
     private static BoomResponse query(Bookmartian bm) {

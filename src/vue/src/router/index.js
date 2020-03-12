@@ -17,6 +17,10 @@ const routes = [
         component: () => import(/* webpackChunkName: "Settings" */ '../views/Settings.vue')
       },
       {
+        path: '/Search',
+        component: () => import(/* webpackChunkName: "Search" */ '../views/Search.vue')
+      },
+      {
         path: '/Page/:page_index',
         component: Page,
         props: true
