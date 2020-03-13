@@ -7,19 +7,19 @@
             "queries": [
                 {
                     "name": "new",
-                    "query": "created-since:1w"
+                    "query": "created-since:1w by:most-recently-created"
                 },
                 {
                     "name": "recent",
-                    "query": "visited-since:1w"
+                    "query": "visited-since:1w by:most-recently-visited"
                 },
                 {
                     "name": "coding",
-                    "query": "code tools by:most-recently-created"
+                    "query": "code tools"
                 },
                 {
                     "name": "supplies",
-                    "query": "3d-printing filament as:prints by:most-recently-visited"
+                    "query": "3d-printing filament as:prints"
                 }
             ]
         },
