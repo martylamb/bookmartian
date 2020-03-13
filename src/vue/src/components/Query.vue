@@ -7,7 +7,7 @@
       <b-dropdown-item aria-role='listitem' v-on:click='sortByCreated()' v-bind:class='{activeSort: isCreatedSorted}'>{{this.createSortedLabel}}</b-dropdown-item>
       <b-dropdown-item aria-role='listitem' v-on:click='sortByVisited()' v-bind:class='{activeSort: isVisitedSorted}'>{{this.visitSortedLabel}}</b-dropdown-item>
       <b-dropdown-item aria-role='listitem'></b-dropdown-item>
-      <b-dropdown-item aria-role='listitem'>Open query in tag search</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem' v-on:click='openInSearch()'>Open query in tag search</b-dropdown-item>
     </b-dropdown>
     <div class='querytext'>{{ this.query }}</div>
     <div class='bookmark' v-for='(bookmark) in this.bookmarks' v-bind:key='bookmark.url'>
@@ -187,6 +187,9 @@ export default {
     },
     refresh: function () {
       this.getBookmarks(this.query)
+    },
+    openInSearch: function () {
+      this.$router.push({ path: '/Search', query: { q: this.query } })
     }
   },
   mounted () {

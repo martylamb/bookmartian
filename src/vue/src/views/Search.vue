@@ -24,7 +24,12 @@ export default {
     // making this a computed property for reactivity (simply replacing the tags data var doesn't update the DOM)
     visibleTags: function () {
       if (this.query) {
-        return this.$refs.query.tags
+        var sortedTags = this.$refs.query.tags
+        return sortedTags.sort(function (a, b) {
+          a = a.name.toLowerCase()
+          b = b.name.toLowerCase()
+          return a > b ? 1 : b > a ? -1 : 0
+        })
       } else {
         return this.tags
       }
