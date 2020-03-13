@@ -26,19 +26,40 @@
         {
             "name": "Work",
             "bannerImageUrl": "https://images8.alphacoders.com/437/thumb-1920-437931.jpg",
-            "tileQuery": "tiles-work",
             "queries": [
                 {
-                    "name": "active",
-                    "query": "active"
+                    "name": "reports",
+                    "query": "microsoft reports by:most-recently-visited"
                 },
                 {
-                    "name": "reports",
-                    "query": "work reports internal"
+                    "name": "active fy20",
+                    "query": "fy20 limit:6"
+                },
+                {
+                    "name": "az-demo",
+                    "query": "azure demo"
                 }
             ]
         },
         {
+            "name": "Fun",
+            "bannerImageUrl": "https://cdn.wallpapersafari.com/57/51/ixVa09.jpg",
+            "tileQuery": "xbox",
+            "queries": [
+                {
+                    "name": "active",
+                    "query": "visited-since:1m limit:20 by:most-visited"
+                },
+                {
+                    "name": "fun stuff",
+                    "query": "games"
+                },
+                {
+                    "name": "video games",
+                    "query": "xbox"
+                }
+            ]
+        },        {
             "name": "D&D",
             "bannerImageUrl": "http://getwallpapers.com/wallpaper/full/5/1/4/157682.jpg",
             "tileQuery": "promote-dnd",

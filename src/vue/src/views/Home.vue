@@ -7,7 +7,7 @@
         ref='tileArray'/>
       <TabArray :pages='this.config.pages' v-on:new-bookmark="showBookmarkModal({ title: '', url: '' })" />
     </div>
-    <div class='page-container'>
+    <div class='page-container' :class="[this.hasTiles ? 'padded' : '']">
       <div class='page'>
         <router-view
           :pageConfig='this.config.pages[$route.params.page_index]?this.config.pages[$route.params.page_index]:{}'
@@ -127,6 +127,17 @@ export default {
       this.$refs.searchbar.updateQuery(event)
     }
   },
+  computed: {
+    hasTiles: function () {
+      var has = false
+      if (this.config.pages[this.$route.params.page_index]) {
+        if (this.config.pages[this.$route.params.page_index].tileQuery) {
+          has = true
+        }
+      }
+      return has
+    }
+  },
   watch: {
     '$route.params.page_index': function (newVal, oldVal) {
       if (newVal && this.config.pages[newVal].bannerImageUrl) {
@@ -154,11 +165,15 @@ export default {
 
 .page-container {
   background-color: #f7f7f7;
-  padding-top: 300px;
   width: 100%;
   min-height: 100vh;
   margin: 0px;
   color: black;
+  padding-top: 148px;
+}
+
+.padded {
+  padding-top: 250px;
 }
 
 .page {

@@ -52,6 +52,8 @@ export default {
           .finally(function () {
             // always executed
           })
+      } else {
+        this.tiles = {}
       }
     },
     deleteBookmark: function (url) {
@@ -74,12 +76,14 @@ export default {
 <style scoped>
 
 .tile-array-container {
-  padding: 12px;
+  padding-left: 16px;
+  padding-right: 16px;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
   align-content: center;
+  min-height: 36px;
 }
 
 </style>
