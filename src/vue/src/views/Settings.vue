@@ -4,6 +4,8 @@
     <p>URL to an external configuration file. The format of the file is described here, and the json schema is available here.</p>
     <h1>Bookmarklet</h1>
     <p>Using this bookmarklet is the easiest way to add bookmarks to the bookmartian.</p>
+    <h1>Manage your tags</h1>
+    <p>Rename, merge and recolor tags used in your bookmark collection.</p>
     <h1>Import bookmarks from a file</h1>
     <p>You can import bookmarks into Bookmartian from an existing file. The file must be formatted in the Netscape Bookmark file format.</p>
     <h1>About this project</h1>
