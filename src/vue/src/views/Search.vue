@@ -7,6 +7,7 @@
     <Query v-show=query :name="'Search results for: ' + query" ref='query'
         :query='query'
         v-on:edit-bookmark='bubbleEditBookmark($event)'/>
+    <div class='spacer'></div>
   </div>
 </template>
 
@@ -155,6 +156,10 @@ export default {
 
 .tag:hover {
   box-shadow: 0 0 5px black;
+}
+
+.spacer {
+  min-height: 20px;
 }
 
 </style>

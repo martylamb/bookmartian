@@ -12,7 +12,9 @@
     <div class='querytext'>{{ this.query }}</div>
     <div class='bookmark' v-for='(bookmark) in this.bookmarks' v-bind:key='bookmark.url'>
       <a :href="'http://localhost:4567/api/visit?url=' + bookmark.url">{{bookmark.title}}</a>
-      <font-awesome-icon :icon="['fas', 'angle-right']" size='sm' transform='down-6 left-4' class='editicon' v-on:click="$emit('edit-bookmark', bookmark)"/>
+      <div class='editspacer' v-on:click="$emit('edit-bookmark', bookmark)">
+        <font-awesome-icon :icon="['fas', 'angle-right']" size='sm' transform='left-4' class='editicon' />
+      </div>
     </div>
   </div>
 
@@ -223,13 +225,18 @@ export default {
   font-weight: bold;
 }
 
+.editspacer {
+  padding-left: 8px;
+  cursor: pointer;
+  margin-left: auto;
+}
+
 .editicon {
-  float: right;
   color: lightgrey;
   cursor: pointer;
 }
 
-.editicon:hover {
+.editspacer:hover .editicon {
   color: blue;
 }
 
@@ -243,6 +250,7 @@ export default {
 .bookmark {
   border-top: 1px solid lightgrey;
   margin-bottom: 4px;
+  display: flex;
 }
 
 a {

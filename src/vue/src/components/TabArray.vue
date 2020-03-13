@@ -57,6 +57,10 @@ export default {
   background-color: #eeeeee;
 }
 
+.page-tab .router-link-active {
+  text-decoration: underline;
+}
+
 a:link {
   text-decoration: none;
   color: inherit;

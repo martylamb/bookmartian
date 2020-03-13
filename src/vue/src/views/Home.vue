@@ -149,13 +149,14 @@ export default {
 .fixed-header {
   position: fixed;
   width: 100%;
+  z-index: 100;
 }
 
 .page-container {
   background-color: #f7f7f7;
   padding-top: 300px;
   width: 100%;
-  height: 100vh;
+  min-height: 100vh;
   margin: 0px;
   color: black;
 }
