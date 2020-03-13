@@ -1,9 +1,8 @@
 <template>
   <div class='page'>
     <div class='tagcloud'>
-      <router-link v-for='(tag) in this.tags' v-bind:key='tag.name'
-        :style="'color:' + tag.color"
-        v-bind:to="{ path: '/Search', query: { q: query + ' ' + tag.name } }">{{tag.name}} </router-link>
+      <span v-for='(tag) in this.visibleTags' v-bind:key='tag.name' v-on:click='incrementSearch(tag.name)'
+        :style="'background-color:' + tagBGColor(tag.name) + '; color:' + tagFGColor(tag.name)" class='tag'>{{tag.name}} </span>
     </div>
     <Query v-show=query :name="'Search results for: ' + query" ref='query'
         :query='query'
@@ -22,29 +21,45 @@ export default {
   props: {
   },
   computed: {
+    // making this a computed property for reactivity (simply replacing the tags data var doesn't update the DOM)
+    visibleTags: function () {
+      if (this.query) {
+        return this.$refs.query.tags
+      } else {
+        return this.tags
+      }
+    }
   },
   directives: {},
   data: function () {
     return {
       query: '',
-      tags: {}
+      tags: [],
+      tagCache: new Map()
     }
   },
   methods: {
     // populate the tag cloud
     getTags: function (query) {
-      // if no query was specific load the full tag cloud
-      if (!query) {
+      // if the tag cache is empty load the full tag cloud from the API
+      if (!this.tagCache.length) {
         const axios = require('axios')
         axios
           .get('http://localhost:4567/api/tags', {
-            headers: {
-            }
+            headers: {}
           })
           .then(response => {
             // handle success
             this.tags = response.data
             console.log('Search: retreived ' + this.tags.length + ' tags')
+
+            // build the tag color cache
+            if (!this.tagCache.length) {
+              console.log('Search: building the tag cache')
+              this.tags.forEach(tag => {
+                this.tagCache.set(tag.name, tag.color)
+              })
+            }
           })
           .catch(error => {
             // handle error
@@ -53,16 +68,36 @@ export default {
           .finally(function () {
             // always executed
           })
-      } else {
-        // if there is a query, we will only list the tags found on bookmarks in the result set
-        // magicitems is a placeholder
-        this.tags = [{ name: 'magicitems', color: 'red' }]
       }
     },
     // execute the search
     getBookmarks: function (query) {
       this.$emit('search-changed', query)
       this.$refs.query.getBookmarks(this.query)
+    },
+    // add a tag to the query and execute the search again
+    incrementSearch: function (tag) {
+      var newQuery = ''
+      if (this.query) {
+        newQuery = this.query + '+'
+      }
+      this.$router.push({ path: '/Search', query: { q: newQuery + tag } })
+    },
+    // set default tag color from cache if none specified
+    tagBGColor: function (tag) {
+      var color = this.tagCache.get(tag)
+      if (color === '#000000') {
+        color = '#ffffff'
+      }
+      return color
+    },
+    // set default tag color from cache if none specified
+    tagFGColor: function (tag) {
+      var color = this.tagCache.get(tag)
+      if (color !== '#000000') {
+        color = '#ffffff'
+      }
+      return color
     },
     // delete a bookmark
     deleteBookmark (url) {
@@ -104,6 +139,17 @@ export default {
   font-size: 12px;
   margin-bottom: 24px;
   text-align: center;
+}
+
+.tag {
+  border: 1px solid grey;
+  margin: 1px;
+  cursor: pointer;
+  background-color: white;
+}
+
+.tag:hover {
+  box-shadow: 0 0 5px black;
 }
 
 </style>

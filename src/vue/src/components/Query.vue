@@ -24,7 +24,7 @@ export default {
   name: 'Query',
   data: function () {
     return {
-      bookmarks: {},
+      bookmarks: [],
       sort: String,
       isTitleSorted: '',
       isCreatedSorted: '',
@@ -58,6 +58,20 @@ export default {
         menuLabel += ' (' + this.isVisitedSorted + ')'
       }
       return menuLabel
+    },
+    // retrieve a list of all tags found on bookmarks in this query
+    tags: function () {
+      var uniqueTags = new Set()
+      var tagsList = []
+      for (var index = 0; index < this.bookmarks.length; index++) {
+        for (var index2 = 0; index2 < this.bookmarks[index].tags.length; index2++) {
+          if (!uniqueTags.has(this.bookmarks[index].tags[index2])) {
+            uniqueTags.add(this.bookmarks[index].tags[index2])
+            tagsList.push({ name: this.bookmarks[index].tags[index2], color: '#000000' })
+          }
+        }
+      }
+      return tagsList
     }
   },
   methods: {
