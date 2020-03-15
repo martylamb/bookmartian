@@ -25,6 +25,7 @@
 
 export default {
   name: 'Query',
+  components: {},
   data: function () {
     return {
       bookmarks: [],

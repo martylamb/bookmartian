@@ -1,7 +1,7 @@
 <template>
   <div class='home'>
     <div class='fixed-header' v-bind:style='bannerImageStyle'>
-      <SearchBar ref='searchbar'/>
+      <SearchBar ref='searchbar' :internetSearchUrl='this.config.internetSearchUrl'/>
       <TileArray
         :query="this.config.pages[$route.params.page_index]?this.config.pages[$route.params.page_index].tileQuery:'--nochange'"
         ref='tileArray'/>

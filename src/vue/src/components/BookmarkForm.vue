@@ -44,12 +44,6 @@
 
 <script>
 // @ is an alias to /src
-import Vue from 'vue'
-import { Field, Input, Taginput } from 'buefy'
-
-Vue.use(Field)
-Vue.use(Input)
-Vue.use(Taginput)
 
 export default {
   name: 'BookmarkForm',

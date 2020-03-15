@@ -15,6 +15,16 @@
             "description": "Url pointing to the image that should be used in the banner if none is specified on a page.",
             "default": ""
         },
+        "internetSearchUrl": {
+            "$id": "#/properties/internetSearchUrl",
+            "type": "string",
+            "title": "Internal search url prefix",
+            "description": "A prefix string used to redirect search queries to a preferred internet search engine.",
+            "default": "",
+            "examples": [
+                "https://www.bing.com/search?q="
+            ]
+        },        
         "pages": {
             "$id": "#/properties/pages",
             "type": "array",
