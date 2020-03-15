@@ -61,7 +61,7 @@ export default {
     return {
       tags: [],
       filteredTags: [],
-      selectedBookmark: { }
+      selectedBookmark: { title: '', url: '' }
     }
   },
   methods: {
