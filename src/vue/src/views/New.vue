@@ -1,6 +1,12 @@
 <template>
   <div class='new'>
-    <BookmarkForm :title="$route.query.title" :url='$route.query.url' :visible='true' :newBookmark='false'/>
+    <BookmarkForm
+      dialogTitle='bookmartian'
+      :title='$route.query.title'
+      :url='$route.query.url'
+      :visible='true'
+      :existingBookmark='false'
+      :clickToClose='false'/>
   </div>
 </template>
 

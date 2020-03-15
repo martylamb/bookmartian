@@ -1,8 +1,8 @@
 <template>
   <div class='form'>
-    <modal name="BookmarkModal" class='bookmark-modal' :height='385' :clickToClose="false">
+    <modal name="BookmarkModal" class='bookmark-modal' :height='this.modalHeight' :clickToClose='this.clickToClose'>
       <div class='bookmark-modal-box'>
-        <h1>bookmartian</h1>
+        <h1>{{this.dialogTitle}}</h1>
         <b-field>
           <b-input type='text' v-model='this.selectedBookmark.title' placeholder='bookmark title'/>
         </b-field>
@@ -27,12 +27,13 @@
         <b-field>
           <b-input type='text' v-model='this.selectedBookmark.notes' placeholder='other notes (optional)'/>
         </b-field>
-        <div class='bookmark-modal-statistics' v-show='this.newBookmark'>
+        <div class='bookmark-modal-statistics' v-show='this.existingBookmark'>
           <span>created on {{simplifyDate(this.selectedBookmark.created)}} | </span>
           <span>modified on {{simplifyDate(this.selectedBookmark.modified)}} | </span>
           <span>visit #{{this.selectedBookmark.visitCount}} on {{simplifyDate(this.selectedBookmark.lastVisited)}}</span>
         </div>
         <div class='bookmark-modal-button-box'>
+          <button v-on:click='deleteBookmark' v-show='this.existingBookmark' class='bookmark-modal-button-delete'>Delete Bookmark</button>
           <button v-on:click='hideBookmarkModal' class='bookmark-modal-button-standard'>Cancel</button>
           <button v-on:click='saveBookmark' class='bookmark-modal-button-standard'>Save</button>
         </div>
@@ -58,17 +59,22 @@ export default {
     title: String,
     url: String,
     visible: Boolean,
-    newBookmark: Boolean
+    existingBookmark: Boolean,
+    clickToClose: Boolean,
+    dialogTitle: String
   },
   data: function () {
     return {
       tags: [],
       filteredTags: [],
-      selectedBookmark: { title: '', url: '', tileImageUrl: '', notes: '', tags: [] }
+      selectedBookmark: { }
     }
   },
   methods: {
     showBookmarkModal: function (bookmark) {
+      if (bookmark) {
+        this.selectedBookmark = bookmark
+      }
       this.$modal.show('BookmarkModal')
     },
     getFilteredTags: function (text) {
@@ -79,14 +85,39 @@ export default {
           .indexOf(text.toLowerCase()) >= 0
       })
     },
+    deleteBookmark: function () {
+      // const axios = require('axios')
+      // axios
+      //   .post('http://localhost:4567/api/bookmark/delete?url=' + this.selectedBookmark.url, {
+      //     headers: {
+      //     }
+      //   })
+      //   .then(response => {
+      //     // handle success
+      //     console.log('Deleted ' + this.selectedBookmark.title)
+      //   })
+      //   .catch(error => {
+      //     // handle error
+      //     console.log(error)
+      //   })
+      //   .finally(function () {
+      //     // always executed
+      //   })
+
+      this.$emit('delete-bookmark', this.selectedBookmark)
+      this.selectedBookmark = {}
+      this.$modal.hide('BookmarkModal')
+    },
     saveBookmark: function (event) {
       // do the API stuff to save the bookmark to the service
 
       this.$modal.hide('BookmarkModal')
+      // redirect backwards if this is the bookmarklet?
     },
     hideBookmarkModal: function (event) {
       this.$modal.hide('BookmarkModal')
-      this.$router.go(-1)
+      // redirect backwards if this is the bookmarklet?
+      // this.$router.go(-1)
     },
     simplifyDate: function (datestring) {
       if (datestring) {
@@ -116,7 +147,13 @@ export default {
       }
     }
   },
-  computed: {},
+  computed: {
+    modalHeight: function () {
+      var baseHeight = 385
+      var statHeight = 40
+      return baseHeight + (this.existingBookmark ? statHeight : 0)
+    }
+  },
   watch: {
   },
   mounted () {
@@ -126,7 +163,7 @@ export default {
       this.selectedBookmark.url = this.url
     }
     if (this.visible) {
-      this.showBookmarkModal(null)
+      this.showBookmarkModal()
     }
   }
 }
