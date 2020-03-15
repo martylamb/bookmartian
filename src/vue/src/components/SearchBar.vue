@@ -6,7 +6,8 @@
           :autofocus="true"
           type='search'
           icon-pack='fas'
-          icon-right='search'/>
+          icon-right='search'
+          placeholder='enter for bookmark search, ctrl-enter for internet search'/>
     </form>
   </div>
 </template>
