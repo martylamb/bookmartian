@@ -6,6 +6,7 @@
       <b-dropdown-item aria-role='listitem' v-on:click='sortByTitle()' v-bind:class='{activeSort: isTitleSorted}'>{{this.titleSortedLabel}}</b-dropdown-item>
       <b-dropdown-item aria-role='listitem' v-on:click='sortByCreated()' v-bind:class='{activeSort: isCreatedSorted}'>{{this.createSortedLabel}}</b-dropdown-item>
       <b-dropdown-item aria-role='listitem' v-on:click='sortByVisited()' v-bind:class='{activeSort: isVisitedSorted}'>{{this.visitSortedLabel}}</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem' v-on:click='sortByVisits()' v-bind:class='{activeSort: isVisitsSorted}'>{{this.visitsSortedLabel}}</b-dropdown-item>
       <b-dropdown-item aria-role='listitem'></b-dropdown-item>
       <b-dropdown-item aria-role='listitem' v-on:click='openInSearch()'>Open query in tag search</b-dropdown-item>
     </b-dropdown>
@@ -30,7 +31,8 @@ export default {
       sort: String,
       isTitleSorted: '',
       isCreatedSorted: '',
-      isVisitedSorted: ''
+      isVisitedSorted: '',
+      isVisitsSorted: ''
     }
   },
   props: {
@@ -58,6 +60,13 @@ export default {
       var menuLabel = 'Sort by date visited'
       if (this.isVisitedSorted) {
         menuLabel += ' (' + this.isVisitedSorted + ')'
+      }
+      return menuLabel
+    },
+    visitsSortedLabel: function () {
+      var menuLabel = 'Sort by visit frequency'
+      if (this.isVisitsSorted) {
+        menuLabel += ' (' + this.isVisitsSorted + ')'
       }
       return menuLabel
     },
@@ -105,6 +114,12 @@ export default {
               case 'by:least-recently-visited':
                 this.isVisitedSorted = 'asc'
                 break
+              case 'by:most-visited':
+                this.isVisitsSorted = 'desc'
+                break
+              case 'by:least-visited':
+                this.isVisitsSorted = 'asc'
+                break
 
               default:
                 break
@@ -133,6 +148,7 @@ export default {
         )
         this.isTitleSorted = 'asc'
       }
+      this.isVisitsSorted = ''
       this.isCreatedSorted = ''
       this.isVisitedSorted = ''
     },
@@ -150,6 +166,7 @@ export default {
         this.isCreatedSorted = 'desc'
       }
       this.isTitleSorted = ''
+      this.isVisitsSorted = ''
       this.isVisitedSorted = ''
     },
     sortByVisited: function () {
@@ -173,8 +190,26 @@ export default {
           return a > b ? 1 : b > a ? -1 : 0
         }
         )
+        this.isVisitedSorted = 'desc'
       }
-      this.isVisitedSorted = 'desc'
+      this.isVisitsSorted = ''
+      this.isTitleSorted = ''
+      this.isCreatedSorted = ''
+    },
+    sortByVisits: function () {
+      if (this.isVisitsSorted === 'desc') {
+        this.bookmarks.reverse()
+        this.isVisitsSorted = 'asc'
+      } else {
+        this.bookmarks.sort(function (b, a) {
+          a = a.visitCount
+          b = b.visitCount
+          return a > b ? 1 : b > a ? -1 : 0
+        }
+        )
+        this.isVisitsSorted = 'desc'
+      }
+      this.isVisitedSorted = ''
       this.isTitleSorted = ''
       this.isCreatedSorted = ''
     },
