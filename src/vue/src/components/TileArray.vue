@@ -31,27 +31,30 @@ export default {
   },
   directives: {
   },
+  computed: {},
   methods: {
     getTiles: function (query) {
       if (query) {
-        const axios = require('axios')
-        axios
-          .get('http://localhost:4567/api/bookmarks?q=' + query, {
-            headers: {}
-          })
-          .then(response => {
-            // handle success
+        if (query !== '--nochange') {
+          const axios = require('axios')
+          axios
+            .get('http://localhost:4567/api/bookmarks?q=' + query, {
+              headers: {}
+            })
+            .then(response => {
+              // handle success
 
-            this.tiles = response.data.data
-            console.log('TileArray: retreived ' + this.tiles.bookmarks.length + ' bookmark tiles')
-          })
-          .catch(error => {
-            // handle error
-            console.log(error)
-          })
-          .finally(function () {
-            // always executed
-          })
+              this.tiles = response.data.data
+              console.log('TileArray: retreived ' + this.tiles.bookmarks.length + ' bookmark tiles')
+            })
+            .catch(error => {
+              // handle error
+              console.log(error)
+            })
+            .finally(function () {
+              // always executed
+            })
+        }
       } else {
         this.tiles = {}
       }

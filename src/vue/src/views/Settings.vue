@@ -38,6 +38,9 @@ export default {
     }
   },
   mounted () {
+    // blank out the searchbar whenever a dashboard page is loaded
+    this.$emit('search-changed', '')
+
     // retrieve about info
     const axios = require('axios')
     axios

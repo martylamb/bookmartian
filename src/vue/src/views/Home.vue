@@ -3,11 +3,11 @@
     <div class='fixed-header' v-bind:style='bannerImageStyle'>
       <SearchBar ref='searchbar'/>
       <TileArray
-        :query="this.config.pages[$route.params.page_index]?this.config.pages[$route.params.page_index].tileQuery:''"
+        :query="this.config.pages[$route.params.page_index]?this.config.pages[$route.params.page_index].tileQuery:'--nochange'"
         ref='tileArray'/>
       <TabArray :pages='this.config.pages' v-on:new-bookmark="showBookmarkModal({ title: '', url: '' })" />
     </div>
-    <div class='page-container' :class="[this.hasTiles ? 'padded' : '']">
+    <div class='page-container' :class="[this.needsPadding ? 'padded' : '']">
       <div class='page'>
         <router-view
           :pageConfig='this.config.pages[$route.params.page_index]?this.config.pages[$route.params.page_index]:{}'
@@ -59,7 +59,8 @@ export default {
       // store the currently selected/viewed page
       bannerImageStyle: { },
       selectedBookmark: { title: '', url: '' },
-      isExistingBookmark: false
+      isExistingBookmark: false,
+      needsPadding: false
     }
   },
   methods: {
@@ -127,30 +128,42 @@ export default {
       this.$refs.searchbar.updateQuery(event)
     }
   },
-  computed: {
-    hasTiles: function () {
-      var has = false
-      if (this.config.pages[this.$route.params.page_index]) {
-        if (this.config.pages[this.$route.params.page_index].tileQuery) {
-          has = true
-        }
-      }
-      return has
-    }
-  },
+  computed: {},
   watch: {
     '$route.params.page_index': function (newVal, oldVal) {
-      if (newVal && this.config.pages[newVal].bannerImageUrl) {
-        this.updateBackground(this.config.pages[newVal].bannerImageUrl)
-      } else {
-        this.updateBackground(this.config.bannerImageUrl)
+      if (newVal) {
+        if (this.config.pages[newVal].bannerImageUrl) {
+          this.updateBackground(this.config.pages[newVal].bannerImageUrl)
+        } else {
+          this.updateBackground(this.config.bannerImageUrl)
+        }
+
+        // change padding on dashboard pages to reflect tiles
+        if (this.$route.params.page_index) {
+          if (this.config.pages[this.$route.params.page_index].tileQuery) {
+            this.needsPadding = true
+          } else {
+            this.needsPadding = false
+          }
+        }
       }
     }
   },
   mounted () {
     // retrieve config file
     this.config = require('../assets/sample-config.json')
+
+    // set the banner background to template default
     this.updateBackground(this.config.bannerImageUrl)
+
+    // change padding on dashboard pages to reflect tiles
+    if (this.$route.params.page_index) {
+      if (this.config.pages[this.$route.params.page_index].tileQuery) {
+        this.needsPadding = true
+      } else {
+        this.needsPadding = false
+      }
+    }
   }
 }
 </script>
