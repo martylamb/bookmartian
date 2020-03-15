@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import Page from '../views/Page.vue'
+import New from '../views/New.vue'
 
 Vue.use(VueRouter)
 
@@ -26,6 +27,11 @@ const routes = [
         props: true
       }
     ]
+  },
+  {
+    path: '/New',
+    name: 'New',
+    component: New
   }
 ]
 
