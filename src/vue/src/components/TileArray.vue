@@ -38,7 +38,7 @@ export default {
         if (query !== '--nochange') {
           const axios = require('axios')
           axios
-            .get('http://localhost:4567/api/bookmarks?q=' + query, {
+            .get('/api/bookmarks?q=' + query, {
               headers: {}
             })
             .then(response => {

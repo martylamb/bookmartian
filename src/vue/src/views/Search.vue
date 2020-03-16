@@ -51,7 +51,7 @@ export default {
       if (!this.tagCache.length) {
         const axios = require('axios')
         axios
-          .get('http://localhost:4567/api/tags', {
+          .get('/api/tags', {
             headers: {}
           })
           .then(response => {

@@ -60,6 +60,11 @@ public class App {
         JSAP jsap = new JSAP();
 
         String defaultDir = System.getProperty("user.dir");
+        String defaultPort = System.getProperty("webserver.port");
+        if (defaultPort == null) {
+            defaultPort = "4567";
+        }
+
         jsap.registerParameter(new FlaggedOption(JSAP_DIR)
                                 .setShortFlag('d')
                                 .setLongFlag("dir")
@@ -72,7 +77,7 @@ public class App {
                                 .setShortFlag('p')
                                 .setLongFlag("port")
                                 .setStringParser(new IntegerStringParser())
-                                .setDefault("4567")
+                                .setDefault(defaultPort)
                                 .setRequired(false)
                                 .setHelp("specifies the port on which the webserver should listen")
         );

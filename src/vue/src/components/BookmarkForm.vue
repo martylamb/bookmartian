@@ -82,7 +82,7 @@ export default {
     deleteBookmark: function () {
       // const axios = require('axios')
       // axios
-      //   .post('http://localhost:4567/api/bookmark/delete?url=' + this.selectedBookmark.url, {
+      //   .post('/api/bookmark/delete?url=' + this.selectedBookmark.url, {
       //     headers: {
       //     }
       //   })
@@ -123,7 +123,7 @@ export default {
       if (!this.tags.length) {
         const axios = require('axios')
         axios
-          .get('http://localhost:4567/api/tags', {
+          .get('/api/tags', {
             headers: {}
           })
           .then(response => {

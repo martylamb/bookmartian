@@ -47,11 +47,12 @@ RUN set -ex && \
     apk add openjdk8-jre bash && \
     rm -rf /var/cache/apk/*
        
-EXPOSE 4567 80 443
+EXPOSE 80
 
 COPY docker-filesystem /
 
 RUN mkdir -p /opt/bookmartian
 COPY --from=builder /bookmartian/target/*-jar-with-dependencies.jar /opt/bookmartian/bookmartian.jar 
+ENV user.dir /data
 
-CMD java -cp /opt/bookmartian/bookmartian.jar com.martiansoftware.bookmartian.App
+CMD java -Duser.dir=/data -Dwebserver.port=80 -cp /opt/bookmartian/bookmartian.jar com.martiansoftware.bookmartian.App

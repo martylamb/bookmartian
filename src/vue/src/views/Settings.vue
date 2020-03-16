@@ -44,7 +44,7 @@ export default {
     // retrieve about info
     const axios = require('axios')
     axios
-      .get('http://localhost:4567/api/about', {
+      .get('/api/about', {
         headers: {
         }
       })

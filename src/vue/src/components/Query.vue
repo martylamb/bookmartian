@@ -12,7 +12,7 @@
     </b-dropdown>
     <div class='querytext'>{{ this.query }}</div>
     <div class='bookmark' v-for='(bookmark) in this.bookmarks' v-bind:key='bookmark.url'>
-      <a :href="'http://localhost:4567/api/visit?url=' + bookmark.url">{{bookmark.title}}</a>
+      <a :href="'/api/visit?url=' + bookmark.url">{{bookmark.title}}</a>
       <div class='editspacer' v-on:click="$emit('edit-bookmark', bookmark)">
         <font-awesome-icon :icon="['fas', 'angle-right']" size='sm' transform='left-4' class='editicon' />
       </div>
@@ -91,7 +91,7 @@ export default {
       if (query) {
         const axios = require('axios')
         axios
-          .get('http://localhost:4567/api/bookmarks?q=' + query, {
+          .get('/api/bookmarks?q=' + query, {
             headers: {
             }
           })

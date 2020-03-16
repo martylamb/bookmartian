@@ -1,6 +1,6 @@
 <template>
   <div class='tile'>
-    <a :href="'http://localhost:4567/api/visit?url=' + this.url">
+    <a :href="'/api/visit?url=' + this.url">
       <img :src='this.imageUrl' class='tileImage' :alt='this.title'/>
     </a>
   </div>
