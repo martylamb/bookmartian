@@ -4,7 +4,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
 module.exports = {
   outputDir: '../main/resources/static-content',
   configureWebpack: {
-    plugins: [new BundleAnalyzerPlugin()]
+    // plugins: [new BundleAnalyzerPlugin()]
   },
   pluginOptions: {
     fontawesome: {

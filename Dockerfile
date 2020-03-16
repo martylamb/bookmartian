@@ -24,18 +24,27 @@
 #   - forward an external port (tcp) to 4567 in the container
 
 # build the vue ui in a temp container and copy the results into the final
-FROM my-vue-cli AS vue-builder
-WORKDIR /code
-COPY src/vue .
-WORKDIR /code/src
-RUN vue build --dest ../static-content --target app
+FROM alpine:latest AS builder
+RUN apk upgrade --update && \
+    apk add npm && \
+    apk add openjdk8 && \
+    apk add maven
+RUN apk add bash
+RUN mkdir -p bookmartian/src/vue
+COPY ./src/vue/package*.json /bookmartian/src/vue/
+WORKDIR /bookmartian/src/vue
+RUN npm install
+COPY . /bookmartian/
+RUN npm run build
+WORKDIR /bookmartian
+RUN mvn package
 
 # build the production container with jre, etc.
 FROM alpine:latest
 
 RUN set -ex && \
     apk upgrade --update && \
-    apk add openjdk8-jre caddy bash && \
+    apk add openjdk8-jre bash && \
     rm -rf /var/cache/apk/*
        
 EXPOSE 4567 80 443
@@ -43,7 +52,6 @@ EXPOSE 4567 80 443
 COPY docker-filesystem /
 
 RUN mkdir -p /opt/bookmartian
-COPY target/*-jar-with-dependencies.jar /opt/bookmartian/bookmartian.jar 
-COPY --from=vue-builder /static-content /tmp/static-content
+COPY --from=builder /bookmartian/target/*-jar-with-dependencies.jar /opt/bookmartian/bookmartian.jar 
 
-CMD bookmartian
+CMD java -cp /opt/bookmartian/bookmartian.jar com.martiansoftware.bookmartian.App
