@@ -1,7 +1,10 @@
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
+    .BundleAnalyzerPlugin;
+
 module.exports = {
   outputDir: '../main/resources/static-content',
   configureWebpack: {
-    devtool: 'source-map'
+    plugins: [new BundleAnalyzerPlugin()]
   },
   pluginOptions: {
     fontawesome: {
@@ -19,7 +22,10 @@ module.exports = {
         {
           set: '@fortawesome/free-solid-svg-icons',
           icons: [
-            'search'
+            'search',
+            'AngleRight',
+            'EllipsisH',
+            'Plus'
           ]
         }
       ]
