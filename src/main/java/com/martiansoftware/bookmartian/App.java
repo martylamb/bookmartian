@@ -154,6 +154,10 @@ public class App {
         get("/api/about", () -> about(bm));
         
         get("/", (req, rsp) -> IOUtils.toString(App.class.getResourceAsStream("/static-content/index.html")));
+        get("/Page/*", (req, rsp) -> IOUtils.toString(App.class.getResourceAsStream("/static-content/index.html")));
+        get("/Settings", (req, rsp) -> IOUtils.toString(App.class.getResourceAsStream("/static-content/index.html")));
+        get("/Search", (req, rsp) -> IOUtils.toString(App.class.getResourceAsStream("/static-content/index.html")));
+        get("/New", (req, rsp) -> IOUtils.toString(App.class.getResourceAsStream("/static-content/index.html")));
         get("/index.html", (req, rsp) -> {             
             String q = req.raw().getQueryString();
             String dest = String.format("/%s%s", Strings.isEmpty(q) ? "" : "?", Strings.isEmpty(q) ? "" : q);
