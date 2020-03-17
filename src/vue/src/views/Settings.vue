@@ -3,7 +3,7 @@
     <h1>Configuration</h1>
     <p>URL to an external configuration file. The format of the file is described here, and the json schema is available here.</p>
     <h1>Bookmarklet</h1>
-    <p>Using this bookmarklet is the easiest way to add bookmarks to the bookmartian.</p>
+    <p>Using <a :href='this.bookmarkFQDN'>this bookmarklet</a> is the easiest way to add bookmarks to the bookmartian.</p>
     <h1>Manage your tags</h1>
     <p>Rename, merge and recolor tags used in your bookmark collection.</p>
     <h1>Import bookmarks from a file</h1>
@@ -34,7 +34,14 @@ export default {
   },
   data: function () {
     return {
-      about: {}
+      about: {},
+      configFileUrl: String
+    }
+  },
+  computed: {
+    bookmarkFQDN: function () {
+      var full = location.protocol+'//'+location.hostname+(location.port ? ':'+location.port: ''); 
+      return "javascript:location.href='" + full + "/New?url='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title)"
     }
   },
   mounted () {

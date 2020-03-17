@@ -1,1 +1,1 @@
-javascript:location.href='http://localhost:8080/New?url='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title)
+javascript:location.href='http://localhost/New?url='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title)
