@@ -4,10 +4,10 @@
       <div class='bookmark-modal-box'>
         <h1>{{this.dialogTitle}}</h1>
         <b-field>
-          <b-input type='text' v-model='selectedBookmark.title' placeholder='bookmark title'/>
+          <b-input type='text' v-model.lazy='selectedBookmark.title' placeholder='bookmark title'/>
         </b-field>
         <b-field>
-          <b-input type='text' v-model='selectedBookmark.url' placeholder='bookmark url'/>
+          <b-input type='text' v-model.lazy='selectedBookmark.url' placeholder='bookmark url'/>
         </b-field>
         <b-field>
           <b-taginput
@@ -22,10 +22,10 @@
           </b-taginput>
         </b-field>
         <b-field>
-          <b-input type='text' v-model='selectedBookmark.tileImageUrl' placeholder='url used for tile image (optional)'/>
+          <b-input type='text' v-model.lazy='selectedBookmark.tileImageUrl' placeholder='url used for tile image (optional)'/>
         </b-field>
         <b-field>
-          <b-input type='text' v-model='selectedBookmark.notes' placeholder='other notes (optional)'/>
+          <b-input type='text' v-model.lazy='selectedBookmark.notes' placeholder='other notes (optional)'/>
         </b-field>
         <div class='bookmark-modal-statistics' v-show='this.existingBookmark'>
           <span>created on {{simplifyDate(this.selectedBookmark.created)}} | </span>
@@ -103,7 +103,7 @@ export default {
       this.$modal.hide('BookmarkModal')
     },
     saveBookmark: function (event) {
-      console.log('BookmarkForm: saving bookmark ' + this.title)
+      console.log('BookmarkForm: saving bookmark ' + this.selectedBookmark.title)
       const axios = require('axios')
       const qs = require('qs')
       axios
@@ -126,13 +126,19 @@ export default {
           // always executed
         })
 
+      this.$emit('save-bookmark', this.selectedBookmark)
+      this.selectedBookmark = {}
       this.$modal.hide('BookmarkModal')
-      // redirect backwards if this is the bookmarklet?
+      if (!this.clickToClose) {
+        this.$router.go(-1)
+      }
     },
     hideBookmarkModal: function (event) {
       this.$modal.hide('BookmarkModal')
       // redirect backwards if this is the bookmarklet?
-      // this.$router.go(-1)
+      if (!this.clickToClose) {
+        this.$router.go(-1)
+      }
     },
     simplifyDate: function (datestring) {
       if (datestring) {

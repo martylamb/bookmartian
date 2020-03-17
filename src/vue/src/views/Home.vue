@@ -21,7 +21,8 @@
       :visible='false'
       :existingBookmark='this.isExistingBookmark'
       :clickToClose='true'
-      v-on:delete-bookmark='deleteBookmark($event)'/>
+      v-on:delete-bookmark='deleteBookmark($event)'
+      v-on:save-bookmark='saveBookmark($event)'/>
   </div>
 </template>
 
