@@ -11,12 +11,11 @@
 
 # build the vue ui in a temp container and copy the results into the final
 FROM alpine:latest AS builder
-RUN apk upgrade --update && \
-    apk add npm && \
-    apk add openjdk8 && \
-    apk add maven
-RUN apk add bash
-RUN mkdir -p bookmartian/src/vue
+RUN mkdir -p bookmartian/src/vue && \
+    apk upgrade --update && \
+    apk add maven \
+            npm \
+            openjdk8
 COPY ./src/vue/package*.json /bookmartian/src/vue/
 WORKDIR /bookmartian/src/vue
 RUN npm install
