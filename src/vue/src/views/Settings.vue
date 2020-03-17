@@ -36,6 +36,10 @@
             <b-button :disabled='currentTag.length==0' class='button is-info'>rename</b-button>
           </p>
         </b-field>
+
+        <p class='control'>
+          <b-button :disabled='currentTag.length==0' class='button is-danger'>delete</b-button>
+        </p>
       </b-field>
     </div>
 
