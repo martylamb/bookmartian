@@ -41,7 +41,7 @@ export default {
   computed: {
     bookmarkFQDN: function () {
       var full = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '')
-      return "javascript:location.href='" + full + "/New?url='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title)"
+      return "javascript:location.href='" + full + "/new?url='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title)"
     }
   },
   mounted () {

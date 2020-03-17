@@ -31,7 +31,7 @@ export default {
   methods: {
     // submit the search
     submitSearch: function (e) {
-      this.$router.push({ path: '/Search', query: { q: this.query } })
+      this.$router.push({ path: '/search', query: { q: this.query } })
     },
     submitOnlineSearch: function () {
       window.location = this.internetSearchUrl + this.query

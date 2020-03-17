@@ -87,7 +87,7 @@ export default {
       if (this.query) {
         newQuery = this.query + '+'
       }
-      this.$router.push({ path: '/Search', query: { q: newQuery + tag } })
+      this.$router.push({ path: '/search', query: { q: newQuery + tag } })
     },
     // set default tag color from cache if none specified
     tagBGColor: function (tag) {

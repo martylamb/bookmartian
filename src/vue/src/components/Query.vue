@@ -228,7 +228,7 @@ export default {
       this.getBookmarks(this.query)
     },
     openInSearch: function () {
-      this.$router.push({ path: '/Search', query: { q: this.query } })
+      this.$router.push({ path: '/search', query: { q: this.query } })
     }
   },
   mounted () {

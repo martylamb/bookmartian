@@ -9,27 +9,27 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    redirect: '/Page/0',
+    redirect: '/page/0',
     name: 'Home',
     component: Home,
     children: [
       {
-        path: '/Settings',
+        path: '/settings',
         component: () => import(/* webpackChunkName: "Settings" */ '../views/Settings.vue')
       },
       {
-        path: '/Search',
+        path: '/search',
         component: () => import(/* webpackChunkName: "Search" */ '../views/Search.vue')
       },
       {
-        path: '/Page/:page_index',
+        path: '/page/:page_index',
         component: Page,
         props: true
       }
     ]
   },
   {
-    path: '/New',
+    path: '/new',
     name: 'New',
     component: New
   }
