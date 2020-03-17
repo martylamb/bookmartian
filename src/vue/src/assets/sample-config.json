@@ -43,27 +43,9 @@
             ]
         },
         {
-            "name": "Fun",
-            "bannerImageUrl": "https://d2rormqr1qwzpz.cloudfront.net/photos/2013/03/19/46142-catan_teaser.jpg",
-            "tileQuery": "xbox",
-            "queries": [
-                {
-                    "name": "active",
-                    "query": "visited-since:1m limit:20 by:most-visited"
-                },
-                {
-                    "name": "fun stuff",
-                    "query": "games"
-                },
-                {
-                    "name": "video games",
-                    "query": "xbox"
-                }
-            ]
-        },        {
             "name": "D&D",
             "bannerImageUrl": "http://getwallpapers.com/wallpaper/full/5/1/4/157682.jpg",
-            "tileQuery": "promote-dnd",
+            "tileQuery": "dnd dmscreen",
             "queries": [
                 {
                     "name": "reference",

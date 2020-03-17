@@ -76,10 +76,12 @@ export default {
       var uniqueTags = new Set()
       var tagsList = []
       for (var index = 0; index < this.bookmarks.length; index++) {
-        for (var index2 = 0; index2 < this.bookmarks[index].tags.length; index2++) {
-          if (!uniqueTags.has(this.bookmarks[index].tags[index2])) {
-            uniqueTags.add(this.bookmarks[index].tags[index2])
-            tagsList.push({ name: this.bookmarks[index].tags[index2], color: '#000000' })
+        if (this.bookmarks[index].tags) {
+          for (var index2 = 0; index2 < this.bookmarks[index].tags.length; index2++) {
+            if (!uniqueTags.has(this.bookmarks[index].tags[index2])) {
+              uniqueTags.add(this.bookmarks[index].tags[index2])
+              tagsList.push({ name: this.bookmarks[index].tags[index2], color: '#000000' })
+            }
           }
         }
       }
@@ -219,7 +221,6 @@ export default {
       for (var index = 0; index < this.bookmarks.length; index++) {
         if (this.bookmarks[index].url === url) {
           this.$delete(this.bookmarks, index)
-          console.log('deleted ' + url)
         }
       }
     },

@@ -69,7 +69,7 @@ export default {
     addBookmarkModal: function () {
       this.isExistingBookmark = false
       this.selectedBookmark = {}
-      this.$refs.bookmarkform.showBookmarkModal({})
+      this.$refs.bookmarkform.showBookmarkModal({ title: '', url: '', tags: [], tileImageUrl: '', notes: '' })
     },
     // update the ui after a bookmark deletion event
     deleteBookmark: function (bookmark) {

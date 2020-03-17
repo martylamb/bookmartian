@@ -163,7 +163,7 @@ public class App {
     
     private static BoomResponse about(Bookmartian bm) {
         try {
-            corsHeaders();
+            //corsHeaders();
             return JSend.success(appProperties);
         } catch (Exception e) {
             return JSend.error(e);
@@ -171,13 +171,13 @@ public class App {
     }
 
     private static BoomResponse tags(Bookmartian bm) {
-        corsHeaders();
+        //corsHeaders();
         return json(bm.tags());
     }
 
     private static BoomResponse query(Bookmartian bm) {
         try {
-            corsHeaders();
+            //corsHeaders();
             return JSend.success(Query.of(q("q")).execute(bm));
         } catch (Exception e) {
             return JSend.error(e);
@@ -225,7 +225,7 @@ public class App {
                             .tags(q("tags"))
                             .build();
 
-            corsHeaders();
+            //corsHeaders();
             return JSend.success(bm.update(oldLurl, b));
         } catch (Exception e) {
             return JSend.error(e);
@@ -239,7 +239,7 @@ public class App {
             Lurl lurl = Lurl.of(url);
             log.debug("searching for bookmark: {}", lurl);
             Optional<Bookmark> b = bm.get(lurl);
-            corsHeaders();
+            //corsHeaders();
             return b.map(result -> JSend.success(result)).orElse(JSend.fail("no such bookmark: " + url));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
@@ -278,7 +278,7 @@ public class App {
             assert(url != null);
             Lurl lurl = Lurl.of(url);
             Optional<Bookmark> ob = bm.visit(lurl);
-            corsHeaders();
+            //corsHeaders();
             if (!ob.isPresent()) return StatusPage.of(404, "Not Found");
             response().redirect(ob.get().lurl().toString());
             return null;
@@ -294,7 +294,7 @@ public class App {
         log.info("deleting bookmark: [{}]", url);
         try {
             Optional<Bookmark> ob = bm.remove(Lurl.of(url));
-            corsHeaders();
+            //corsHeaders();
             return ob.map(b -> JSend.success(b)).orElse(JSend.fail("no such bookmark: " + url));
         } catch (Exception e) {
             return JSend.error(e);

@@ -4,10 +4,10 @@
       <div class='bookmark-modal-box'>
         <h1>{{this.dialogTitle}}</h1>
         <b-field>
-          <b-input type='text' v-model='this.selectedBookmark.title' placeholder='bookmark title'/>
+          <b-input type='text' v-model='selectedBookmark.title' placeholder='bookmark title'/>
         </b-field>
         <b-field>
-          <b-input type='text' v-model='this.selectedBookmark.url' placeholder='bookmark url'/>
+          <b-input type='text' v-model='selectedBookmark.url' placeholder='bookmark url'/>
         </b-field>
         <b-field>
           <b-taginput
@@ -22,10 +22,10 @@
           </b-taginput>
         </b-field>
         <b-field>
-          <b-input type='text' v-model='this.selectedBookmark.tileImageUrl' placeholder='url used for tile image (optional)'/>
+          <b-input type='text' v-model='selectedBookmark.tileImageUrl' placeholder='url used for tile image (optional)'/>
         </b-field>
         <b-field>
-          <b-input type='text' v-model='this.selectedBookmark.notes' placeholder='other notes (optional)'/>
+          <b-input type='text' v-model='selectedBookmark.notes' placeholder='other notes (optional)'/>
         </b-field>
         <div class='bookmark-modal-statistics' v-show='this.existingBookmark'>
           <span>created on {{simplifyDate(this.selectedBookmark.created)}} | </span>
@@ -61,7 +61,7 @@ export default {
     return {
       tags: [],
       filteredTags: [],
-      selectedBookmark: { title: '', url: '' }
+      selectedBookmark: { title: '', url: '', tags: [], tileImageUrl: '', notes: '' }
     }
   },
   methods: {
@@ -80,30 +80,51 @@ export default {
       })
     },
     deleteBookmark: function () {
-      // const axios = require('axios')
-      // axios
-      //   .post('/api/bookmark/delete?url=' + this.selectedBookmark.url, {
-      //     headers: {
-      //     }
-      //   })
-      //   .then(response => {
-      //     // handle success
-      //     console.log('Deleted ' + this.selectedBookmark.title)
-      //   })
-      //   .catch(error => {
-      //     // handle error
-      //     console.log(error)
-      //   })
-      //   .finally(function () {
-      //     // always executed
-      //   })
+      console.log('BookmarkForm: deleting bookmark ' + this.selectedBookmark.title)
+      const axios = require('axios')
+      axios
+        .post('/api/bookmark/delete?url=' + this.selectedBookmark.url, {
+          headers: {}
+        })
+        .then(response => {
+          // handle success
+          console.log('BookmarkForm: successful delete')
+        })
+        .catch(error => {
+          // handle error
+          console.log(error)
+        })
+        .finally(function () {
+          // always executed
+        })
 
       this.$emit('delete-bookmark', this.selectedBookmark)
       this.selectedBookmark = {}
       this.$modal.hide('BookmarkModal')
     },
     saveBookmark: function (event) {
-      // do the API stuff to save the bookmark to the service
+      console.log('BookmarkForm: saving bookmark ' + this.title)
+      const axios = require('axios')
+      const qs = require('qs')
+      axios
+        .post('/api/bookmark/update',
+          qs.stringify({
+            url: this.selectedBookmark.url,
+            title: this.selectedBookmark.title,
+            tags: this.selectedBookmarkFlattenedTags,
+            notes: this.selectedBookmark.notes
+          }))
+        .then(response => {
+          // handle success
+          console.log('BookmarkForm: successful save')
+        })
+        .catch(error => {
+          // handle error
+          console.log(error)
+        })
+        .finally(function () {
+          // always executed
+        })
 
       this.$modal.hide('BookmarkModal')
       // redirect backwards if this is the bookmarklet?
@@ -146,6 +167,13 @@ export default {
       var baseHeight = 385
       var statHeight = 40
       return baseHeight + (this.existingBookmark ? statHeight : 0)
+    },
+    selectedBookmarkFlattenedTags: function () {
+      var flattenedTags = ''
+      this.selectedBookmark.tags.forEach(tag => {
+        flattenedTags += tag + ' '
+      })
+      return flattenedTags
     }
   },
   watch: {
