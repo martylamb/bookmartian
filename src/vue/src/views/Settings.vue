@@ -40,7 +40,7 @@ export default {
   },
   computed: {
     bookmarkFQDN: function () {
-      var full = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port: '')
+      var full = location.protocol + '//' + location.hostname + (location.port ? ':' + location.port : '')
       return "javascript:location.href='" + full + "/New?url='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title)"
     }
   },
