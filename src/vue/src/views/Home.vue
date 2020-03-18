@@ -89,6 +89,28 @@ export default {
     },
     changeSearchTerm: function (event) {
       this.$refs.searchbar.updateQuery(event)
+    },
+    // use the API to retrieve a config file
+    getConfig: async function () {
+      const axios = require('axios')
+      await axios
+        .get('/api/config', {
+          headers: {
+          }
+        })
+        .then(response => {
+          // handle success
+          this.config = response.data
+          console.log('Home: loaded config file')
+        })
+        .catch(error => {
+          // handle error
+          this.config = require('../assets/default-config.json')
+          console.log(error)
+        })
+        .finally(function () {
+          // always executed
+        })
     }
   },
   computed: {},
@@ -112,9 +134,10 @@ export default {
       }
     }
   },
-  mounted () {
+  async mounted () {
     // retrieve config file
-    this.config = require('../assets/sample-config.json')
+    await this.getConfig()
+    // this.config = require('../assets/sample-config.json')
 
     // set the banner background to template default
     this.updateBackground(this.config.bannerImageUrl)
