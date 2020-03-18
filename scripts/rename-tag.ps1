@@ -7,7 +7,7 @@
 #
 # Example usage:
 #
-# 
+# .\rename-tag.ps1 geek nerd
 
 param (
     [Parameter(
