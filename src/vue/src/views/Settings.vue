@@ -1,12 +1,12 @@
 <template>
   <div class='page'>
-    <h1>Configuration</h1>
+    <h1><a href='#configuration'/>Configuration</h1>
     <p>URL to an external configuration file. The format of the file is described here, and the json schema is available here.</p>
 
-    <h1>Bookmarklet</h1>
+    <h1><a href='#bookmarklet'/>Bookmarklet</h1>
     <p>Using <a :href='this.bookmarkFQDN'>this bookmarklet</a> is the easiest way to add bookmarks to the bookmartian.</p>
 
-    <h1>Manage your tags</h1>
+    <h1><a href='#tags'/>Manage your tags</h1>
     <p>Rename, merge and recolor tags used in your bookmark collection.</p>
     <div class='tagactions'>
       <b-field grouped group-multiline>
@@ -43,10 +43,10 @@
       </b-field>
     </div>
 
-    <h1>Import bookmarks from a file</h1>
+    <h1><a href='#import'/>Import bookmarks from a file</h1>
     <p>You can import bookmarks into Bookmartian from an existing file. The file must be formatted in the Netscape Bookmark file format.</p>
 
-    <h1>About this project</h1>
+    <h1><a href='#about'/>About this project</h1>
     <p>Bookmartian is a self-hosted, personal bookmark database intended to make saving, finding, and using bookmarks simple but powerful. Designed to be easily hosted on your home machine or on a cloud server, bookmartian is self-contained with no external software dependencies. Enjoy! Marty Lamb &amp; John Mutchek</p>
     <p class="monospace aboutbox">
       <strong>project.version:</strong> <span>{{this.about['project.version']}}</span><br/>

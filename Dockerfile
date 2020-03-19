@@ -16,10 +16,12 @@ RUN mkdir -p bookmartian/src/vue && \
     apk add maven \
             npm \
             openjdk8
-COPY ./src/vue/package*.json /bookmartian/src/vue/
+# COPY ./src/vue/package*.json /bookmartian/src/vue/
 WORKDIR /bookmartian/src/vue
-RUN npm install
 COPY . /bookmartian/
+RUN npm install && \
+    cd /bookmartian && \
+    mvn dependency:resolve
 RUN npm run build
 WORKDIR /bookmartian
 RUN mvn package
