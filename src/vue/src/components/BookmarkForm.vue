@@ -18,6 +18,7 @@
             field='name'
             placeholder="tag list"
             max-height='120px'
+            :confirm-key-codes='[13,188,9,32]'
             @typing="getFilteredTags">
           </b-taginput>
         </b-field>
