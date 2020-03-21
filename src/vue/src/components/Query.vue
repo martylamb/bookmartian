@@ -8,7 +8,8 @@
       <b-dropdown-item aria-role='listitem' v-on:click='sortByVisited()' v-bind:class='{activeSort: isVisitedSorted}'>{{this.visitSortedLabel}}</b-dropdown-item>
       <b-dropdown-item aria-role='listitem' v-on:click='sortByVisits()' v-bind:class='{activeSort: isVisitsSorted}'>{{this.visitsSortedLabel}}</b-dropdown-item>
       <b-dropdown-item aria-role='listitem'></b-dropdown-item>
-      <b-dropdown-item aria-role='listitem' v-on:click='openInSearch()'>Open query in tag search</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem' v-on:click='openInSearch()'>Open in tag search</b-dropdown-item>
+      <b-dropdown-item aria-role='listitem' v-on:click='openInTabs()'>Open every link in a tab</b-dropdown-item>
     </b-dropdown>
     <div class='querytext'>{{ this.query }}</div>
     <div class='bookmark' v-for='(bookmark) in this.bookmarks' v-bind:key='bookmark.url'>
@@ -229,6 +230,11 @@ export default {
     },
     openInSearch: function () {
       this.$router.push({ path: '/search', query: { q: this.query } })
+    },
+    openInTabs: function () {
+      this.bookmarks.forEach(link => {
+        window.open(link.url)
+      })
     }
   },
   mounted () {
