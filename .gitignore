@@ -8,6 +8,7 @@ debug.log
 /.vscode/
 art/~*.*
 /src/vue/node_modules/
+/src/main/resources/static-content/
 anonymous.bookmartian
 index.1.html
 .classpath
