@@ -233,7 +233,7 @@ export default {
     },
     openInTabs: function () {
       this.bookmarks.forEach(link => {
-        window.open(link.url)
+        window.open('/api/visit?url=' + link.url)
       })
     }
   },
