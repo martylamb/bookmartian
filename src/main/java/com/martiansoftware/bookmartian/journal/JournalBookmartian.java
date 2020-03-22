@@ -56,6 +56,7 @@ public class JournalBookmartian implements Bookmartian {
         ensureTagsForAllBookmarks();
         autoDeleteUnusedTags(TagNameSet.of(_tags.keySet()));
         log.info("finished loading {}", journalPath);
+        log.info("loaded {} bookmarks", _bookmarks.size());
     }
 
     private void apply(BMJournalEntry je) {

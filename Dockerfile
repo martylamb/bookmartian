@@ -6,35 +6,40 @@
 #   - all data is stored in /data - be sure to mount something here for
 #     persistence!
 #
-# Service can run "raw" (no authentication, no ssl), listening on port
-# 4567 for http connections, OR behind an (included) caddy server,
-# providing ssl, letsencrypt, and authentication.  "Raw" is the default.
-#
-# To run using (included) caddy server for ssl, letsencrypt, and
-# authentication:
-#
-#   - forward your http port to port 80 in the container
-#   - forward your https port to port 443 in the container
-#   - create a .htpasswd file and store it in the directory you have
-#     mounted in /data (optional)
-#
-#
-# To run raw:
-#
-#   - forward an external port (tcp) to 4567 in the container
+# Service runs "raw" (no authentication, no ssl), listening on port
+# 4567 (or as specified) for http connections
 
+# build the vue ui in a temp container and copy the results into the final
+FROM alpine:latest AS builder
+RUN mkdir -p bookmartian/src/vue && \
+    apk upgrade --update && \
+    apk add maven \
+            npm \
+            openjdk8
+# COPY ./src/vue/package*.json /bookmartian/src/vue/
+WORKDIR /bookmartian/src/vue
+COPY . /bookmartian/
+RUN npm install && \
+    cd /bookmartian && \
+    mvn dependency:resolve
+RUN npm run build
+WORKDIR /bookmartian
+RUN mvn package
+
+# build the production container with jre, etc.
 FROM alpine:latest
 
 RUN set -ex && \
     apk upgrade --update && \
     apk add openjdk8-jre bash && \
-    rm -rf /var/cache/apk/*    
-    
+    rm -rf /var/cache/apk/*
+       
 EXPOSE 80
 
 COPY docker-filesystem /
 
 RUN mkdir -p /opt/bookmartian
-COPY target/*-jar-with-dependencies.jar /opt/bookmartian/bookmartian.jar 
+COPY --from=builder /bookmartian/target/*-jar-with-dependencies.jar /opt/bookmartian/bookmartian.jar 
+ENV user.dir /data
 
-CMD bookmartian
+CMD java -Duser.dir=/data -Dwebserver.port=80 -cp /opt/bookmartian/bookmartian.jar com.martiansoftware.bookmartian.App

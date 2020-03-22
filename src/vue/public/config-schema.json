@@ -1,0 +1,115 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "http://example.com/example.json",
+    "type": "object",
+    "title": "Bookmartian Configuration",
+    "description": "Used to define the custom pages and configuration of a bookmartian installation",
+    "required": [
+        "pages"
+    ],
+    "properties": {
+        "bannerImageUrl": {
+            "$id": "#/properties/bannerImageUrl",
+            "type": "string",
+            "title": "Default banner image",
+            "description": "Url pointing to the image that should be used in the banner if none is specified on a page.",
+            "default": ""
+        },
+        "internetSearchUrl": {
+            "$id": "#/properties/internetSearchUrl",
+            "type": "string",
+            "title": "Internal search url prefix",
+            "description": "A prefix string used to redirect search queries to a preferred internet search engine.",
+            "default": "",
+            "examples": [
+                "https://www.bing.com/search?q="
+            ]
+        },        
+        "pages": {
+            "$id": "#/properties/pages",
+            "type": "array",
+            "title": "Pages",
+            "description": "Array of custom dashboard configurations, displayed as tabbed pages in bookmartian.",
+            "default": [],
+            "items": {
+                "$id": "#/properties/pages/items",
+                "type": "object",
+                "title": "Page",
+                "description": "A custom dashboard config",
+                "default": {},
+                "examples": [
+                    {
+                        "name": "Home",
+                        "queries": [
+                            {
+                                "query": "thisyear limit:6",
+                                "name": "active"
+                            }
+                        ],
+                        "tileQuery": "promote"
+                    }
+                ],
+                "required": [
+                    "name",
+                    "queries"
+                ],
+                "properties": {
+                    "name": {
+                        "$id": "#/properties/pages/items/properties/name",
+                        "type": "string",
+                        "title": "Page Name",
+                        "description": "The short title to be displayed on the tab bar.",
+                        "default": "",
+                        "examples": [
+                            "Home"
+                        ]
+                    },
+                    "tileQuery": {
+                        "$id": "#/properties/pages/items/properties/tileQuery",
+                        "type": "string",
+                        "title": "Tile Query",
+                        "description": "The search expression used to generate promoted tiles ",
+                        "default": "",
+                        "examples": [
+                            "promote"
+                        ]
+                    },
+                    "queries": {
+                        "$id": "#/properties/pages/items/properties/queries",
+                        "type": "array",
+                        "title": "Queries",
+                        "description": "Array of search expressions used to populate the page",
+                        "default": [],
+                        "items": {
+                            "$id": "#/properties/pages/items/properties/queries/items",
+                            "type": "object",
+                            "title": "Query",
+                            "description": "A configured search expression that will render as a single block on the page.",
+                            "default": {},
+                            "required": [
+                                "name",
+                                "query"
+                            ],
+                            "properties": {
+                                "name": {
+                                    "$id": "#/properties/pages/items/properties/queries/items/properties/name",
+                                    "type": "string",
+                                    "title": "Query Name",
+                                    "description": "The short title to be displayed as the header for the query block.",
+                                    "default": ""
+                                },
+                                "query": {
+                                    "$id": "#/properties/pages/items/properties/queries/items/properties/query",
+                                    "type": "string",
+                                    "title": "Query",
+                                    "description": "The search expression used to build the results list for this query box.",
+                                    "default": ""
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

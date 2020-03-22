@@ -1,0 +1,62 @@
+{
+    "bannerImageUrl": "http://theinconvenientskeptic.com/wp-content/uploads/2011/05/NASA-The-Andromeda-Galaxy-M31-Spyral-Galaxy-1-Q5VNLFJ7C2-1024x768.jpg",
+    "internetSearchUrl": "https://www.bing.com/search?q=",
+    "pages": [
+        {
+            "name": "Home",
+            "tileQuery": "promote",
+            "queries": [
+                {
+                    "name": "newly created",
+                    "query": "created-since:1w limit:10 by:most-recently-created"
+                },
+                {
+                    "name": "recently visited",
+                    "query": "visited-since:1m limit:10 by:most-recently-visited"
+                },
+                {
+                    "name": "frequently visited",
+                    "query": "visits-over:10 limit:10 by:most-visited"
+                }
+            ]
+        },
+        {
+            "name": "Work",
+            "bannerImageUrl": "https://i.pinimg.com/736x/cd/94/fc/cd94fccb24bd92cd8714851de609af4b.jpg",
+            "tileQuery": "promote-msft",
+            "queries": [
+                {
+                    "name": "reports",
+                    "query": "microsoft reports by:most-recently-visited"
+                },
+                {
+                    "name": "fy20",
+                    "query": "fy20 by:most-visited"
+                },
+                {
+                    "name": "az-demos",
+                    "query": "azure demo"
+                }
+            ]
+        },
+        {
+            "name": "D&D",
+            "bannerImageUrl": "http://getwallpapers.com/wallpaper/full/5/1/4/157682.jpg",
+            "tileQuery": "promote-dnd",
+            "queries": [
+                {
+                    "name": "recent",
+                    "query": "dnd !promote-dnd limit:10 by:most-recently-visited"
+                },
+                {
+                    "name": "reference",
+                    "query": "dmscreen reference"
+                },
+                {
+                    "name": "randomtables",
+                    "query": "randomtables dmscreen"
+                }
+            ]
+        }
+    ]
+}

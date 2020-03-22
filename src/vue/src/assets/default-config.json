@@ -1,0 +1,23 @@
+{
+    "bannerImageUrl": "/default-banner.jpg",
+    "internetSearchUrl": "https://www.bing.com/search?q=",
+    "pages": [
+        {
+            "name": "home",
+            "queries": [
+                {
+                    "name": "newly created",
+                    "query": "created-since:1w limit:10 by:most-recently-created"
+                },
+                {
+                    "name": "recently visited",
+                    "query": "visited-since:1w limit:10 by:most-recently-visited"
+                },
+                {
+                    "name": "frequently visited",
+                    "query": "visits-over:10 limit:10 by:most-visited"
+                }
+            ]
+        }
+    ]
+}

@@ -7,6 +7,8 @@ bookmarks.json
 debug.log
 /.vscode/
 art/~*.*
+/src/vue/node_modules/
+/src/main/resources/static-content/
 anonymous.bookmartian
 index.1.html
 .classpath
@@ -15,3 +17,4 @@ index.1.html
 .settings/org.eclipse.jdt.apt.core.prefs
 .settings/org.eclipse.jdt.core.prefs
 .settings/org.eclipse.m2e.core.prefs
+userdata.bookmartian
