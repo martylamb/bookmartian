@@ -27,11 +27,10 @@ FROM alpine:latest
 
 RUN set -ex && \
     apk upgrade --update && \
-    apk add openjdk8-jre caddy bash && \
-    rm -rf /var/cache/apk/*
+    apk add openjdk8-jre bash && \
+    rm -rf /var/cache/apk/*    
     
-    
-EXPOSE 4567 80 443
+EXPOSE 80
 
 COPY docker-filesystem /
 
