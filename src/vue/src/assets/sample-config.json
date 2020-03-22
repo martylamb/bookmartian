@@ -7,37 +7,34 @@
             "tileQuery": "promote",
             "queries": [
                 {
-                    "name": "new",
-                    "query": "created-since:1w by:most-recently-created"
+                    "name": "newly created",
+                    "query": "created-since:1w limit:10 by:most-recently-created"
                 },
                 {
-                    "name": "recent",
-                    "query": "visited-since:1w by:most-recently-visited"
+                    "name": "recently visited",
+                    "query": "visited-since:1m limit:10 by:most-recently-visited"
                 },
                 {
-                    "name": "coding",
-                    "query": "code tools"
-                },
-                {
-                    "name": "supplies",
-                    "query": "3d-printing filament as:prints"
+                    "name": "frequently visited",
+                    "query": "visits-over:10 limit:10 by:most-visited"
                 }
             ]
         },
         {
             "name": "Work",
             "bannerImageUrl": "https://i.pinimg.com/736x/cd/94/fc/cd94fccb24bd92cd8714851de609af4b.jpg",
+            "tileQuery": "promote-msft",
             "queries": [
                 {
                     "name": "reports",
                     "query": "microsoft reports by:most-recently-visited"
                 },
                 {
-                    "name": "active fy20",
-                    "query": "fy20 limit:6"
+                    "name": "fy20",
+                    "query": "fy20 by:most-visited"
                 },
                 {
-                    "name": "az-demo",
+                    "name": "az-demos",
                     "query": "azure demo"
                 }
             ]
@@ -45,15 +42,19 @@
         {
             "name": "D&D",
             "bannerImageUrl": "http://getwallpapers.com/wallpaper/full/5/1/4/157682.jpg",
-            "tileQuery": "dnd dmscreen",
+            "tileQuery": "promote-dnd",
             "queries": [
                 {
+                    "name": "recent",
+                    "query": "dnd !promote-dnd limit:10 by:most-recently-visited"
+                },
+                {
                     "name": "reference",
-                    "query": "reference dnd"
+                    "query": "dmscreen reference"
                 },
                 {
                     "name": "randomtables",
-                    "query": "randomtables dnd"
+                    "query": "randomtables dmscreen"
                 }
             ]
         }

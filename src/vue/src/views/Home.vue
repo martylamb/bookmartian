@@ -105,7 +105,8 @@ export default {
         })
         .catch(error => {
           // handle error
-          this.config = require('../assets/default-config.json')
+          // for now, load john's hard-coded config file because the api call will fail
+          this.config = require('../assets/sample-config.json')
           console.log(error)
         })
         .finally(function () {
@@ -137,7 +138,6 @@ export default {
   async mounted () {
     // retrieve config file
     await this.getConfig()
-    // this.config = require('../assets/sample-config.json')
 
     // set the banner background to template default
     this.updateBackground(this.config.bannerImageUrl)
