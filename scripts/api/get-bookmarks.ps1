@@ -1,3 +1,5 @@
+#requires -PSEdition Core
+
 # Powershell script to query bookmartian api
 #
 # to install PowerShell on windows or linux

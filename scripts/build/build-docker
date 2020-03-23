@@ -1,0 +1,19 @@
+#!/bin/bash
+
+main () {
+    set -eo pipefail
+    declare desc="Script used to build properly tagged docker container for bookmartian project."
+
+    # script variables
+    local version="0.0.0.0"
+
+    version="$(./scripts/build/gettag)"
+    
+    docker build -t bookmartian:"$version" .
+    docker tag bookmartian:"$version" bookmartian.azurecr.io/martylamb/bookmartian:"$version"
+
+    }
+
+main "$@"
+
+# bash script written using best practices from https://github.com/progrium/bashstyle

@@ -1,8 +1,0 @@
-#!/bin/bash
-
-git pull
-pkill java
-pkill caddy
-mvn clean compile
-nohup ./go -d ~/data/bookmartian &
-nohup /opt/caddy/caddy -conf=/home/jmutchek/data/Caddyfile &

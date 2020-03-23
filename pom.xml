@@ -121,9 +121,43 @@
         </resources>
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-enforcer-plugin</artifactId>
+                <version>3.0.0-M3</version>
+                <executions>
+                <execution>
+                    <id>enforce-versions</id>
+                    <goals>
+                    <goal>enforce</goal>
+                    </goals>
+                    <configuration>
+                    <rules>
+                        <bannedPlugins>
+                        <!-- will only display a warning but does not fail the build. -->
+                        <level>WARN</level>
+                        <excludes>
+                            <exclude>org.apache.maven.plugins:maven-verifier-plugin</exclude>
+                        </excludes>
+                        <message>Please consider using the maven-invoker-plugin (http://maven.apache.org/plugins/maven-invoker-plugin/)!</message>
+                        </bannedPlugins>
+                        <requireMavenVersion>
+                        <version>3.0.5</version>
+                        </requireMavenVersion>
+                        <requireJavaVersion>
+                        <version>1.8</version>
+                        </requireJavaVersion>
+                        <!-- <requireOS>
+                        <family>unix</family>
+                        </requireOS> -->
+                    </rules>
+                    </configuration>
+                </execution>
+                </executions>
+            </plugin>           
+             <plugin>
                 <groupId>pl.project13.maven</groupId>
                 <artifactId>git-commit-id-plugin</artifactId>
-                <version>2.1.13</version>
+                <version>4.0.0</version>
                 <executions>
                     <execution>
                         <id>get-the-git-infos</id>
@@ -144,7 +178,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>3.2.0</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -155,7 +189,7 @@
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
+                <version>3.2.0</version>
                 <configuration>
                     <archive>
                         <manifest>
@@ -179,7 +213,7 @@
             <plugin>
                 <groupId>com.spotify</groupId>
                 <artifactId>dockerfile-maven-plugin</artifactId>
-                <version>1.3.4</version>
+                <version>1.4.13</version>
 <!-- commenting out this block prevents execution during mvn package phase
      it can be manually invoked via mvn dockerfile:build
                 <executions>

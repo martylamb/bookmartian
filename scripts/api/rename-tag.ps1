@@ -1,3 +1,5 @@
+#requires -PSEdition Core
+
 # Powershell script to rename a tag (brute force) bookmartian api
 #
 # to install PowerShell on windows or linux
