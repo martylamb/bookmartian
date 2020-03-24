@@ -10,7 +10,7 @@
 #
 # .\build.ps1
 
-$version = $(wsl /mnt/d/local/70-code/73-github-personal/bookmartian/scripts/build/gettag)
+$buildVersion = $(wsl /mnt/d/local/70-code/73-github-personal/bookmartian/scripts/build/gettag)
 
-docker build -t bookmartian:$version .
-docker tag bookmartian:$version bookmartian.azurecr.io/martylamb/bookmartian:$version
+docker build -t bookmartian:$buildVersion --build-arg BUILDVERSION=$buildVersion .
+docker tag bookmartian:$buildVersion bookmartian.azurecr.io/martylamb/bookmartian:$buildVersion

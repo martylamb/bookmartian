@@ -11,6 +11,7 @@
 
 # build the vue ui in a temp container and copy the results into the final
 FROM alpine:latest AS builder
+ARG BUILDVERSION=?
 RUN mkdir -p bookmartian/src/vue && \
     apk upgrade --update && \
     apk add maven \
@@ -24,7 +25,7 @@ RUN npm install && \
     mvn dependency:resolve
 RUN npm run build
 WORKDIR /bookmartian
-RUN mvn package
+RUN mvn package -DbuildVersion=${BUILDVERSION}
 
 # build the production container with jre, etc.
 FROM alpine:latest

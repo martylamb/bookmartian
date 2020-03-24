@@ -10,10 +10,12 @@
     
     <groupId>com.martiansoftware</groupId>
     <artifactId>bookmartian</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>${buildVersion}</version>
     <packaging>jar</packaging>
     
     <properties>
+        <baseVersion>2.0.1</baseVersion>
+        <buildVersion>${baseVersion}</buildVersion>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>

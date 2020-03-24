@@ -18,7 +18,7 @@ main () {
         let current_build_number="$current_build_number"+1
     fi
 
-    maven_version="$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression='project.version' -q -DforceStdout)"
+    maven_version="$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression='baseVersion' -q -DforceStdout)"
     full_tag="$(printf "%s.%s-%s" $maven_version $current_build_number $username)"
     
     # write an incremented build id to the file for next time
