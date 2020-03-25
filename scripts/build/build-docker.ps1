@@ -6,11 +6,19 @@
 # to install PowerShell on windows or linux
 # https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7
 # 
+# Run this command from the root of the project (where the Dockerfile lives)
+#
 # Example usage:
 #
-# .\build.ps1
+# .\scripts\build\build-docker.ps1
 
-$buildVersion = $(wsl /mnt/d/local/70-code/73-github-personal/bookmartian/scripts/build/gettag)
+function main() {
+    # get the version string from pom and local build number
+    $buildVersion = $(wsl /mnt/d/local/70-code/73-github-personal/bookmartian/scripts/build/gettag)
 
-docker build -t bookmartian:$buildVersion --build-arg BUILDVERSION=$buildVersion .
-docker tag bookmartian:$buildVersion bookmartian.azurecr.io/martylamb/bookmartian:$buildVersion
+    # build and tag
+    docker build -t bookmartian:$buildVersion --build-arg BUILDVERSION=$buildVersion .
+    docker tag bookmartian:$buildVersion bookmartian.azurecr.io/martylamb/bookmartian:$buildVersion
+}
+
+main $args

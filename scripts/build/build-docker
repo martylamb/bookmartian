@@ -1,19 +1,27 @@
 #!/bin/bash
 
+# Bash script to build docker container with correct tagging
+# NOTE: written using best practices from https://github.com/progrium/bashstyle
+#
+# Run this command from the root of the project (where the Dockerfile lives)
+#
+# Example usage:
+#
+# ./scripts/build/build-docker
+
 main () {
     set -eo pipefail
     declare desc="Script used to build properly tagged docker container for bookmartian project."
 
-    # script variables
+    # script variables with default values
     local version="0.0.0.0"
 
+    # get the version string from pom and local build number
     version="$(./scripts/build/gettag)"
     
-    docker build -t bookmartian:"$version" .
+    # build and tag
+    docker build -t bookmartian:"$version" --build-arg BUILDVERSION="$version" .
     docker tag bookmartian:"$version" bookmartian.azurecr.io/martylamb/bookmartian:"$version"
-
     }
 
 main "$@"
-
-# bash script written using best practices from https://github.com/progrium/bashstyle
