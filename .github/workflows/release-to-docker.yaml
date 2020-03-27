@@ -1,0 +1,44 @@
+name: Release to Docker
+
+on: 
+  release:
+    types:
+    - created
+
+env:
+  DOCKER_REGISTRY: ${{ secrets.Docker_Registry }}
+  DOCKER_USERNAME: ${{ secrets.Docker_Username }}
+  DOCKER_PASSWORD: ${{ secrets.Docker_Password }}
+
+jobs:
+  build_docker:
+    env:
+      BASEVERSION: 0.0.0
+      BUILDVERSION: 0
+    name: Build the Docker image
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Clone master
+      uses: actions/checkout@v2
+
+    - name: Set up Java
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+
+    - name: Retrieve base version
+      run: echo "::set-env name=BASEVERSION::$(mvn org.apache.maven.plugins:maven-help-plugin:3.2.0:evaluate -Dexpression='baseVersion' -q -DforceStdout)"
+
+    - name: Create version tag
+      run: echo "::set-env name=BUILDVERSION::$(printf "%s.%s" $BASEVERSION $GITHUB_RUN_NUMBER)"
+
+    - name: Build image
+      run: |
+        docker build . --file Dockerfile --tag $DOCKER_REGISTRY/github/bookmartian:$BUILDVERSION --build-arg BUILDVERSION=$BUILDVERSION
+        docker tag $DOCKER_REGISTRY/github/bookmartian:$BUILDVERSION $DOCKER_REGISTRY/github/bookmartian:latest
+
+    - name: Push image
+      run: |
+       echo $DOCKER_PASSWORD | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
+       docker push $DOCKER_REGISTRY/github/bookmartian 
+
