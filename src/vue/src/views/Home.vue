@@ -99,14 +99,20 @@ export default {
           }
         })
         .then(response => {
-          // handle success
-          this.config = response.data
-          console.log('Home: loaded config file')
+          if (response.data.status === 'success') {
+            // handle success
+            this.config = response.data.data
+            console.log('Home: loaded config file')
+          } else {
+            // handle error in API call
+            this.config = require('../assets/default-config.json')
+            console.log('Home: failed response, using default config file')
+          }
         })
         .catch(error => {
           // handle error
-          // for now, load john's hard-coded config file because the api call will fail
-          this.config = require('../assets/sample-config.json')
+          this.config = require('../assets/default-config.json')
+          console.log('Home: api error, using default config file')
           console.log(error)
         })
         .finally(function () {
