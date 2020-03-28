@@ -2,6 +2,7 @@ package com.martiansoftware.util;
 
 import com.martiansoftware.boom.Boom;
 import com.martiansoftware.boom.BoomResponse;
+import com.martiansoftware.boom.MimeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,11 @@ public class JSend {
     
     public static BoomResponse success(Object data) {
         return jsend(STATUS.success, null, data);
+    }
+    
+    public static BoomResponse rawSuccess(String jsonData) {
+        String result = String.format("{\n\t\"status\": \"success\",\n\t\"data\": %s\n}", jsonData);
+        return new BoomResponse(result).as(MimeType.JSON);
     }
     
     public static BoomResponse fail(String message) {

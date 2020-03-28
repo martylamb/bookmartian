@@ -138,6 +138,7 @@ public class App {
         get("/api/visit", () -> visit(bm));
         get("/api/query-help", () -> { response().redirect("/api/query-help.json"); return null; });
         get("/api/backup", () -> backup(bm));
+        get("/api/config", () -> config(bm));
         
         // example usages:
         // http -f post 127.0.0.1:4567/api/restore backup@backup.json
@@ -257,6 +258,21 @@ public class App {
         return new BoomResponse(Json.toJson(new Backup(bm)))
                         .as(MimeType.BIN)
                         .named(String.format("backup-%s.bookmartian", sdf.format(new Date())));
+    }
+    
+    private static BoomResponse config(Bookmartian bm) {
+        try {
+            Optional<String> configJson = bm.config();
+            if (configJson.isPresent()) {
+                // return is a String of raw json, so we have to manually construct the jsend response.
+                // FIXME:  IF CONFIG JSON IS INVALID, THEN THE RESPONSE WILL BE TOO
+                return JSend.rawSuccess(configJson.get());
+            }
+            return JSend.fail("config not found");
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            return JSend.error(e);
+        }
     }
     
     private static BoomResponse restore(Bookmartian bm) {

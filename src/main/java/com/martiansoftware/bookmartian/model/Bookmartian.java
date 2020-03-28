@@ -1,5 +1,6 @@
 package com.martiansoftware.bookmartian.model;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -18,6 +19,8 @@ public interface Bookmartian {
     public Optional<Bookmark> visit(Lurl lurl); // updates visit count and visit timestamp and returns updated bookmark, or returns Optional.empty if no such bookmark exists.
     // updateBookmark?
     public Bookmark update(Lurl replacing, Bookmark bookmark); // saves the bookmark, potentially replacing a bookmark at a different url
+    
+    public Optional<String> config() throws IOException; // FIXME: temporary solution to provide a config
     
     public Collection<Tag> tags(); // all tags
     public Optional<Tag> get(TagName tn);

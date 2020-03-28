@@ -9,6 +9,7 @@ import com.martiansoftware.bookmartian.model.TagNameSet;
 import com.martiansoftware.boom.Json;
 import com.martiansoftware.tinyjournal.TinyFileJournal;
 import com.martiansoftware.tinyjournal.TinyJournal;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -77,6 +78,15 @@ public class JournalBookmartian implements Bookmartian {
         } catch (IOException e) {
             throw new JournalException("error writing to journal " + _journalPath, e);
         }
+    }
+    
+    @Override
+    public Optional<String> config() throws IOException {
+        Path configFile = _journalPath.getParent().resolve("config.json");
+        if (Files.exists(configFile)) {
+            return Optional.of(Files.readAllLines(configFile).stream().collect(Collectors.joining("\n")));
+        }
+        return Optional.empty();
     }
     
     @Override
