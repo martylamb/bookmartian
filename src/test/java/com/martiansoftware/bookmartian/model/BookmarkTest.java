@@ -1,6 +1,11 @@
 package com.martiansoftware.bookmartian.model;
 
 import com.martiansoftware.boom.Json;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.Optional;
 import org.junit.Test;
@@ -79,4 +84,35 @@ public class BookmarkTest {
         assertEquals(v2, bm3.lastVisited().get()); // should be most recent
         assertEquals(100, bm3.visitCount().get().longValue()); // should be highest
     }
+
+
+    @Test
+    public void testSerialization() throws IOException, ClassNotFoundException {
+        Date d = new Date();
+        Bookmark b = Bookmark.newBuilder()
+                .url("http://martiansoftware.com")
+                .notes("notes go here")
+                .imageUrl("pic/of/me")
+                .tags("these are my tags")
+                .visitCount(42)
+                .created(d)
+                .build();
+        
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        ObjectOutputStream oout = new ObjectOutputStream(bout);        
+        oout.writeObject(b.toBuilder());
+        
+        byte[] bytes = bout.toByteArray();
+        ByteArrayInputStream bin = new ByteArrayInputStream(bytes);
+        ObjectInputStream oin = new ObjectInputStream(bin);
+        Bookmark b2 = ((Bookmark.Builder) oin.readObject()).build();
+        
+        assertEquals(b.created(), b2.created());
+        assertEquals(b.imageUrl(), b2.imageUrl());
+        assertEquals(b.tagNames().toString(), b2.tagNames().toString());
+        assertEquals(new Long(42), b2.visitCount().get());
+        assertEquals(d, b2.created().get());
+        assertFalse(b2.lastVisited().isPresent());        
+    }
+
 }

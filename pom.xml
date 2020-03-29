@@ -58,7 +58,7 @@
             <groupId>com.martiansoftware</groupId>
             <artifactId>tinyjournal</artifactId>
             <version>0.1.0-SNAPSHOT</version>                
-        </dependency>         
+        </dependency>
     </dependencies>
     
     <repositories>
