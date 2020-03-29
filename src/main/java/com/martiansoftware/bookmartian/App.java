@@ -1,6 +1,5 @@
 package com.martiansoftware.bookmartian;
 
-import com.martiansoftware.bookmartian.auth.FormAuthenticator;
 import com.martiansoftware.bookmartian.journal.JournalBookmartian;
 import com.martiansoftware.util.JSend;
 import com.martiansoftware.bookmartian.model.Bookmark;
@@ -25,7 +24,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -366,17 +364,7 @@ public class App {
             return JSend.error(e);
         }
     }
- 
-    private static void initAuth(Path bmHome) throws Exception {
-        final FormAuthenticator fa = FormAuthenticator
-                                        .newBuilder()
-                                        .authFile(bmHome.resolve("users").resolve("anonymous").resolve("auth.properties"))
-                                        .build();
-     	fa.secure("/");
-     	fa.secure("/index.html");
-     	fa.secure("/api/*");
-    }
-        
+         
     private static class Backup {        
         private final Collection<Tag> tags;
         private final Collection<Bookmark> bookmarks;
