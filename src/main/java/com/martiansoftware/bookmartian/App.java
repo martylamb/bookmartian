@@ -7,6 +7,7 @@ import com.martiansoftware.bookmartian.model.JsonConfig;
 import com.martiansoftware.bookmartian.model.Bookmartian;
 import com.martiansoftware.bookmartian.model.Lurl;
 import com.martiansoftware.bookmartian.model.Tag;
+import com.martiansoftware.bookmartian.mvstore.MvStoreBookmartian;
 import com.martiansoftware.bookmartian.query.Query;
 import java.nio.file.Paths;
 import static com.martiansoftware.boom.Boom.*;
@@ -116,9 +117,9 @@ public class App {
         }
         JsonConfig.init();
         // TODO: implement a cache by username and retrieve from there on demand
-        Bookmartian bm = new JournalBookmartian(Paths.get(cmd.getString(JSAP_DIR)).resolve("userdata.bookmartian"));
+        Bookmartian bm = new MvStoreBookmartian(Paths.get(cmd.getString(JSAP_DIR)));
 
-// TODO        Runtime.getRuntime().addShutdownHook(new Thread(() -> bm.shutdown()));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> bm.shutdown()));
         
         before("/*", (req, rsp) -> log(req, rsp));
         before("/*", (req, rsp) -> disableCaching(req, rsp));
