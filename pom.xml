@@ -15,7 +15,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <logback.version>1.2.3</logback.version>
         <boom.version>0.1.1</boom.version>
-        <jsoup.version>1.10.2</jsoup.version>
+        <jsoup.version>1.13.1</jsoup.version>
         <mvstore.version>1.4.200</mvstore.version>
     </properties>
     
@@ -24,7 +24,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13</version>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -57,11 +57,11 @@
             <artifactId>jsoup</artifactId>
             <version>${jsoup.version}</version>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>com.martiansoftware</groupId>
             <artifactId>tinyjournal</artifactId>
             <version>0.1.0-SNAPSHOT</version>                
-        </dependency>
+        </dependency> -->
         <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2-mvstore</artifactId>

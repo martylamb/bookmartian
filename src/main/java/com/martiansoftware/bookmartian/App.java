@@ -1,6 +1,5 @@
 package com.martiansoftware.bookmartian;
 
-import com.martiansoftware.bookmartian.journal.JournalBookmartian;
 import com.martiansoftware.util.JSend;
 import com.martiansoftware.bookmartian.model.Bookmark;
 import com.martiansoftware.bookmartian.model.JsonConfig;
@@ -139,9 +138,9 @@ public class App {
         get("/api/backup", () -> backup(bm));
         get("/api/config", () -> config(bm));
         
-        // example usages:
-        // http -f post 127.0.0.1:4567/api/restore backup@backup.json
-        // curl --form "backup=@backup.json" 127.0.0.1:4567/api/restore
+        // example usages if the file to restore is called backup-yyyymmdd-hhmmss.json
+        // http -f post 127.0.0.1:4567/api/restore backup@backup-yyyymmdd-hhmmss.json
+        // curl --form "backup=@backup-yyyymmdd-hhmmss.json" 127.0.0.1:4567/api/restore
         post("/api/restore", () -> restore(bm));
         
         options("/api/bookmark/update", () -> corsOptions());
