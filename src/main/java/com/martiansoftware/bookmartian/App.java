@@ -21,9 +21,11 @@ import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.stringparsers.IntegerStringParser;
 import com.martiansoftware.util.Strings;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.SimpleDateFormat;
@@ -254,8 +256,7 @@ public class App {
     
     private static BoomResponse backup(Bookmartian bm) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
-        
-        return new BoomResponse(Json.toJson(new Backup(bm)))
+        return new BoomResponse(new ByteArrayInputStream(Json.toJson(new Backup(bm)).getBytes(StandardCharsets.UTF_8)))
                         .as(MimeType.BIN)
                         .named(String.format("backup-%s.bookmartian", sdf.format(new Date())));
     }
@@ -279,7 +280,7 @@ public class App {
         try {
             uploading();
             Part part = request().raw().getPart("backup");
-            Backup backup = Json.fromJson(new InputStreamReader(part.getInputStream()), Backup.class);
+            Backup backup = Json.fromJson(new InputStreamReader(part.getInputStream(), StandardCharsets.UTF_8), Backup.class);
             
             for (Bookmark b : backup.bookmarks) bm.update(null, b);
             for (Tag t : backup.tags) bm.update(t);
