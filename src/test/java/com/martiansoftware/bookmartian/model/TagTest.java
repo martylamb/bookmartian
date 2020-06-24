@@ -1,6 +1,11 @@
 package com.martiansoftware.bookmartian.model;
 
 import com.martiansoftware.boom.Json;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -51,5 +56,21 @@ public class TagTest {
         Tag t2 = Json.fromJson(json, Tag.class);
         assertEquals("test-tag", t2.tagName().toString());
         assertEquals(BLUE, t2.color());
+    }
+    
+    @Test
+    public void testRoundTrip() throws IOException, ClassNotFoundException {
+        ByteArrayOutputStream bout = new ByteArrayOutputStream();
+        ObjectOutputStream oout = new ObjectOutputStream(bout);
+        Tag t1 = Tag.newBuilder().name("test-tag").color(Color.of("#123456")).build();
+        oout.writeObject(t1.toBuilder());
+        oout.close();
+        byte[] b = bout.toByteArray();
+        
+        ByteArrayInputStream bin = new ByteArrayInputStream(b);
+        ObjectInputStream oin = new ObjectInputStream(bin);
+        Tag t2 = ((Tag.Builder) oin.readObject()).build();
+        
+        assertEquals(0, t1.compareTo(t2));
     }
 }

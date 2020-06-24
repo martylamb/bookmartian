@@ -20,8 +20,8 @@ main () {
     version="$(./scripts/build/gettag)"
     
     # build and tag
-    docker build --ulimit nofile=65536:65536 -t bookmartian:"$version" --build-arg BUILDVERSION="$version" .
-    docker tag bookmartian:"$version" bookmartian.azurecr.io/martylamb/bookmartian:"$version"
+    podman build --ulimit nofile=65536:65536 -t bookmartian:"$version" --build-arg BUILDVERSION="$version" .
+    podman tag bookmartian:"$version" bookmartian.azurecr.io/martylamb/bookmartian:"$version"
     }
 
 main "$@"

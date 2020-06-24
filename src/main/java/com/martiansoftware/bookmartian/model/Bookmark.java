@@ -5,8 +5,13 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
+import com.martiansoftware.util.ObjectIO;
 import com.martiansoftware.util.Strings;
 import com.martiansoftware.validation.Hope;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.lang.reflect.Type;
 import java.text.Collator;
 import java.util.Comparator;
@@ -15,6 +20,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  *
@@ -147,13 +153,16 @@ public class Bookmark {
                     
     }
     
-    public static class Builder {
+    public static class Builder implements Externalizable {
+        private static final long serialVersionUID = 0; // used a fixed serial ID as far as java is concerned...
+        private static final long MYVERSION = 0;        // but use our own to handle backwards compatibility manually
+        
         private Lurl _lurl;
         private String _title, _notes, _imageUrl;
         private TagNameSet _tags;
         private Date _created, _modified, _lastVisited;
         private long _visitCount;
-        private Builder() {}
+        public Builder() {}
         
         public Builder url(Lurl lurl) {
             _lurl = lurl;
@@ -180,10 +189,12 @@ public class Bookmark {
             return this;
         }
         
+        // ADDS tags
         public Builder tags(String tags) {
             return tags(TagNameSet.of(tags));
         }
         
+        // ADDS tags
         public Builder tags(TagNameSet tags) {
             if (_tags == null) {
                 _tags = tags;
@@ -222,6 +233,40 @@ public class Bookmark {
         
         public Bookmark build() {
             return new Bookmark(_lurl, _title, _notes, _imageUrl, _tags, _created, _modified, _lastVisited, _visitCount);
+        }
+
+        @Override
+        public void writeExternal(ObjectOutput oo) throws IOException {
+            oo.writeLong(MYVERSION);
+            ObjectIO.writeNullableUTF(oo, _lurl == null ? null : _lurl.toString());
+            ObjectIO.writeNullableUTF(oo, _title);
+            ObjectIO.writeNullableUTF(oo, _notes);
+            ObjectIO.writeNullableUTF(oo, _imageUrl);
+            
+            ObjectIO.writeNullableUTF(oo, _tags == null ? null : _tags.toString());
+
+            ObjectIO.writeNullableDate(oo, _created);
+            ObjectIO.writeNullableDate(oo, _modified);
+            ObjectIO.writeNullableDate(oo, _lastVisited);
+            oo.writeLong(_visitCount);
+        }
+
+        @Override
+        public void readExternal(ObjectInput oi) throws IOException, ClassNotFoundException {
+            ObjectIO.assertMaxVersion(oi, MYVERSION);
+
+            _lurl = ObjectIO.fromNullableUTF(oi, s -> Lurl.of(s));
+            _title = ObjectIO.readNullableUTF(oi);
+            _notes = ObjectIO.readNullableUTF(oi);
+            _imageUrl = ObjectIO.readNullableUTF(oi);
+            
+            _tags = ObjectIO.fromNullableUTF(oi, s -> TagNameSet.of(s));
+
+            _created = ObjectIO.readNullableDate(oi);
+            _modified = ObjectIO.readNullableDate(oi);
+            _lastVisited = ObjectIO.readNullableDate(oi);
+
+            _visitCount = oi.readLong();
         }
     }
 

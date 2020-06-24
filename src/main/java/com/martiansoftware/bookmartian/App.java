@@ -1,13 +1,12 @@
 package com.martiansoftware.bookmartian;
 
-import com.martiansoftware.bookmartian.auth.FormAuthenticator;
-import com.martiansoftware.bookmartian.journal.JournalBookmartian;
 import com.martiansoftware.util.JSend;
 import com.martiansoftware.bookmartian.model.Bookmark;
 import com.martiansoftware.bookmartian.model.JsonConfig;
 import com.martiansoftware.bookmartian.model.Bookmartian;
 import com.martiansoftware.bookmartian.model.Lurl;
 import com.martiansoftware.bookmartian.model.Tag;
+import com.martiansoftware.bookmartian.mvstore.MvStoreBookmartian;
 import com.martiansoftware.bookmartian.query.Query;
 import java.nio.file.Paths;
 import static com.martiansoftware.boom.Boom.*;
@@ -28,7 +27,6 @@ import java.io.LineNumberReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -123,9 +121,9 @@ public class App {
         }
         JsonConfig.init();
         // TODO: implement a cache by username and retrieve from there on demand
-        Bookmartian bm = new JournalBookmartian(Paths.get(cmd.getString(JSAP_DIR)).resolve("userdata.bookmartian"));
+        Bookmartian bm = new MvStoreBookmartian(Paths.get(cmd.getString(JSAP_DIR)));
 
-// TODO        Runtime.getRuntime().addShutdownHook(new Thread(() -> bm.shutdown()));
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> bm.shutdown()));
         
         before("/*", (req, rsp) -> log(req, rsp));
         before("/*", (req, rsp) -> disableCaching(req, rsp));
@@ -145,9 +143,9 @@ public class App {
         get("/api/backup", () -> backup(bm));
         get("/api/config", () -> config(bm));
         
-        // example usages:
-        // http -f post 127.0.0.1:4567/api/restore backup@backup.json
-        // curl --form "backup=@backup.json" 127.0.0.1:4567/api/restore
+        // example usages if the file to restore is called backup-yyyymmdd-hhmmss.json
+        // http -f post 127.0.0.1:4567/api/restore backup@backup-yyyymmdd-hhmmss.json
+        // curl --form "backup=@backup-yyyymmdd-hhmmss.json" 127.0.0.1:4567/api/restore
         post("/api/restore", () -> restore(bm));
         
         options("/api/bookmark/update", () -> corsOptions());
@@ -370,17 +368,7 @@ public class App {
             return JSend.error(e);
         }
     }
- 
-    private static void initAuth(Path bmHome) throws Exception {
-        final FormAuthenticator fa = FormAuthenticator
-                                        .newBuilder()
-                                        .authFile(bmHome.resolve("users").resolve("anonymous").resolve("auth.properties"))
-                                        .build();
-     	fa.secure("/");
-     	fa.secure("/index.html");
-     	fa.secure("/api/*");
-    }
-        
+         
     private static class Backup {        
         private final Collection<Tag> tags;
         private final Collection<Bookmark> bookmarks;

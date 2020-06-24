@@ -74,6 +74,11 @@ public class TagNameSet {
         return containsAll(TagNameSet.of(multipleTags));
     }
     
+    @Override
+    public String toString() {
+        return _tagNames.stream().map(tn -> tn.toString()).collect(Collectors.joining(" "));            
+    }
+    
     public static class GsonAdapter extends TypeAdapter<TagNameSet> {        
         
         @Override
