@@ -65,7 +65,7 @@ public class Color implements Comparable<Color> {
     }
 
     // gson helper
-    public static class GsonAdapter extends JsonConfig.StringAdapter<Color> {
+    public static class GsonAdapter extends Json.StringAdapter<Color> {
         @Override protected String toString(Color color ){ return color.toString(); }
         @Override protected Color fromString(String s) { return Color.of(s); }
         @Override public Stream<Class> classes() { return Stream.of(Color.class); }

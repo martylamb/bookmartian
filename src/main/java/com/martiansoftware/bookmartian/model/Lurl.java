@@ -206,7 +206,7 @@ public class Lurl implements Comparable<Lurl> {
     }
     
     // gson helper
-    public static class GsonAdapter extends JsonConfig.StringAdapter<Lurl> {
+    public static class GsonAdapter extends Json.StringAdapter<Lurl> {
         @Override protected String toString(Lurl lurl ){ return lurl.toString(); }
         @Override protected Lurl fromString(String s) { return Lurl.of(s); }
         @Override public Stream<Class> classes() { return Stream.of(Lurl.class); }

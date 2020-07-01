@@ -1,6 +1,5 @@
 package com.martiansoftware.bookmartian.model;
 
-import com.martiansoftware.boom.Json;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -47,7 +46,7 @@ public class TagTest {
 
     @Test
     public void testJson() {
-        JsonConfig.init();
+        Json.init();
         
         Tag t = Tag.newBuilder().name("test-tag").color(BLUE).build();
         String json = Json.toJson(t);

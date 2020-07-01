@@ -1,6 +1,6 @@
 package com.martiansoftware.bookmartian.model;
 
-import com.martiansoftware.bookmartian.model.JsonConfig.StringAdapter;
+import com.martiansoftware.bookmartian.model.Json.StringAdapter;
 import com.martiansoftware.util.Strings;
 import java.util.Objects;
 import java.util.regex.Matcher;

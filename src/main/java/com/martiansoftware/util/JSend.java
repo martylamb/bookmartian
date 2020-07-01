@@ -1,8 +1,5 @@
 package com.martiansoftware.util;
 
-import com.martiansoftware.boom.Boom;
-import com.martiansoftware.boom.BoomResponse;
-import com.martiansoftware.boom.MimeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +11,7 @@ import org.slf4j.LoggerFactory;
  */
 public class JSend {
 
-    private static final Logger log = LoggerFactory.getLogger(JSend.class);
+    private static final Logger LOG = LoggerFactory.getLogger(JSend.class);
     
     private enum STATUS {success, fail, error};
     private final STATUS _status;
@@ -27,33 +24,30 @@ public class JSend {
         _data = data;
     }
     
-    private static BoomResponse jsend(STATUS status, String message, Object data) {
-        return Boom.json(new JSend(status, message, data));
-    }
     
-    public static BoomResponse success() {
+    public static JSend success() {
         return success(null);
     }
     
-    public static BoomResponse success(Object data) {
-        return jsend(STATUS.success, null, data);
+    public static JSend success(Object data) {
+        return new JSend(STATUS.success, null, data);
     }
     
-    public static BoomResponse rawSuccess(String jsonData) {
-        String result = String.format("{\n\t\"status\": \"success\",\n\t\"data\": %s\n}", jsonData);
-        return new BoomResponse(result).as(MimeType.JSON);
+//    public static BoomResponse rawSuccess(String jsonData) {
+//        String result = String.format("{\n\t\"status\": \"success\",\n\t\"data\": %s\n}", jsonData);
+//        return new BoomResponse(result).as(MimeType.JSON);
+//    }
+    
+    public static JSend fail(String message) {
+        return new JSend(STATUS.fail, message, null);
     }
     
-    public static BoomResponse fail(String message) {
-        return jsend(STATUS.fail, message, null);
+    public static JSend error(String message) {
+        return new JSend(STATUS.error, message, null);
     }
     
-    public static BoomResponse error(String message) {
-        return jsend(STATUS.error, message, null);
-    }
-    
-    public static BoomResponse error(Exception e) {
-        log.error(e.getMessage(), e);
+    public static JSend error(Exception e) {
+        LOG.error(e.getMessage(), e);
         return error(e.getMessage());
     }
 }

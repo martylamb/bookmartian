@@ -15,7 +15,7 @@ import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
 import com.google.gson.stream.JsonToken;
 import com.google.gson.stream.JsonWriter;
-import com.martiansoftware.boom.Json;
+import io.javalin.plugin.json.JavalinJson;
 import java.io.IOException;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -32,10 +32,12 @@ import java.util.stream.Stream;
  *
  * @author mlamb
  */
-public class JsonConfig {
+public class Json {
     
-    public static void init() {
-        GsonBuilder creator = new GsonBuilder()
+    private static final Gson GSON;
+    
+    static {
+        GSON = new GsonBuilder()
                 .setFieldNamingStrategy(f -> f.getName().replaceAll("^_", ""))
                 .setPrettyPrinting()
                 .enableComplexMapKeySerialization()
@@ -46,11 +48,17 @@ public class JsonConfig {
                 .registerTypeAdapter(Lurl.class, new Lurl.GsonAdapter())
                 .registerTypeAdapter(Color.class, new Color.GsonAdapter())
                 .registerTypeAdapter(Date.class, new UTCDateAdapter())
-                .registerTypeAdapter(Bookmark.class, new Bookmark.GsonAdapter());
+                .registerTypeAdapter(Bookmark.class, new Bookmark.GsonAdapter())
+                .create();
 
-        Json.use(creator.create());
+        JavalinJson.setFromJsonMapper(GSON::fromJson);
+        JavalinJson.setToJsonMapper(GSON::toJson);
     }
 
+    public static void init() {} // allows client to force class initialization
+    
+    public static String toJson(Object o) { return GSON.toJson(o); }
+    public static <T> T fromJson(String j, Class<T> clazz) { return GSON.fromJson(j, clazz); }
     
     // OptionalTypeAdapter adapted from
     // https://github.com/serenity-bdd/serenity-core/blob/master/serenity-core/src/main/java/net/thucydides/core/reports/json/gson/OptionalTypeAdapter.java

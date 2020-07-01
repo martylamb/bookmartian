@@ -1,6 +1,5 @@
 package com.martiansoftware.bookmartian.model;
 
-import com.martiansoftware.boom.Json;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -88,7 +87,7 @@ public class LurlTest {
     
     @Test
     public void testJson() {
-        JsonConfig.init();
+        Json.init();
         
         Lurl l = Lurl.of("http://martiansoftware.com");
         String json = Json.toJson(l);        

@@ -2,49 +2,44 @@ package com.martiansoftware.bookmartian;
 
 import com.martiansoftware.util.JSend;
 import com.martiansoftware.bookmartian.model.Bookmark;
-import com.martiansoftware.bookmartian.model.JsonConfig;
+import com.martiansoftware.bookmartian.model.Json;
 import com.martiansoftware.bookmartian.model.Bookmartian;
 import com.martiansoftware.bookmartian.model.Lurl;
 import com.martiansoftware.bookmartian.model.Tag;
 import com.martiansoftware.bookmartian.mvstore.MvStoreBookmartian;
 import com.martiansoftware.bookmartian.query.Query;
 import java.nio.file.Paths;
-import static com.martiansoftware.boom.Boom.*;
-import com.martiansoftware.boom.BoomResponse;
-import com.martiansoftware.boom.Json;
-import com.martiansoftware.boom.MimeType;
-import com.martiansoftware.boom.StatusPage;
 import com.martiansoftware.jsap.FlaggedOption;
 import com.martiansoftware.jsap.JSAP;
 import com.martiansoftware.jsap.JSAPException;
 import com.martiansoftware.jsap.JSAPResult;
 import com.martiansoftware.jsap.stringparsers.IntegerStringParser;
 import com.martiansoftware.util.Strings;
-import java.io.ByteArrayInputStream;
+import io.javalin.Javalin;
+import io.javalin.http.BadRequestResponse;
+import io.javalin.http.Context;
+import io.javalin.http.NotFoundResponse;
+import io.javalin.http.staticfiles.Location;
+import io.javalin.plugin.json.JavalinJson;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
-import javax.servlet.MultipartConfigElement;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.Part;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import spark.Request;
-import spark.Response;
-import static spark.Spark.port;
-import spark.utils.IOUtils;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  *
@@ -116,132 +111,65 @@ public class App {
 
         banner();
         
-        if (cmd.contains(JSAP_PORT)) {
-            port(cmd.getInt(JSAP_PORT));
-        }
-        JsonConfig.init();
-        // TODO: implement a cache by username and retrieve from there on demand
+        Json.init();
+        // TODO: implement a cache by username and retrieve from there on demand?
         Bookmartian bm = new MvStoreBookmartian(Paths.get(cmd.getString(JSAP_DIR)));
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> bm.shutdown()));
+
+
+        Javalin server = Javalin.create(config -> {
+            config.showJavalinBanner = false;
+            config.requestLogger((ctx, ms) -> log(ctx, ms));
+            config.addStaticFiles("/static-content", Location.CLASSPATH);
+            
+        }).start(cmd.contains(JSAP_PORT) ? cmd.getInt(JSAP_PORT) : 7000);
+
+//        before("/*", (req, rsp) -> disableCaching(req, rsp));
+
+        server.get("/api/tags", ctx -> ctx.json(bm.tags()));
+        server.get("/api/bookmarks", ctx -> ctx.json(query(ctx, bm)));
+        server.get("/api/bookmark", ctx -> ctx.json(getBookmark(ctx, bm)));
+        server.get("/api/visit", ctx -> visit(ctx, bm));
+        server.get("/api/backup", ctx -> backup(ctx, bm));
+        server.get("/api/query-help",  ctx -> ctx.redirect("/api/query-help.json")); // FIXME - where is this?
+        server.get("/api/config", ctx -> config(ctx, bm));
         
-        before("/*", (req, rsp) -> log(req, rsp));
-        before("/*", (req, rsp) -> disableCaching(req, rsp));
+        Stream.of("/page/*", "/settings", "/search", "/new").forEach(
+                p -> server.get(p, ctx -> ctx.redirect("/"))
+        );
         
-// TODO       if (cmd.getBoolean(JSAP_REQUIRELOGIN)) {
-//            Spark.awaitInitialization();
-//            initAuth(bmHome);
-//        }
+//        // example usages if the file to restore is called backup-yyyymmdd-hhmmss.json
+//        // http -f post 127.0.0.1:4567/api/restore backup@backup-yyyymmdd-hhmmss.json
+//        // curl --form "backup=@backup-yyyymmdd-hhmmss.json" 127.0.0.1:4567/api/restore
+        server.post("/api/restore", ctx -> restore(ctx, bm));
         
-        get("/api/tags", () -> tags(bm));
-        
-        options("/api/bookmark", () -> corsOptions());
-        get("/api/bookmark", () -> getBookmark(bm));
-        get("/api/bookmarks", () -> query(bm));
-        get("/api/visit", () -> visit(bm));
-        get("/api/query-help", () -> { response().redirect("/api/query-help.json"); return null; });
-        get("/api/backup", () -> backup(bm));
-        get("/api/config", () -> config(bm));
-        
-        // example usages if the file to restore is called backup-yyyymmdd-hhmmss.json
-        // http -f post 127.0.0.1:4567/api/restore backup@backup-yyyymmdd-hhmmss.json
-        // curl --form "backup=@backup-yyyymmdd-hhmmss.json" 127.0.0.1:4567/api/restore
-        post("/api/restore", () -> restore(bm));
-        
-        options("/api/bookmark/update", () -> corsOptions());
-        post("/api/bookmark/update", () -> updateBookmark(bm));
-        
-        post("/api/bookmark/delete", () -> deleteBookmark(bm));
-        
-        post("/api/bookmarks/import", () -> importNetscapeBookmarksFile(bm));
-        
-        get("/api/about", () -> about(bm));
-        
-        get("/", (req, rsp) -> IOUtils.toString(App.class.getResourceAsStream("/static-content/index.html")));
-        get("/page/*", (req, rsp) -> IOUtils.toString(App.class.getResourceAsStream("/static-content/index.html")));
-        get("/settings", (req, rsp) -> IOUtils.toString(App.class.getResourceAsStream("/static-content/index.html")));
-        get("/search", (req, rsp) -> IOUtils.toString(App.class.getResourceAsStream("/static-content/index.html")));
-        get("/new", (req, rsp) -> IOUtils.toString(App.class.getResourceAsStream("/static-content/index.html")));
-        get("/index.html", (req, rsp) -> {             
-            String q = req.raw().getQueryString();
-            String dest = String.format("/%s%s", Strings.isEmpty(q) ? "" : "?", Strings.isEmpty(q) ? "" : q);
-            rsp.redirect(dest, HttpServletResponse.SC_MOVED_PERMANENTLY); return null; 
-        });
+        server.post("/api/bookmark/update", ctx -> updateBookmark(ctx, bm));
+        server.get("/api/about", ctx -> about(ctx, bm));
+        server.post("/api/bookmark/delete", ctx -> deleteBookmark(ctx, bm));
+        server.post("/api/bookmarks/import", ctx-> importNetscapeBookmarksFile(ctx, bm));
     }
     
-    private static BoomResponse about(Bookmartian bm) {
+
+    private static void log(Context ctx, float ms) {
+        StringBuilder msg = new StringBuilder();
+        msg.append(String.format("%s: %s %s", ctx.req.getRemoteAddr(), ctx.req.getMethod(), ctx.req.getRequestURL()));
+        String q = ctx.req.getQueryString();
+        if (q != null) msg.append(String.format("?%s", q));
+        log.debug(msg.toString());
+    }
+
+    private static JSend query(Context ctx, Bookmartian bm) {
         try {
             //corsHeaders();
-            return JSend.success(appProperties);
+            return JSend.success(Query.of(q(ctx, "q")).execute(bm));
         } catch (Exception e) {
             return JSend.error(e);
         }
     }
 
-    private static BoomResponse tags(Bookmartian bm) {
-        //corsHeaders();
-        return json(bm.tags());
-    }
-
-    private static BoomResponse query(Bookmartian bm) {
-        try {
-            //corsHeaders();
-            return JSend.success(Query.of(q("q")).execute(bm));
-        } catch (Exception e) {
-            return JSend.error(e);
-        }
-    }
-    
-    private static BoomResponse corsOptions() {
-        corsHeaders();
-        return JSend.success();
-    }
-    
-    private static void disableCaching(Request req, Response rsp) {
-        rsp.header("Cache-Control", "no-cache, no-store, must-revalidate");
-        rsp.header("Pragma", "no-cache");
-        rsp.header("Expires", "0");
-    }
-    
-    private static void corsHeaders() {
-        String acrh = request().headers("Access-Control-Request-Headers");
-        if (acrh != null) response().header("Access-Control-Allow-Headers", acrh);
-        String acrm = request().headers("Access-Control-Request-Method");
-        if (acrm != null) response().header("Access-Control-Allow-Methods", "GET, POST");
-        String origin = request().headers("Origin");
-        response().header("Access-Control-Allow-Origin", origin == null ? "*" : origin);
-    }
-
-    private static String q(String key) {
-        return Strings.safeTrimToNull(request().queryParams(key));
-    }
-    
-    private static BoomResponse updateBookmark(Bookmartian bm) {
-        String url = q("url");
-        if (url == null) return JSend.fail("a URL is required");
-        try {
-            log.debug("updating bookmark: {}", url);
-            String oldUrl = q("oldUrl");
-            Lurl oldLurl = (oldUrl == null) ? null : Lurl.of(oldUrl);
-            if (oldLurl != null) log.debug("  => replacing {}", oldLurl);
-
-            Bookmark b = Bookmark.newBuilder()
-                            .url(url)
-                            .title(q("title"))
-                            .imageUrl(q("imageUrl"))
-                            .notes(q("notes"))
-                            .tags(q("tags"))
-                            .build();
-
-            //corsHeaders();
-            return JSend.success(bm.update(oldLurl, b));
-        } catch (Exception e) {
-            return JSend.error(e);
-        }
-    }
-    
-    private static BoomResponse getBookmark(Bookmartian bm) {
-        String url = q("url");
+    private static JSend getBookmark(Context ctx, Bookmartian bm) {
+        String url = q(ctx, "url");
         if (url == null) return JSend.fail("a URL is required");
         try {
             Lurl lurl = Lurl.of(url);
@@ -255,63 +183,78 @@ public class App {
         }
     }
     
-    private static BoomResponse backup(Bookmartian bm) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
-        return new BoomResponse(new ByteArrayInputStream(Json.toJson(new Backup(bm)).getBytes(StandardCharsets.UTF_8)))
-                        .as(MimeType.BIN)
-                        .named(String.format("backup-%s.bookmartian", sdf.format(new Date())));
-    }
-    
-    private static BoomResponse config(Bookmartian bm) {
-        try {
-            Optional<String> configJson = bm.config();
-            if (configJson.isPresent()) {
-                // return is a String of raw json, so we have to manually construct the jsend response.
-                // FIXME:  IF CONFIG JSON IS INVALID, THEN THE RESPONSE WILL BE TOO
-                return JSend.rawSuccess(configJson.get());
-            }
-            return JSend.fail("config not found");
-        } catch (IOException e) {
-            log.error(e.getMessage(), e);
-            return JSend.error(e);
-        }
-    }
-    
-    private static BoomResponse restore(Bookmartian bm) {
-        try {
-            uploading();
-            Part part = request().raw().getPart("backup");
-            Backup backup = Json.fromJson(new InputStreamReader(part.getInputStream(), StandardCharsets.UTF_8), Backup.class);
-            
-            for (Bookmark b : backup.bookmarks) bm.update(null, b);
-            for (Tag t : backup.tags) bm.update(t);
-            
-            return JSend.success(String.format("%d bookmarks, %d tags", backup.bookmarks.size(), backup.tags.size()));
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            return StatusPage.of(e);
-        }
-    }
-    
-    private static BoomResponse visit(Bookmartian bm) {
-        String url = q("url");
-        if (url == null) halt(400, "a URL is required");
+    private static void visit(Context ctx, Bookmartian bm) throws Exception {
+        String url = q(ctx, "url");
+        if (url == null) throw new BadRequestResponse("a URL is required");
         try {
             assert(url != null);
             Lurl lurl = Lurl.of(url);
             Optional<Bookmark> ob = bm.visit(lurl);
             //corsHeaders();
-            if (!ob.isPresent()) return StatusPage.of(404, "Not Found");
-            response().redirect(ob.get().lurl().toString());
-            return null;
+            if (!ob.isPresent()) throw new NotFoundResponse();  // TODO: manually respond instead of throw so we don't dump stack?
+            ctx.redirect(ob.get().lurl().toString());
         } catch (Exception e) {
             log.error(e.getMessage(), e);
-            return StatusPage.of(e);
+            throw(e);
         }
     }
+
+    private static void backup(Context ctx, Bookmartian bm) {
+        // NOTE:  This is NOT a JSend result.  It's a raw JSON file provided as a download
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd-HHmmss");
+        ctx.res.setContentType("application/octet-stream");
+        ctx.res.setHeader("Content-disposition", "attachment; filename=" + String.format("backup-%s.bookmartian", sdf.format(new Date())));
+        ctx.result(JavalinJson.toJson(new Backup(bm)).getBytes(StandardCharsets.UTF_8));
+    }
     
-    private static BoomResponse deleteBookmark(Bookmartian bm) {
-        String url = q("url");
+    private static JSend restore(Context ctx, Bookmartian bm) {
+        
+        String backupJson = new BufferedReader(
+                                    new InputStreamReader(ctx.uploadedFile("backup").getContent(), StandardCharsets.UTF_8)
+                            ).lines().collect(Collectors.joining("\n"));
+        Backup backup = JavalinJson.fromJson(backupJson, Backup.class);
+        
+        for (Bookmark b : backup.bookmarks) bm.update(null, b);
+        for (Tag t : backup.tags) bm.update(t);
+        
+        return JSend.success(String.format("%d bookmarks, %d tags", backup.bookmarks.size(), backup.tags.size()));
+    }
+    
+    private static JSend updateBookmark(Context ctx, Bookmartian bm) {
+        String url = q(ctx, "url");
+        if (url == null) return JSend.fail("a URL is required");
+        try {
+            log.debug("updating bookmark: {}", url);
+            String oldUrl = q(ctx, "oldUrl");
+            Lurl oldLurl = (oldUrl == null) ? null : Lurl.of(oldUrl);
+            if (oldLurl != null) log.debug("  => replacing {}", oldLurl);
+
+            Bookmark b = Bookmark.newBuilder()
+                            .url(url)
+                            .title(q(ctx, "title"))
+                            .imageUrl(q(ctx, "imageUrl"))
+                            .notes(q(ctx, "notes"))
+                            .tags(q(ctx, "tags"))
+                            .build();
+
+            //corsHeaders();
+            return JSend.success(bm.update(oldLurl, b));
+        } catch (Exception e) {
+            return JSend.error(e);
+        }
+    }
+
+    private static JSend about(Context ctx, Bookmartian bm) {
+        try {
+            //corsHeaders();
+            return JSend.success(appProperties);
+        } catch (Exception e) {
+            return JSend.error(e);
+        }
+    }
+
+    private static JSend deleteBookmark(Context ctx, Bookmartian bm) {
+        String url = q(ctx, "url");
         if (url == null) return JSend.fail("a URL is required");
         log.info("deleting bookmark: [{}]", url);
         try {
@@ -323,28 +266,11 @@ public class App {
         }
     }
     
-    private static void log(Request req, Response rsp) {
-        StringBuilder msg = new StringBuilder();
-        msg.append(String.format("%s: %s %s", req.ip(), req.requestMethod(), req.url()));
-        String q = req.queryString();
-        if (q != null) msg.append(String.format("?%s", q));
-        log.debug(msg.toString());
-    }
-    
-    private static void uploading() throws IOException {
-        Request r = request();
-        if (r.raw().getAttribute("org.eclipse.jetty.multipartConfig") == null) {
-            MultipartConfigElement multipartConfigElement = new MultipartConfigElement(Files.createTempDirectory("bookmartian-").toString());
-            r.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
-        }        
-    }
-    
-    private static BoomResponse importNetscapeBookmarksFile(Bookmartian bm) {
+    private static JSend importNetscapeBookmarksFile(Context ctx, Bookmartian bm) {
         try {
-            uploading();
-            String tags = q("tags");
-            Part part = request().raw().getPart("bookmarksFile");
-            Document doc = Jsoup.parse(part.getInputStream(), "UTF-8", "");
+            String tags = q(ctx, "tags");
+            
+            Document doc = Jsoup.parse(ctx.uploadedFile("bookmarksFile").getContent(), "UTF-8", "");
             Elements links = doc.getElementsByTag("a");
             for (Element link : links) {
                 log.info("importing {}", link.attr("HREF"));
@@ -367,8 +293,28 @@ public class App {
         } catch (Exception e) {            
             return JSend.error(e);
         }
+    }    
+
+    private static JSend config(Context ctx, Bookmartian bm) {
+        try {
+            Optional<String> configJson = bm.config();
+            if (configJson.isPresent()) {
+                // return is a String of raw json, so we have to manually construct the jsend response.
+                // FIXME:  IF CONFIG JSON IS INVALID, THEN THE RESPONSE WILL BE TOO                
+                ctx.res.setContentType("application/json");
+                ctx.result(String.format("{\n\t\"status\": \"success\",\n\t\"data\": %s\n}", configJson.get()));                
+            }
+            return JSend.fail("config not found");
+        } catch (IOException e) {
+            log.error(e.getMessage(), e);
+            return JSend.error(e);
+        }
     }
-         
+
+    private static String q(Context ctx, String key) {
+        return Strings.safeTrimToNull(ctx.req.getParameter(key));
+    }    
+    
     private static class Backup {        
         private final Collection<Tag> tags;
         private final Collection<Bookmark> bookmarks;

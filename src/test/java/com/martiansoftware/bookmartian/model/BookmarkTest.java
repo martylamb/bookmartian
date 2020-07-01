@@ -1,6 +1,5 @@
 package com.martiansoftware.bookmartian.model;
 
-import com.martiansoftware.boom.Json;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -54,7 +53,7 @@ public class BookmarkTest {
 
     @Test
     public void testJson() {
-        JsonConfig.init();
+        Json.init();
         Bookmark b = Bookmark.newBuilder()
                 .url("http://martiansoftware.com")
                 .notes("notes go here")
