@@ -3,7 +3,7 @@ name: Release to Docker
 on: 
   release:
     types:
-    - created
+      - created
 
 env:
   DOCKER_REGISTRY: ${{ secrets.Docker_Registry }}
