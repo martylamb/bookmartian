@@ -1,6 +1,7 @@
 name: Release to Docker
 
-on: 
+on:
+  push:
   release:
     types:
       - created
