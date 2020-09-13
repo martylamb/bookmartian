@@ -1,5 +1,5 @@
 # bookmartian
-A tag-based link database that makes it easy to collect and curate hundreds or thousands of bookmarks across devices. Whether running in the cloud or self-hosted, Bookmartian is easiest to get up and running in a docker container.
+A tag-based link database that makes it easy to collect and curate hundreds or thousands of bookmarks across devices. Whether running in the cloud or self-hosted, Bookmartian is easiest to get up and running in a docker container per user.
 
 # Where to get it?
 Download the latest stable build...
