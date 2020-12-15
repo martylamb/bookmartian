@@ -198,3 +198,33 @@ After this operation, all bookmarks using any of the marged tags will be tagged 
 # merge tags
 http -v -f POST http://127.0.0.1:4567/api/tag/merge target=colors "tags=red,green,blue"
 ```
+
+Backup (Export) Bookmarks
+----------
+
+**GET /api/backup**
+
+Parameters:
+  * n/a
+
+Returns a json document with all bookmarks and tags.   
+ 
+```shell
+# merge tags
+http -v -f GET http://127.0.0.1:4567/api/backup
+```
+
+Restore (Import) Bookmarks
+----------
+
+**POST /api/backup**
+
+Parameters:
+  * FILE Upload 'backup'
+
+Accepts a FILE upload json backup and imports it into the current database.
+ 
+```shell
+# merge tags
+http -v -f POST http://127.0.0.1:4567/api/restore backup@/path/to/backup.json 
+```

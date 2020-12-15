@@ -6,6 +6,17 @@ module.exports = {
   configureWebpack: {
     // plugins: [new BundleAnalyzerPlugin()]
   },
+  devServer: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:4567',
+        secure: false,
+        pathRewrite: {
+          // '^/api': '/v2/api',
+        },
+      }
+    },
+  },
   pluginOptions: {
     fontawesome: {
     
