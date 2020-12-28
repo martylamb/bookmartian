@@ -18,8 +18,21 @@
             <button class="button is-primary">Send me the magic link</button>
           </div>
         </section>
-        <h1><a href='#code' />Login with a code</h1>
-        <p>TODO: insert login form for code</p>
+        <section>
+          <h1><a href='#code' />Login with a code</h1>
+          <div class='login-section'>
+            <p class=description>
+              When you login with a code, bookmartian uses it to validate your login with your current browser. We will write a single cookie to the browser cache so that you don't have to login with this browser in the future.
+            </p>
+            <b-field grouped>
+              <b-field label='Login Code'>
+                <b-input value=''>
+                </b-input>
+              </b-field>
+            </b-field>
+            <button class="button is-primary">Login with the code</button>
+          </div>
+        </section>
       </div>
     </div>
   </div>
