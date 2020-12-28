@@ -1,13 +1,23 @@
 <template>
   <div class='login'>
-    <div class='fixed-header'>
-      bookmartian login
-    </div>
+    <div class='fixed-header'>bookmartian login</div>
     <div class='page-container'>
       <div class='page'>
-        <h1><a href="#username" />Login with username</h1>
-        <p>TODO: insert login form for username</p>
-
+        <section>
+          <h1><a href='#username' />Login with username</h1>
+          <div class='login-section'>
+            <p class=description>
+              When you login with a username, bookmartian will send you a 'magic link'. Use that link to complete the login in your current browser. We will write a single cookie to the browser cache so that you don't have to login with this browser in the future.
+            </p>
+            <b-field grouped>
+              <b-field label='Username'>
+                <b-input value=''>
+                </b-input>
+              </b-field>
+            </b-field>
+            <button class="button is-primary">Send me the magic link</button>
+          </div>
+        </section>
         <h1><a href='#code' />Login with a code</h1>
         <p>TODO: insert login form for code</p>
       </div>
@@ -32,7 +42,7 @@ export default {
   computed: {},
   watch: {},
   methods: {},
-  mounted () {}
+  mounted () { }
 }
 </script>
 
@@ -70,4 +80,14 @@ h1 {
   padding-top: 24px;
   padding-bottom: ;
 }
+
+.description {
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+
+.login-section {
+  margin: 20px;
+}
+
 </style>
