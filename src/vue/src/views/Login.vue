@@ -11,11 +11,11 @@
             </p>
             <b-field grouped>
               <b-field label='Username'>
-                <b-input value=''>
+                <b-input value='' v-model='username'>
                 </b-input>
               </b-field>
             </b-field>
-            <button class="button is-primary">Send me the magic link</button>
+            <button class="button is-info" v-on:click='userLogin()'>Send me the magic link</button>
           </div>
         </section>
         <section>
@@ -26,11 +26,11 @@
             </p>
             <b-field grouped>
               <b-field label='Login Code'>
-                <b-input value=''>
+                <b-input value='' v-model='code'>
                 </b-input>
               </b-field>
             </b-field>
-            <button class="button is-primary">Login with the code</button>
+            <button class="button is-info" v-on:click='codeLogin()'>Login with this code</button>
           </div>
         </section>
       </div>
@@ -41,6 +41,8 @@
 <script>
 // @ is an alias to /src
 // import ___ from '@/components/___.vue'
+const axios = require('axios')
+const qs = require('qs')
 
 export default {
   name: 'Login',
@@ -50,11 +52,37 @@ export default {
   props: {},
   directives: {},
   data: function () {
-    return {}
+    return {
+      username: '',
+      code: ''
+    }
   },
   computed: {},
   watch: {},
-  methods: {},
+  methods: {
+    userLogin: function () {
+      console.log('Login: submitting username ' + this.username)
+      axios
+        .post('/login',
+          qs.stringify({
+            username: this.username
+          }))
+        .then(response => {
+          // handle success
+          // TODO: update UI to reflect status of submission
+          console.log('Login: successful username submit')
+        })
+        .catch(error => {
+          // handle error
+          console.log(error)
+        })
+        .finally(function () {
+          // always executed
+        })
+    },
+    codeLogin: function () {
+    }
+  },
   mounted () { }
 }
 </script>
