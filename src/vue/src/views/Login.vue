@@ -49,7 +49,9 @@ export default {
   components: {
     // ___
   },
-  props: {},
+  props: {
+    logout: Boolean
+  },
   directives: {},
   data: function () {
     return {
@@ -83,7 +85,12 @@ export default {
     codeLogin: function () {
     }
   },
-  mounted () { }
+  mounted () {
+    if (this.logout) {
+      // TODO: actually handle logout
+      console.log('Login: logging out')
+    }
+  }
 }
 </script>
 
