@@ -38,6 +38,9 @@ jobs:
     - name: Create version tag
       run: echo "BUILDVERSION=$(printf "%s.%s" $BASEVERSION $GITHUB_RUN_NUMBER)" >> $GITHUB_ENV
 
+    - name: Echo version strings
+      run: echo "BUILDVERSION = $BUILDVERSION"
+
     - name: Build image
       run: |
         docker build . --file Dockerfile --tag $DOCKER_REGISTRY/github/bookmartian:$BUILDVERSION --build-arg BUILDVERSION=$BUILDVERSION
