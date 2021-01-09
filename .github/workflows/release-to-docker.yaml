@@ -7,6 +7,9 @@ on:
   release:
     types:
       - created
+  push:
+    branches:
+      - 'workflow/**'
 
 env:
   DOCKER_REGISTRY: ${{ secrets.Docker_Registry }}
@@ -41,6 +44,7 @@ jobs:
         docker tag $DOCKER_REGISTRY/github/bookmartian:$BUILDVERSION $DOCKER_REGISTRY/github/bookmartian:latest
 
     - name: Push image
+      if: ${{ github.event_name == 'release' }}
       run: |
        echo $DOCKER_PASSWORD | docker login $DOCKER_REGISTRY -u $DOCKER_USERNAME --password-stdin
        docker push $DOCKER_REGISTRY/github/bookmartian 
