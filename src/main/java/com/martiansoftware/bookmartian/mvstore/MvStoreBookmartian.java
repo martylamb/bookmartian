@@ -122,8 +122,10 @@ public class MvStoreBookmartian implements Bookmartian {
         synchronized(_lock) {
             Path configFile = _dataDir.resolve("config.json");
             if (Files.exists(configFile)) {
+                LOG.info("Loading config from {}", configFile.toAbsolutePath());
                 return Optional.of(Files.readAllLines(configFile).stream().collect(Collectors.joining("\n")));
             }
+            LOG.info("No configuration file at {}", configFile.toAbsolutePath());
             return Optional.empty();
         }
     }
